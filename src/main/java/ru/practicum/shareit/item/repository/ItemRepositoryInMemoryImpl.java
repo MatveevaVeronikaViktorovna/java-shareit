@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.repository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -44,7 +45,7 @@ public class ItemRepositoryInMemoryImpl implements ItemRepository {
             return items.get(id);
         } else {
             log.warn("Вещь с id " + id + " не найдена");
-            throw new ItemNotFoundException("Вещь с id " + id + " не найдена");
+            throw new EntityNotFoundException(Item.class.getSimpleName(), id);
         }
     }
 
@@ -66,7 +67,7 @@ public class ItemRepositoryInMemoryImpl implements ItemRepository {
             return item;
         } else {
             log.warn("Вещь с id " + id + " не найдена у владельца с id " + userId);
-            throw new ItemNotFoundException("Вещь с id " + id + " не найдена у владельца с id " + userId);
+            throw new EntityNotFoundException(Item.class.getSimpleName(), id);
         }
     }
 

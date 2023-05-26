@@ -43,7 +43,7 @@ public class UserRepositoryInMemoryImpl implements UserRepository {
             return users.get(id);
         } else {
             log.warn("Пользователь с id " + id + " не найден");
-            throw new EntityNotFoundException("Пользователь с id " + id + " не найден");
+            throw new EntityNotFoundException(User.class.getSimpleName(), id);
         }
     }
 
