@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.UserAlreadyExistException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class UserRepositoryInMemoryImpl implements UserRepository {
             return users.get(id);
         } else {
             log.warn("Пользователь с id " + id + " не найден");
-            throw new UserNotFoundException("Пользователь с id " + id + " не найден");
+            throw new EntityNotFoundException("Пользователь с id " + id + " не найден");
         }
     }
 
