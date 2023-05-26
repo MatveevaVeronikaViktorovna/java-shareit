@@ -3,8 +3,7 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.dto.UserDtoForCreate;
-import ru.practicum.shareit.user.dto.UserDtoForUpdate;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -20,17 +19,17 @@ public class UserServiceImpl implements UserService {
     private final UserRepository repository;
 
     @Override
-    public UserDtoForCreate create(UserDtoForCreate userDtoForCreate) {
-        User user = UserMapper.convertDtoForCreateToUser(userDtoForCreate);
+    public UserDto create(UserDto userDto) {
+        User user = UserMapper.convertDtoToUser(userDto);
         User newUser = repository.create(user);
         log.info("Добавлен пользователь: {}", newUser);
         return UserMapper.convertUserToDto(newUser);
     }
 
     @Override
-    public List<UserDtoForCreate> getAll() {
+    public List<UserDto> getAll() {
         List<User> users = repository.getAll();
-        List<UserDtoForCreate> allUsers = new ArrayList<>();
+        List<UserDto> allUsers = new ArrayList<>();
         for (User user : users) {
             allUsers.add(UserMapper.convertUserToDto(user));
         }
@@ -38,14 +37,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDtoForCreate getById(Long id) {
+    public UserDto getById(Long id) {
         User user = repository.getById(id);
         return UserMapper.convertUserToDto(user);
     }
 
     @Override
-    public UserDtoForCreate update(Long id, UserDtoForUpdate userDtoForUpdate) {
-        User user = UserMapper.convertDtoForUpdateToUser(userDtoForUpdate);
+    public UserDto update(Long id, UserDto userDto) {
+        User user = UserMapper.convertDtoToUser(userDto);
         User updatedUser = repository.update(id, user);
         log.info("Обновлен пользователь c id {} на {}", id, updatedUser);
         return UserMapper.convertUserToDto(updatedUser);

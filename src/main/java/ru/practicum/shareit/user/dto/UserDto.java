@@ -9,11 +9,11 @@ import javax.validation.constraints.NotBlank;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
-public class UserDtoForCreate {
+public class UserDto {
     long id;
-    @NotBlank
-    @Email
+    @NotBlank(groups = Create.class)
+    @Email(groups = {Create.class, Update.class})
     String email;
-    @NotBlank
+    @NotBlank(groups = Create.class)
     String name;
 }

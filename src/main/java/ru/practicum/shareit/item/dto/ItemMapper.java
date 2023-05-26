@@ -6,18 +6,7 @@ import ru.practicum.shareit.item.model.Item;
 @Data
 public class ItemMapper {
 
-    public static Item convertDtoForCreateToItem(ItemDtoForCreate dto) {
-        if (dto == null) return null;
-        else {
-            Item item = new Item();
-            item.setName(dto.getName());
-            item.setDescription(dto.getDescription());
-            item.setAvailable(dto.getAvailable());
-            return item;
-        }
-    }
-
-    public static Item convertDtoForUpdateToItem(ItemDtoForUpdate dto) {
+    public static Item convertDtoToItem(ItemDto dto) {
         if (dto == null) return null;
         else {
             Item item = new Item();
@@ -34,13 +23,13 @@ public class ItemMapper {
         }
     }
 
-    public static ItemDtoForCreate convertItemToDto(Item item) {
-        ItemDtoForCreate itemDtoForCreate = new ItemDtoForCreate();
-        itemDtoForCreate.setId(item.getId());
-        itemDtoForCreate.setName(item.getName());
-        itemDtoForCreate.setDescription(item.getDescription());
-        itemDtoForCreate.setAvailable(item.getAvailable());
-        return itemDtoForCreate;
+    public static ItemDto convertItemToDto(Item item) {
+        ItemDto itemDto = new ItemDto();
+        itemDto.setId(item.getId());
+        itemDto.setName(item.getName());
+        itemDto.setDescription(item.getDescription());
+        itemDto.setAvailable(item.getAvailable());
+        return itemDto;
     }
 
 }
