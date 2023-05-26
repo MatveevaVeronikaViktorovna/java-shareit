@@ -18,6 +18,6 @@ public class Item {
     String description;
     @NotNull
     Boolean available;
-    @NotBlank
+    @NotNull
     User owner;
 }

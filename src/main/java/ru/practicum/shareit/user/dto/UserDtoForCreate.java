@@ -14,5 +14,6 @@ public class UserDtoForCreate {
     @NotBlank
     @Email
     String email;
+    @NotBlank
     String name;
 }
