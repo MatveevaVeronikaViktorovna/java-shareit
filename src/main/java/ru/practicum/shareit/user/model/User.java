@@ -18,6 +18,7 @@ public class User {
     long id;
     @NotBlank
     @Email
+    @Column(unique = true)
     String email;
     @NotBlank
     String name;

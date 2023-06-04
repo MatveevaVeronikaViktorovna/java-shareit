@@ -6,7 +6,7 @@ import ru.practicum.shareit.user.model.User;
 @Data
 public class UserMapper {
 
-    public static User convertDtoToUser(UserDto dto) {
+    public static User toUser(UserDto dto) {
         if (dto == null) return null;
         else {
             User user = new User();
@@ -20,7 +20,7 @@ public class UserMapper {
         }
     }
 
-    public static UserDto convertUserToDto(User user) {
+    public static UserDto toDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
         userDto.setName(user.getName());

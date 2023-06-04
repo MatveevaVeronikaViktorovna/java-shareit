@@ -24,5 +24,7 @@ public class Item {
     @NotNull
     Boolean available;
     @NotNull
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     User owner;
 }
