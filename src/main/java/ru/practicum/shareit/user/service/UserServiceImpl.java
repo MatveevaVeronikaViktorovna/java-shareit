@@ -51,20 +51,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto update(Long id, UserDto userDto) {
-  /*      User user = UserMapper.toUser(userDto);
-        User updatedUser = repository.update(id, user);
+        User newUser = UserMapper.toUser(userDto);
+        User oldUser = UserMapper.toUser(getById(id));
+        newUser.setId(id);
+        if (newUser.getName() == null) {
+            newUser.setName(oldUser.getName());
+        }
+        if (newUser.getEmail() == null) {
+            newUser.setEmail(oldUser.getEmail());
+        }
+        User updatedUser = repository.save(newUser);
         log.info("Обновлен пользователь c id {} на {}", id, updatedUser);
         return UserMapper.toDto(updatedUser);
-   */
-        return null;
     }
 
     @Override
     public void delete(Long id) {
-    /*    repository.delete(id);
+        repository.deleteById(id);
         log.info("Удален пользователь с id {}", id);
-
-     */
     }
 
 }
