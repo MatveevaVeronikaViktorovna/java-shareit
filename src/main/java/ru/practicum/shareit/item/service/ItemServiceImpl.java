@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -11,8 +12,9 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,58 +26,91 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto create(Long userId, ItemDto itemDto) {
-        Item item = ItemMapper.convertDtoToItem(itemDto);
-        User owner = userRepository.getById(userId);
-        item.setOwner(owner);
-        Item newItem = itemRepository.create(item);
+        Item item = ItemMapper.toItem(itemDto);
+        Optional<User> owner = userRepository.findById(userId);
+        if(owner.isPresent()) {
+            item.setOwner(owner.get());
+        } else {
+            log.warn("Пользователь с id " + userId + " не найден");
+            throw new EntityNotFoundException(User.class.getSimpleName(), userId);
+        }
+        Item newItem = itemRepository.save(item);
         log.info("Добавленa вещь: {}", newItem);
-        return ItemMapper.convertItemToDto(newItem);
+        return ItemMapper.toDto(newItem);
     }
 
     @Override
     public List<ItemDto> getAllByOwner(Long userId) {
-        List<Item> thisOwnerItems = itemRepository.getAllByOwner(userId);
+        List<Item> thisOwnerItems = itemRepository.findByOwner(userId);
         List<ItemDto> items = new ArrayList<>();
         for (Item item : thisOwnerItems) {
-            items.add(ItemMapper.convertItemToDto(item));
+            items.add(ItemMapper.toDto(item));
         }
         return items;
     }
 
     @Override
     public ItemDto getById(Long id) {
-        Item item = itemRepository.getById(id);
-        return ItemMapper.convertItemToDto(item);
+        Optional<Item> item = itemRepository.findById(id);
+        if(item.isPresent()) {
+            return ItemMapper.toDto(item.get());
+        } else {
+            log.warn("Вещь с id " + id + " не найдена");
+            throw new EntityNotFoundException(Item.class.getSimpleName(), id);
+        }
     }
 
     @Override
     public ItemDto update(Long userId, Long id, ItemDto itemDto) {
-        Item newItem = ItemMapper.convertDtoToItem(itemDto);
-        User owner = userRepository.getById(userId);
-        Item updatedItem = itemRepository.update(userId, id, newItem);
-        updatedItem.setOwner(owner);
+        Item newItem = ItemMapper.toItem(itemDto);
+        Item oldItem = ItemMapper.toItem(getById(id));
+
+        if (isThisOwnersItem(userId, id)) {
+            newItem.setId(id);
+            if (newItem.getName() == null) {
+                newItem.setName(oldItem.getName());
+            }
+            if (newItem.getDescription() == null) {
+                newItem.setDescription(oldItem.getDescription());
+            }
+            if (newItem.getAvailable() == null) {
+                newItem.setAvailable(oldItem.getAvailable());
+            }
+            newItem.setOwner(oldItem.getOwner());
+        } else {
+            log.warn("Вещь с id " + id + " не найдена у владельца с id " + userId);
+            throw new EntityNotFoundException(Item.class.getSimpleName(), id);
+        }
+        Item updatedItem = itemRepository.save(newItem);
         log.info("Обновлена вещь c id {} на {}", id, updatedItem);
-        return ItemMapper.convertItemToDto(updatedItem);
+        return ItemMapper.toDto(updatedItem);
     }
 
     @Override
     public void delete(Long id) {
-        itemRepository.delete(id);
+        itemRepository.deleteById(id);
         log.info("Удалена вещь с id {}", id);
     }
 
     @Override
     public List<ItemDto> findAvailableByText(Long userId, String text) {
-        if (text == null || text.isBlank()) {
+    /*    if (text == null || text.isBlank()) {
             return Collections.emptyList();
         } else {
             List<Item> searchResults = itemRepository.findAvailableByText(userId, text);
             List<ItemDto> items = new ArrayList<>();
             for (Item item : searchResults) {
-                items.add(ItemMapper.convertItemToDto(item));
+                items.add(ItemMapper.toDto(item));
             }
             return items;
-        }
+        } */
+        return null;
+    }
+
+    private boolean isThisOwnersItem(Long userId, Long id) {
+        Item item = ItemMapper.toItem(getById(id));
+        User owner = item.getOwner();
+        return Objects.equals(owner.getId(), userId);
     }
 
 }

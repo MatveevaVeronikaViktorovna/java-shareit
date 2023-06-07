@@ -12,42 +12,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ItemRepositoryInMemoryImpl implements ItemRepository {
-
-    private final Map<Long, Item> items = new HashMap<>();
-    private long newId;
-
-    @Override
-    public Item create(Item item) {
-        newId++;
-        item.setId(newId);
-        items.put(newId, item);
-        return item;
-    }
-
-    @Override
-    public List<Item> getAllByOwner(Long userId) {
-        List<Item> thisOwnerItems = new ArrayList<>();
-        for (Item item : items.values()) {
-            if (item.getOwner().getId() == userId) {
-                thisOwnerItems.add(item);
-            }
-        }
-        return thisOwnerItems;
-    }
-
-    @Override
-    public Item getById(Long id) {
-        if (items.containsKey(id)) {
-            return items.get(id);
-        } else {
-            log.warn("Вещь с id " + id + " не найдена");
-            throw new EntityNotFoundException(Item.class.getSimpleName(), id);
-        }
-    }
+public abstract class ItemRepositoryInMemoryImpl implements ItemRepository {
+/*
 
     @Override
     public Item update(Long userId, Long id, Item item) {
@@ -71,10 +41,6 @@ public class ItemRepositoryInMemoryImpl implements ItemRepository {
         }
     }
 
-    @Override
-    public void delete(Long id) {
-        items.remove(id);
-    }
 
     @Override
     public List<Item> findAvailableByText(Long userId, String text) {
@@ -89,10 +55,5 @@ public class ItemRepositoryInMemoryImpl implements ItemRepository {
         return searchResults;
     }
 
-    private boolean isThisOwnersItem(Long userId, Long id) {
-        Item item = items.get(id);
-        User owner = item.getOwner();
-        return owner.getId() == userId;
-    }
-
+*/
 }
