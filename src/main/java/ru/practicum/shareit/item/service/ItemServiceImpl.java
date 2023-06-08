@@ -63,8 +63,14 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto update(Long userId, Long id, ItemDto itemDto) {
         Item newItem = ItemMapper.toItem(itemDto);
-        Item oldItem = ItemMapper.toItem(getById(id));
-
+        Optional<Item> oldItemOptional = itemRepository.findById(id);
+        Item oldItem;
+        if(oldItemOptional.isPresent()) {
+            oldItem = oldItemOptional.get();
+        } else {
+            log.warn("Вещь с id " + id + " не найдена");
+            throw new EntityNotFoundException(Item.class.getSimpleName(), id);
+        }
         if (isThisOwnersItem(userId, id)) {
             newItem.setId(id);
             if (newItem.getName() == null) {
@@ -108,7 +114,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private boolean isThisOwnersItem(Long userId, Long id) {
-        Item item = ItemMapper.toItem(getById(id));
+        Item item = itemRepository.findById(id).get();
         User owner = item.getOwner();
         return Objects.equals(owner.getId(), userId);
     }
