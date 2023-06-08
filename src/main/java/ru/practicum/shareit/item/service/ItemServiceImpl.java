@@ -11,10 +11,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -100,17 +97,16 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> findAvailableByText(Long userId, String text) {
-    /*    if (text == null || text.isBlank()) {
+        if (text == null || text.isBlank()) {
             return Collections.emptyList();
         } else {
-            List<Item> searchResults = itemRepository.findAvailableByText(userId, text);
+            List<Item> searchResults = itemRepository.findAllByNameContainingIgnoreCase(text);
             List<ItemDto> items = new ArrayList<>();
             for (Item item : searchResults) {
                 items.add(ItemMapper.toDto(item));
             }
             return items;
-        } */
-        return null;
+        }
     }
 
     private boolean isThisOwnersItem(Long userId, Long id) {
