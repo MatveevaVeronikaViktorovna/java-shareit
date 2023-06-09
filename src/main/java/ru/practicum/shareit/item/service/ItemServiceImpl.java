@@ -101,6 +101,7 @@ public class ItemServiceImpl implements ItemService {
             return Collections.emptyList();
         } else {
             List<Item> searchResults = itemRepository.findAllByNameContainingIgnoreCase(text);
+            System.out.println("нашли: " + searchResults);
             List<ItemDto> items = new ArrayList<>();
             for (Item item : searchResults) {
                 items.add(ItemMapper.toDto(item));
