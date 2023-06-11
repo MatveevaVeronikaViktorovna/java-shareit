@@ -96,11 +96,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> findAvailableByText(Long userId, String text) {
+    public List<ItemDto> searchByText(Long userId, String text) {
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         } else {
-            List<Item> searchResults = itemRepository.findAllByNameContainingIgnoreCase(text);
+            List<Item> searchResults = itemRepository.findAllAvailableByText(text);
             System.out.println("нашли: " + searchResults);
             List<ItemDto> items = new ArrayList<>();
             for (Item item : searchResults) {

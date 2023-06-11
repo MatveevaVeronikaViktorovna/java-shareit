@@ -16,5 +16,5 @@ public interface ItemService {
 
     void delete(Long id);
 
-    List<ItemDto> findAvailableByText(Long userId, String text);
+    List<ItemDto> searchByText(Long userId, String text);
 }

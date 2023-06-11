@@ -53,9 +53,9 @@ public class ItemController {
 
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemDto> findAvailableByText(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemDto> searchByText(@RequestHeader("X-Sharer-User-Id") Long userId,
                                              @RequestParam String text) {
-        return itemService.findAvailableByText(userId, text);
+        return itemService.searchByText(userId, text);
     }
 
 }
