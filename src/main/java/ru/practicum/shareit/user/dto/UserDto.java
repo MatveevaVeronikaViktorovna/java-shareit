@@ -12,8 +12,8 @@ import javax.validation.constraints.NotBlank;
 public class UserDto {
     Long id;
     @NotBlank(groups = Create.class)
+    String name;
+    @NotBlank(groups = Create.class)
     @Email(groups = {Create.class, Update.class})
     String email;
-    @NotBlank(groups = Create.class)
-    String name;
 }

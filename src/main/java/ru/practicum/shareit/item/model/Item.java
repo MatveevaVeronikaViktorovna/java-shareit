@@ -21,10 +21,10 @@ public class Item {
     String name;
     @NotBlank
     String description;
-    @NotNull
+    @Column(name = "is_available", nullable = false)
     Boolean available;
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "owner_id")
     User owner;
 }

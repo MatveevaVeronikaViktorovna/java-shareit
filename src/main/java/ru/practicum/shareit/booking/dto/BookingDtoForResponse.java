@@ -15,17 +15,11 @@ import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
-public class BookingDto {
+public class BookingDtoForResponse {
     Long id;
-    @NotNull(groups = Create.class)
-    @FutureOrPresent(groups = Create.class)
     LocalDateTime start;
-    @Future(groups = Create.class)
-    @NotNull(groups = Create.class)
     LocalDateTime end;
     UserDto booker;
-    @NotNull(groups = Create.class)
-    Long itemId;
     ItemDto item;
     Status status;
 }
