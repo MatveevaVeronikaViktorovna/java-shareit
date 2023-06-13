@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
             return UserMapper.toDto(user.get());
         } else {
             log.warn("Пользователь с id " + id + " не найден");
-            throw new EntityNotFoundException(User.class.getSimpleName(), id);
+            throw new EntityNotFoundException("Пользователь с id " + id + " не найден");
         }
     }
 

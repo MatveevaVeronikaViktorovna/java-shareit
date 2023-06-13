@@ -29,7 +29,7 @@ public class ItemServiceImpl implements ItemService {
             item.setOwner(owner.get());
         } else {
             log.warn("Пользователь с id " + userId + " не найден");
-            throw new EntityNotFoundException(User.class.getSimpleName(), userId);
+            throw new EntityNotFoundException("Пользователь с id " + userId + " не найден");
         }
         Item newItem = itemRepository.save(item);
         log.info("Добавленa вещь: {}", newItem);
@@ -53,7 +53,7 @@ public class ItemServiceImpl implements ItemService {
             return ItemMapper.toDto(item.get());
         } else {
             log.warn("Вещь с id " + id + " не найдена");
-            throw new EntityNotFoundException(Item.class.getSimpleName(), id);
+            throw new EntityNotFoundException("Вещь с id " + id + " не найдена");
         }
     }
 
@@ -66,7 +66,7 @@ public class ItemServiceImpl implements ItemService {
             oldItem = oldItemOptional.get();
         } else {
             log.warn("Вещь с id " + id + " не найдена");
-            throw new EntityNotFoundException(Item.class.getSimpleName(), id);
+            throw new EntityNotFoundException("Вещь с id " + id + " не найдена");
         }
         if (isThisOwnersItem(userId, id)) {
             newItem.setId(id);
@@ -82,7 +82,7 @@ public class ItemServiceImpl implements ItemService {
             newItem.setOwner(oldItem.getOwner());
         } else {
             log.warn("Вещь с id " + id + " не найдена у владельца с id " + userId);
-            throw new EntityNotFoundException(Item.class.getSimpleName(), id);
+            throw new EntityNotFoundException("Вещь с id " + id + " не найдена у владельца с id " + userId);
         }
         Item updatedItem = itemRepository.save(newItem);
         log.info("Обновлена вещь c id {} на {}", id, updatedItem);

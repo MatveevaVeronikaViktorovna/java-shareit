@@ -23,4 +23,20 @@ public class BookingController {
         return bookingService.create(userId, bookingDto);
     }
 
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public BookingDtoForResponse approveOrReject(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                 @PathVariable Long id,
+                                                 @RequestParam Boolean approved) {
+        return bookingService.approveOrReject(userId, id, approved);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public BookingDtoForResponse getById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                         @PathVariable Long id) {
+        return bookingService.getById(userId, id);
+    }
+
+
 }
