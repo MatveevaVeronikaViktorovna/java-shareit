@@ -83,7 +83,8 @@ public class BookingServiceImpl implements BookingService {
             } else {
                 booking.setStatus(Status.REJECTED);
             }
-            return BookingMapper.toDto(booking);
+            Booking newBooking = bookingRepository.save(booking);
+            return BookingMapper.toDto(newBooking);
         } else {
             log.warn("Бронирование с id " + id + " у пользователя с id " + userId + " не найдено");
             throw new EntityNotFoundException("Бронирование с id " + id + " у пользователя с id " + userId + " не найдено");
@@ -127,6 +128,35 @@ public class BookingServiceImpl implements BookingService {
             case WAITING:bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
             break;
             case REJECTED:bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+        }
+        List<BookingDtoForResponse> bookingsForResponse = new ArrayList<>();
+        for (Booking booking : bookings) {
+            bookingsForResponse.add(BookingMapper.toDto(booking));
+        }
+        return bookingsForResponse;
+    }
+
+    @Override
+    public List<BookingDtoForResponse> getAllByOwner(Long userId, State state) {
+        if (!userRepository.existsById(userId)) {
+            log.warn("Пользователь с id " + userId + " не найден");
+            throw new EntityNotFoundException("Пользователь с id " + userId + " не найден");
+        }
+        List<Booking> bookings = new ArrayList<>();
+        LocalDateTime currentMoment = LocalDateTime.now();
+        switch (state) {
+            case ALL: bookings = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
+                break;
+            case CURRENT: bookings = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                    currentMoment, currentMoment);
+                break;
+            case PAST: bookings = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId,currentMoment);
+                break;
+            case FUTURE: bookings = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, currentMoment);
+                break;
+            case WAITING:bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
+                break;
+            case REJECTED:bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
         }
         List<BookingDtoForResponse> bookingsForResponse = new ArrayList<>();
         for (Booking booking : bookings) {
