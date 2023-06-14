@@ -7,7 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoForResponse;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.Create;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,5 +41,10 @@ public class BookingController {
         return bookingService.getById(userId, id);
     }
 
-
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<BookingDtoForResponse> getAllByBooker(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                      @RequestParam(defaultValue = "ALL") State state) {
+        return bookingService.getAllByBooker(userId, state);
+    }
 }

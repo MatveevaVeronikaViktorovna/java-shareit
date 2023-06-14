@@ -1,9 +1,10 @@
 package ru.practicum.shareit.booking.service;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
+import ru.practicum.shareit.booking.controller.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoForResponse;
+
+import java.util.List;
 
 public interface BookingService {
 
@@ -11,5 +12,6 @@ public interface BookingService {
 
     BookingDtoForResponse approveOrReject(Long userId, Long id, Boolean approved);
     BookingDtoForResponse getById(Long userId, Long id);
+    List<BookingDtoForResponse> getAllByBooker(Long userId, State state);
 
-}
+    }
