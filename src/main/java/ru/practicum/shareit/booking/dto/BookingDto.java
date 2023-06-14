@@ -26,6 +26,6 @@ public class BookingDto {
     UserDto booker;
     @NotNull(groups = Create.class)
     Long itemId;
-    ItemDto item;
-    Status status;
+    ItemDto item; //это убрать или мы где то используем их? уберу чуть позже
+    Status status; // это убрать
 }

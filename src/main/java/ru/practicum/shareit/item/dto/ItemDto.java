@@ -3,6 +3,8 @@ package ru.practicum.shareit.item.dto;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoForItem;
 import ru.practicum.shareit.user.dto.Create;
 
 import javax.validation.constraints.NotBlank;
@@ -18,4 +20,6 @@ public class ItemDto {
     String description;
     @NotNull(groups = Create.class)
     Boolean available;
+    BookingDtoForItem lastBooking;
+    BookingDtoForItem nextBooking;
 }
