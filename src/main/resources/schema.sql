@@ -28,5 +28,5 @@ CREATE TABLE IF NOT EXISTS comments (
 	text varchar,
 	author_id BIGINT REFERENCES users (id),
 	item_id BIGINT REFERENCES items (id),
-	created IMESTAMP
+	created TIMESTAMP
 )
