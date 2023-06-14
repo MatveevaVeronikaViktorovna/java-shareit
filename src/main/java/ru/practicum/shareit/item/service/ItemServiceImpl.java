@@ -3,6 +3,10 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -11,6 +15,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -20,6 +25,7 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
 
     @Override
     public ItemDto create(Long userId, ItemDto itemDto) {
@@ -38,19 +44,24 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getAllByOwner(Long userId) {
-        List<Item> thisOwnerItems = itemRepository.findAllByOwnerId(userId);
+        List<Item> thisOwnerItems = itemRepository.findAllByOwnerIdOrderByIdAsc(userId);
         List<ItemDto> items = new ArrayList<>();
         for (Item item : thisOwnerItems) {
-            items.add(ItemMapper.toDto(item));
+            items.add(setLastBookingAndNextBooking(item));
         }
         return items;
     }
 
     @Override
-    public ItemDto getById(Long id) {
-        Optional<Item> item = itemRepository.findById(id);
-        if(item.isPresent()) {
-            return ItemMapper.toDto(item.get());
+    public ItemDto getById(Long userId, Long id) {
+        Optional<Item> itemOptional = itemRepository.findById(id);
+        if(itemOptional.isPresent()) {
+            Item item = itemOptional.get();
+            if (item.getOwner().getId().equals(userId)) {
+                return setLastBookingAndNextBooking(itemOptional.get());
+            } else {
+                return  ItemMapper.toDto(item);
+            }
         } else {
             log.warn("Вещь с id " + id + " не найдена");
             throw new EntityNotFoundException("Вещь с id " + id + " не найдена");
@@ -113,6 +124,18 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(id).get();
         User owner = item.getOwner();
         return Objects.equals(owner.getId(), userId);
+    }
+
+    private ItemDto setLastBookingAndNextBooking (Item item) {
+        ItemDto itemDto = ItemMapper.toDto(item);
+        LocalDateTime currentMoment = LocalDateTime.now();
+        Optional <Booking> lastBooking = bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc
+                (item.getId(),currentMoment, Status.APPROVED);
+        lastBooking.ifPresent(booking -> itemDto.setLastBooking(BookingMapper.toDtoForItem(lastBooking.get())));
+        Optional <Booking> nextBooking = bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc
+                (item.getId(),currentMoment, Status.APPROVED);
+        nextBooking.ifPresent(booking -> itemDto.setNextBooking(BookingMapper.toDtoForItem(nextBooking.get())));
+        return itemDto;
     }
 
 }
