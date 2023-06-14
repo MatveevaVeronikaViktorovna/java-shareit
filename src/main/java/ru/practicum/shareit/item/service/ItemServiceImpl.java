@@ -7,10 +7,15 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.CommentWithoutBookingException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -26,12 +31,13 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     public ItemDto create(Long userId, ItemDto itemDto) {
         Item item = ItemMapper.toItem(itemDto);
         Optional<User> owner = userRepository.findById(userId);
-        if(owner.isPresent()) {
+        if (owner.isPresent()) {
             item.setOwner(owner.get());
         } else {
             log.warn("Пользователь с id " + userId + " не найден");
@@ -55,12 +61,12 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto getById(Long userId, Long id) {
         Optional<Item> itemOptional = itemRepository.findById(id);
-        if(itemOptional.isPresent()) {
+        if (itemOptional.isPresent()) {
             Item item = itemOptional.get();
             if (item.getOwner().getId().equals(userId)) {
                 return setLastBookingAndNextBooking(itemOptional.get());
             } else {
-                return  ItemMapper.toDto(item);
+                return ItemMapper.toDto(item);
             }
         } else {
             log.warn("Вещь с id " + id + " не найдена");
@@ -73,7 +79,7 @@ public class ItemServiceImpl implements ItemService {
         Item newItem = ItemMapper.toItem(itemDto);
         Optional<Item> oldItemOptional = itemRepository.findById(id);
         Item oldItem;
-        if(oldItemOptional.isPresent()) {
+        if (oldItemOptional.isPresent()) {
             oldItem = oldItemOptional.get();
         } else {
             log.warn("Вещь с id " + id + " не найдена");
@@ -126,16 +132,45 @@ public class ItemServiceImpl implements ItemService {
         return Objects.equals(owner.getId(), userId);
     }
 
-    private ItemDto setLastBookingAndNextBooking (Item item) {
+    private ItemDto setLastBookingAndNextBooking(Item item) {
         ItemDto itemDto = ItemMapper.toDto(item);
         LocalDateTime currentMoment = LocalDateTime.now();
-        Optional <Booking> lastBooking = bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc
-                (item.getId(),currentMoment, Status.APPROVED);
+        Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc
+                (item.getId(), currentMoment, Status.APPROVED);
         lastBooking.ifPresent(booking -> itemDto.setLastBooking(BookingMapper.toDtoForItem(lastBooking.get())));
-        Optional <Booking> nextBooking = bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc
-                (item.getId(),currentMoment, Status.APPROVED);
+        Optional<Booking> nextBooking = bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc
+                (item.getId(), currentMoment, Status.APPROVED);
         nextBooking.ifPresent(booking -> itemDto.setNextBooking(BookingMapper.toDtoForItem(nextBooking.get())));
         return itemDto;
+    }
+
+    @Override
+    public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
+        List<Booking> bookings = bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(userId,
+                itemId, LocalDateTime.now());
+        if (bookings.isEmpty()) {
+            throw new CommentWithoutBookingException("Отзыв может оставить только тот пользователь, который брал эту " +
+                    "вещь в аренду, и только после окончания срока аренды.");
+        }
+        Comment comment = CommentMapper.toComment(commentDto);
+        Optional<User> author = userRepository.findById(userId);
+        if (author.isPresent()) {
+            comment.setAuthor(author.get());
+        } else {
+            log.warn("Пользователь с id " + userId + " не найден");
+            throw new EntityNotFoundException("Пользователь с id " + userId + " не найден");
+        }
+        Optional<Item> item = itemRepository.findById(itemId);
+        if(item.isPresent()) {
+            comment.setItem(item.get());
+        } else {
+            log.warn("Вещь с id " + itemId + " не найдена");
+            throw new EntityNotFoundException("Вещь с id " + itemId + " не найдена");
+        }
+        comment.setCreated(LocalDateTime.now());
+        Comment newComment = commentRepository.save(comment);
+        log.info("Добавлен комментарий: {}", newComment);
+        return CommentMapper.toDto(newComment);
     }
 
 }
