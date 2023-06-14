@@ -5,10 +5,12 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoForItem;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.user.dto.Create;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
@@ -22,4 +24,5 @@ public class ItemDto {
     Boolean available;
     BookingDtoForItem lastBooking;
     BookingDtoForItem nextBooking;
+    List<CommentDto> comments;
 }

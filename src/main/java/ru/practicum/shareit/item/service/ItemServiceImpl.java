@@ -53,7 +53,9 @@ public class ItemServiceImpl implements ItemService {
         List<Item> thisOwnerItems = itemRepository.findAllByOwnerIdOrderByIdAsc(userId);
         List<ItemDto> items = new ArrayList<>();
         for (Item item : thisOwnerItems) {
-            items.add(setLastBookingAndNextBooking(item));
+            ItemDto itemDto = setLastBookingAndNextBooking(item);
+            setComments(itemDto);
+            items.add(itemDto);
         }
         return items;
     }
@@ -63,11 +65,14 @@ public class ItemServiceImpl implements ItemService {
         Optional<Item> itemOptional = itemRepository.findById(id);
         if (itemOptional.isPresent()) {
             Item item = itemOptional.get();
+            ItemDto itemDto;
             if (item.getOwner().getId().equals(userId)) {
-                return setLastBookingAndNextBooking(itemOptional.get());
+                itemDto = setLastBookingAndNextBooking(itemOptional.get());
             } else {
-                return ItemMapper.toDto(item);
+                itemDto = ItemMapper.toDto(item);
             }
+            setComments(itemDto);
+            return itemDto;
         } else {
             log.warn("Вещь с id " + id + " не найдена");
             throw new EntityNotFoundException("Вещь с id " + id + " не найдена");
@@ -144,6 +149,15 @@ public class ItemServiceImpl implements ItemService {
         return itemDto;
     }
 
+    private void setComments(ItemDto itemDto) {
+        List<Comment> comments = commentRepository.findAllByItemId(itemDto.getId());
+        List<CommentDto> commentsDto = new ArrayList<>();
+        for (Comment comment : comments) {
+            commentsDto.add(CommentMapper.toDto(comment));
+        }
+        itemDto.setComments(commentsDto);
+    }
+
     @Override
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
         List<Booking> bookings = bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(userId,
@@ -161,7 +175,7 @@ public class ItemServiceImpl implements ItemService {
             throw new EntityNotFoundException("Пользователь с id " + userId + " не найден");
         }
         Optional<Item> item = itemRepository.findById(itemId);
-        if(item.isPresent()) {
+        if (item.isPresent()) {
             comment.setItem(item.get());
         } else {
             log.warn("Вещь с id " + itemId + " не найдена");
