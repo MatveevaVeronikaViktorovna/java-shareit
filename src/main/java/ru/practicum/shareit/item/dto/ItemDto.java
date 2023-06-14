@@ -3,9 +3,7 @@ package ru.practicum.shareit.item.dto;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoForItem;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.user.dto.Create;
 
 import javax.validation.constraints.NotBlank;

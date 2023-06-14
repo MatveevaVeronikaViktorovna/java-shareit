@@ -131,33 +131,6 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    private boolean isThisOwnersItem(Long userId, Long id) {
-        Item item = itemRepository.findById(id).get();
-        User owner = item.getOwner();
-        return Objects.equals(owner.getId(), userId);
-    }
-
-    private ItemDto setLastBookingAndNextBooking(Item item) {
-        ItemDto itemDto = ItemMapper.toDto(item);
-        LocalDateTime currentMoment = LocalDateTime.now();
-        Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc
-                (item.getId(), currentMoment, Status.APPROVED);
-        lastBooking.ifPresent(booking -> itemDto.setLastBooking(BookingMapper.toDtoForItem(lastBooking.get())));
-        Optional<Booking> nextBooking = bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc
-                (item.getId(), currentMoment, Status.APPROVED);
-        nextBooking.ifPresent(booking -> itemDto.setNextBooking(BookingMapper.toDtoForItem(nextBooking.get())));
-        return itemDto;
-    }
-
-    private void setComments(ItemDto itemDto) {
-        List<Comment> comments = commentRepository.findAllByItemId(itemDto.getId());
-        List<CommentDto> commentsDto = new ArrayList<>();
-        for (Comment comment : comments) {
-            commentsDto.add(CommentMapper.toDto(comment));
-        }
-        itemDto.setComments(commentsDto);
-    }
-
     @Override
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
         List<Booking> bookings = bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(userId,
@@ -185,6 +158,33 @@ public class ItemServiceImpl implements ItemService {
         Comment newComment = commentRepository.save(comment);
         log.info("Добавлен комментарий: {}", newComment);
         return CommentMapper.toDto(newComment);
+    }
+
+    private boolean isThisOwnersItem(Long userId, Long id) {
+        Item item = itemRepository.findById(id).get();
+        User owner = item.getOwner();
+        return Objects.equals(owner.getId(), userId);
+    }
+
+    private ItemDto setLastBookingAndNextBooking(Item item) {
+        ItemDto itemDto = ItemMapper.toDto(item);
+        LocalDateTime currentMoment = LocalDateTime.now();
+        Optional<Booking> lastBooking = bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc
+                (item.getId(), currentMoment, Status.APPROVED);
+        lastBooking.ifPresent(booking -> itemDto.setLastBooking(BookingMapper.toDtoForItem(lastBooking.get())));
+        Optional<Booking> nextBooking = bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc
+                (item.getId(), currentMoment, Status.APPROVED);
+        nextBooking.ifPresent(booking -> itemDto.setNextBooking(BookingMapper.toDtoForItem(nextBooking.get())));
+        return itemDto;
+    }
+
+    private void setComments(ItemDto itemDto) {
+        List<Comment> comments = commentRepository.findAllByItemId(itemDto.getId());
+        List<CommentDto> commentsDto = new ArrayList<>();
+        for (Comment comment : comments) {
+            commentsDto.add(CommentMapper.toDto(comment));
+        }
+        itemDto.setComments(commentsDto);
     }
 
 }

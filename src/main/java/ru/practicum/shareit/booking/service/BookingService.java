@@ -11,7 +11,10 @@ public interface BookingService {
     BookingDtoForResponse create(Long userId, BookingDto bookingDto);
 
     BookingDtoForResponse approveOrReject(Long userId, Long id, Boolean approved);
+
     BookingDtoForResponse getById(Long userId, Long id);
+
     List<BookingDtoForResponse> getAllByBooker(Long userId, State state);
+
     List<BookingDtoForResponse> getAllByOwner(Long userId, State state);
-    }
+}

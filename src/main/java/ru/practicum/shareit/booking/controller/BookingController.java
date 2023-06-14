@@ -9,7 +9,6 @@ import ru.practicum.shareit.booking.dto.BookingDtoForResponse;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.user.dto.Create;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -51,7 +50,8 @@ public class BookingController {
     @GetMapping("/owner")
     @ResponseStatus(HttpStatus.OK)
     public List<BookingDtoForResponse> getAllByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                      @RequestParam(defaultValue = "ALL") State state) {
+                                                     @RequestParam(defaultValue = "ALL") State state) {
         return bookingService.getAllByOwner(userId, state);
     }
+
 }

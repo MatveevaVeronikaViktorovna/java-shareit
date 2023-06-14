@@ -36,19 +36,22 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDtoForResponse create(Long userId, BookingDto bookingDto) {
         Booking booking = BookingMapper.toBooking(bookingDto);
-        if(booking.getEnd().isBefore(booking.getStart())) {
+        if (booking.getEnd().isBefore(booking.getStart())) {
             log.warn("Время окончания бронирования раньше чем время начала бронирования");
-            throw new BookingEndBeforeStartException("Время окончания бронирования раньше чем время начала бронирования");
+            throw new BookingEndBeforeStartException("Время окончания бронирования раньше чем время начала " +
+                    "бронирования");
         }
-        if(booking.getEnd().equals(booking.getStart())) {
+        if (booking.getEnd().equals(booking.getStart())) {
             log.warn("Время окончания бронирования совпадает со временем начала бронирования");
-            throw new BookingEndBeforeStartException("Время окончания бронирования совпадает со временем начала бронирования");
+            throw new BookingEndBeforeStartException("Время окончания бронирования совпадает со временем начала " +
+                    "бронирования");
         }
         Optional<Item> item = itemRepository.findById(bookingDto.getItemId());
-        if(item.isPresent()) {
+        if (item.isPresent()) {
             if (!item.get().getAvailable()) {
                 log.warn("Вещь с id " + bookingDto.getItemId() + " недоступна для бронирования");
-                throw new ItemNotAvailableException("Вещь с id " + bookingDto.getItemId() + " недоступна для бронирования");
+                throw new ItemNotAvailableException("Вещь с id " + bookingDto.getItemId() + " недоступна для " +
+                        "бронирования");
             }
             booking.setItem(item.get());
         } else {
@@ -60,8 +63,8 @@ public class BookingServiceImpl implements BookingService {
             if (booking.getItem().getOwner().getId().equals(userId)) {
                 log.warn("Пользователь с id " + userId + " является владельцем вещи с id " + bookingDto.getItemId() +
                         " и не может ее забронировать");
-                throw new EntityNotFoundException("Пользователь с id " + userId + " является владельцем вещи с id " + bookingDto.getItemId() +
-                        " и не может ее забронировать");
+                throw new EntityNotFoundException("Пользователь с id " + userId + " является владельцем вещи с id "
+                        + bookingDto.getItemId() + " и не может ее забронировать");
             }
             booking.setBooker(booker.get());
         } else {
@@ -100,7 +103,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDtoForResponse getById(Long userId, Long id) {
         Optional<Booking> booking = bookingRepository.findById(id);
-        if(booking.isPresent()) {
+        if (booking.isPresent()) {
             if (booking.get().getBooker().getId().equals(userId) ||
                     booking.get().getItem().getOwner().getId().equals(userId)) {
                 return BookingMapper.toDto(booking.get());
@@ -124,18 +127,24 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime currentMoment = LocalDateTime.now();
         switch (state) {
-            case ALL: bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
-            break;
-            case CURRENT: bookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
-                    currentMoment, currentMoment);
-            break;
-            case PAST: bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId,currentMoment);
-            break;
-            case FUTURE: bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId, currentMoment);
-            break;
-            case WAITING:bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
-            break;
-            case REJECTED:bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+            case ALL:
+                bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
+                break;
+            case CURRENT:
+                bookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                        currentMoment, currentMoment);
+                break;
+            case PAST:
+                bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, currentMoment);
+                break;
+            case FUTURE:
+                bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId, currentMoment);
+                break;
+            case WAITING:
+                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
+                break;
+            case REJECTED:
+                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
         }
         List<BookingDtoForResponse> bookingsForResponse = new ArrayList<>();
         for (Booking booking : bookings) {
@@ -153,18 +162,24 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime currentMoment = LocalDateTime.now();
         switch (state) {
-            case ALL: bookings = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
+            case ALL:
+                bookings = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
                 break;
-            case CURRENT: bookings = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
-                    currentMoment, currentMoment);
+            case CURRENT:
+                bookings = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                        currentMoment, currentMoment);
                 break;
-            case PAST: bookings = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId,currentMoment);
+            case PAST:
+                bookings = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, currentMoment);
                 break;
-            case FUTURE: bookings = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, currentMoment);
+            case FUTURE:
+                bookings = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, currentMoment);
                 break;
-            case WAITING:bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
+            case WAITING:
+                bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
                 break;
-            case REJECTED:bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+            case REJECTED:
+                bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
         }
         List<BookingDtoForResponse> bookingsForResponse = new ArrayList<>();
         for (Booking booking : bookings) {

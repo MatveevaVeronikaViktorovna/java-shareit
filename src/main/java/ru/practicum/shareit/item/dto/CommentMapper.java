@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
-import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.model.Comment;
 
 @Data
@@ -25,4 +24,5 @@ public class CommentMapper {
         commentDto.setCreated(comment.getCreated());
         return commentDto;
     }
+
 }
