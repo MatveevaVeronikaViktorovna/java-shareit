@@ -11,7 +11,6 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.BookingAlreadyApprovedException;
-import ru.practicum.shareit.exception.BookingEndBeforeStartException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.exception.ItemNotAvailableException;
 import ru.practicum.shareit.item.model.Item;
@@ -36,6 +35,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDtoForResponse create(Long userId, BookingDto bookingDto) {
         Booking booking = BookingMapper.toBooking(bookingDto);
+        
         Optional<Item> item = itemRepository.findById(bookingDto.getItemId());
         if (item.isPresent()) {
             if (!item.get().getAvailable()) {
@@ -48,6 +48,7 @@ public class BookingServiceImpl implements BookingService {
             log.warn("Вещь с id " + bookingDto.getItemId() + " не найдена");
             throw new EntityNotFoundException("Вещь с id " + bookingDto.getItemId() + " не найдена");
         }
+
         Optional<User> booker = userRepository.findById(userId);
         if (booker.isPresent()) {
             if (booking.getItem().getOwner().getId().equals(userId)) {
@@ -61,6 +62,7 @@ public class BookingServiceImpl implements BookingService {
             log.warn("Пользователь с id " + userId + " не найден");
             throw new EntityNotFoundException("Пользователь с id " + userId + " не найден");
         }
+
         booking.setStatus(Status.WAITING);
         Booking newBooking = bookingRepository.save(booking);
         log.info("Добавлено бронирование: {}", newBooking);
