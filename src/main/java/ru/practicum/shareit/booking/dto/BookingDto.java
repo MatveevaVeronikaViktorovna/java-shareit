@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking.dto;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.user.dto.Create;
 import ru.practicum.shareit.valid.StartBeforeEndDateValid;
 
 import javax.validation.constraints.Future;
@@ -13,12 +12,12 @@ import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
-@StartBeforeEndDateValid(groups = Create.class)
+@StartBeforeEndDateValid
 public class BookingDto {
-    @FutureOrPresent(groups = Create.class)
+    @FutureOrPresent
     LocalDateTime start;
-    @Future(groups = Create.class)
+    @Future
     LocalDateTime end;
-    @NotNull(groups = Create.class)
+    @NotNull
     Long itemId;
 }
