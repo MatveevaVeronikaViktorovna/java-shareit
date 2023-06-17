@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.dto.Create;
-import valid.StartBeforeEndDateValid;
+import ru.practicum.shareit.valid.StartBeforeEndDateValid;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;

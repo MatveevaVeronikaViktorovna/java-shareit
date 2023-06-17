@@ -79,7 +79,6 @@ public class BookingServiceImpl implements BookingService {
                     log.warn("Бронирование с id {} уже подтверждено пользователем с id {}", id, userId);
                     throw new BookingAlreadyApprovedException(String.format("Бронирование с id %d уже подтверждено " +
                             "пользователем с id %d", id, userId));
-
                 }
                 booking.setStatus(Status.APPROVED);
             } else {

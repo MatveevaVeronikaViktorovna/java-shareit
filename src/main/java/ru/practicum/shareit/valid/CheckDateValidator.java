@@ -1,4 +1,4 @@
-package valid;
+package ru.practicum.shareit.valid;
 
 import ru.practicum.shareit.booking.dto.BookingDto;
 
