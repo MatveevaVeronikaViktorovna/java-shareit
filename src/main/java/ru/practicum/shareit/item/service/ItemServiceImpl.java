@@ -40,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
         if (owner.isPresent()) {
             item.setOwner(owner.get());
         } else {
-            log.warn("Пользователь с id " + userId + " не найден");
+            log.warn("Пользователь с id {} не найден", userId);
             throw new EntityNotFoundException("Пользователь с id " + userId + " не найден");
         }
         Item newItem = itemRepository.save(item);
@@ -74,7 +74,7 @@ public class ItemServiceImpl implements ItemService {
             setComments(itemDto);
             return itemDto;
         } else {
-            log.warn("Вещь с id " + id + " не найдена");
+            log.warn("Вещь с id {} не найдена", id);
             throw new EntityNotFoundException("Вещь с id " + id + " не найдена");
         }
     }
@@ -87,7 +87,7 @@ public class ItemServiceImpl implements ItemService {
         if (oldItemOptional.isPresent()) {
             oldItem = oldItemOptional.get();
         } else {
-            log.warn("Вещь с id " + id + " не найдена");
+            log.warn("Вещь с id {} не найдена", id);
             throw new EntityNotFoundException("Вещь с id " + id + " не найдена");
         }
         if (isThisOwnersItem(userId, id)) {
@@ -103,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
             }
             newItem.setOwner(oldItem.getOwner());
         } else {
-            log.warn("Вещь с id " + id + " не найдена у владельца с id " + userId);
+            log.warn("Вещь с id {} не найдена у владельца с id {}",id, userId);
             throw new EntityNotFoundException("Вещь с id " + id + " не найдена у владельца с id " + userId);
         }
         Item updatedItem = itemRepository.save(newItem);
@@ -144,14 +144,14 @@ public class ItemServiceImpl implements ItemService {
         if (author.isPresent()) {
             comment.setAuthor(author.get());
         } else {
-            log.warn("Пользователь с id " + userId + " не найден");
+            log.warn("Пользователь с id {} не найден", userId);
             throw new EntityNotFoundException("Пользователь с id " + userId + " не найден");
         }
         Optional<Item> item = itemRepository.findById(itemId);
         if (item.isPresent()) {
             comment.setItem(item.get());
         } else {
-            log.warn("Вещь с id " + itemId + " не найдена");
+            log.warn("Вещь с id {} не найдена", itemId);
             throw new EntityNotFoundException("Вещь с id " + itemId + " не найдена");
         }
         comment.setCreated(LocalDateTime.now());
