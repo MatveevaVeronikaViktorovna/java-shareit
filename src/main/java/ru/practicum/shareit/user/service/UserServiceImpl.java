@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         }
         User updatedUser = repository.save(newUser);
         log.info("Обновлен пользователь c id {} на {}", id, updatedUser);
-        return UserMapper.toDto(updatedUser);
+        return UserMapper.toDto(newUser);
     }
 
     @Override
