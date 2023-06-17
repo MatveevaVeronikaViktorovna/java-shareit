@@ -21,7 +21,8 @@ public class Item {
     String name;
     @NotBlank
     String description;
-    @Column(name = "is_available", nullable = false)
+    @Column(name = "is_available")
+    @NotNull
     Boolean available;
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
