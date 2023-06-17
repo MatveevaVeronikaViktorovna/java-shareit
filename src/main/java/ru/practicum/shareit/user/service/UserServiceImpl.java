@@ -9,9 +9,9 @@ import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +30,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getAll() {
-        List<User> users = repository.findAll();
-        List<UserDto> allUsers = new ArrayList<>();
-        for (User user : users) {
-            allUsers.add(UserMapper.toDto(user));
-        }
-        return allUsers;
+        return repository.findAll()
+                .stream()
+                .map(UserMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override

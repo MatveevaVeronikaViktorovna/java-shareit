@@ -103,12 +103,12 @@ public class ItemServiceImpl implements ItemService {
             }
             newItem.setOwner(oldItem.getOwner());
         } else {
-            log.warn("Вещь с id {} не найдена у владельца с id {}",id, userId);
-            throw new EntityNotFoundException(String.format("Вещь с id %d не найдена у владельца с id %d",id, userId));
+            log.warn("Вещь с id {} не найдена у владельца с id {}", id, userId);
+            throw new EntityNotFoundException(String.format("Вещь с id %d не найдена у владельца с id %d", id, userId));
         }
         Item updatedItem = itemRepository.save(newItem);
         log.info("Обновлена вещь c id {} на {}", id, updatedItem);
-        return ItemMapper.toDto(updatedItem);
+        return ItemMapper.toDto(newItem);
     }
 
     @Override
