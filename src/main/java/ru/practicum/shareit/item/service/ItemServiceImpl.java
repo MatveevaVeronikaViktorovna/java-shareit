@@ -41,7 +41,7 @@ public class ItemServiceImpl implements ItemService {
             item.setOwner(owner.get());
         } else {
             log.warn("Пользователь с id {} не найден", userId);
-            throw new EntityNotFoundException("Пользователь с id " + userId + " не найден");
+            throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
         Item newItem = itemRepository.save(item);
         log.info("Добавленa вещь: {}", newItem);
@@ -75,7 +75,7 @@ public class ItemServiceImpl implements ItemService {
             return itemDto;
         } else {
             log.warn("Вещь с id {} не найдена", id);
-            throw new EntityNotFoundException("Вещь с id " + id + " не найдена");
+            throw new EntityNotFoundException(String.format("Вещь с id %d не найдена", id));
         }
     }
 
@@ -88,7 +88,7 @@ public class ItemServiceImpl implements ItemService {
             oldItem = oldItemOptional.get();
         } else {
             log.warn("Вещь с id {} не найдена", id);
-            throw new EntityNotFoundException("Вещь с id " + id + " не найдена");
+            throw new EntityNotFoundException(String.format("Вещь с id %d не найдена", id));
         }
         if (isThisOwnersItem(userId, id)) {
             newItem.setId(id);
@@ -104,7 +104,7 @@ public class ItemServiceImpl implements ItemService {
             newItem.setOwner(oldItem.getOwner());
         } else {
             log.warn("Вещь с id {} не найдена у владельца с id {}",id, userId);
-            throw new EntityNotFoundException("Вещь с id " + id + " не найдена у владельца с id " + userId);
+            throw new EntityNotFoundException(String.format("Вещь с id %d не найдена у владельца с id %d",id, userId));
         }
         Item updatedItem = itemRepository.save(newItem);
         log.info("Обновлена вещь c id {} на {}", id, updatedItem);
@@ -136,6 +136,8 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> bookings = bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(userId,
                 itemId, LocalDateTime.now());
         if (bookings.isEmpty()) {
+            log.warn("Отзыв может оставить только тот пользователь, который брал эту вещь в аренду, и только после " +
+                    "окончания срока аренды.");
             throw new CommentWithoutBookingException("Отзыв может оставить только тот пользователь, который брал эту " +
                     "вещь в аренду, и только после окончания срока аренды.");
         }
@@ -145,14 +147,14 @@ public class ItemServiceImpl implements ItemService {
             comment.setAuthor(author.get());
         } else {
             log.warn("Пользователь с id {} не найден", userId);
-            throw new EntityNotFoundException("Пользователь с id " + userId + " не найден");
+            throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
         Optional<Item> item = itemRepository.findById(itemId);
         if (item.isPresent()) {
             comment.setItem(item.get());
         } else {
             log.warn("Вещь с id {} не найдена", itemId);
-            throw new EntityNotFoundException("Вещь с id " + itemId + " не найдена");
+            throw new EntityNotFoundException(String.format("Вещь с id %d не найдена", itemId));
         }
         comment.setCreated(LocalDateTime.now());
         Comment newComment = commentRepository.save(comment);

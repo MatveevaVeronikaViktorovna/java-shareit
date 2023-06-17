@@ -40,13 +40,13 @@ public class BookingServiceImpl implements BookingService {
         if (item.isPresent()) {
             if (!item.get().getAvailable()) {
                 log.warn("Вещь с id {} недоступна для бронирования", bookingDto.getItemId());
-                throw new ItemNotAvailableException("Вещь с id " + bookingDto.getItemId() + " недоступна для " +
-                        "бронирования");
+                throw new ItemNotAvailableException(String.format("Вещь с id %d недоступна для бронирования",
+                        bookingDto.getItemId()));
             }
             booking.setItem(item.get());
         } else {
             log.warn("Вещь с id {} не найдена", bookingDto.getItemId());
-            throw new EntityNotFoundException("Вещь с id " + bookingDto.getItemId() + " не найдена");
+            throw new EntityNotFoundException(String.format("Вещь с id %d не найдена", bookingDto.getItemId()));
         }
 
         Optional<User> booker = userRepository.findById(userId);
@@ -54,13 +54,13 @@ public class BookingServiceImpl implements BookingService {
             if (booking.getItem().getOwner().getId().equals(userId)) {
                 log.warn("Пользователь с id {} является владельцем вещи с id {} и не может ее забронировать",
                         userId, bookingDto.getItemId());
-                throw new EntityNotFoundException("Пользователь с id " + userId + " является владельцем вещи с id "
-                        + bookingDto.getItemId() + " и не может ее забронировать");
+                throw new EntityNotFoundException(String.format("Пользователь с id %d является владельцем вещи " +
+                        "с id %d и не может ее забронировать", userId, bookingDto.getItemId()));
             }
             booking.setBooker(booker.get());
         } else {
             log.warn("Пользователь с id {} не найден", userId);
-            throw new EntityNotFoundException("Пользователь с id " + userId + " не найден");
+            throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
 
         booking.setStatus(Status.WAITING);
@@ -77,8 +77,9 @@ public class BookingServiceImpl implements BookingService {
             if (approved) {
                 if (booking.getStatus() == Status.APPROVED) {
                     log.warn("Бронирование с id {} уже подтверждено пользователем с id {}", id, userId);
-                    throw new BookingAlreadyApprovedException("Бронирование с id " + id + " уже подтверждено " +
-                            "пользователем с id " + userId);
+                    throw new BookingAlreadyApprovedException(String.format("Бронирование с id %d уже подтверждено " +
+                            "пользователем с id %d", id, userId));
+
                 }
                 booking.setStatus(Status.APPROVED);
             } else {
@@ -88,8 +89,8 @@ public class BookingServiceImpl implements BookingService {
             return BookingMapper.toDto(newBooking);
         } else {
             log.warn("Бронирование с id {} у пользователя с id {} не найдено", id, userId);
-            throw new EntityNotFoundException("Бронирование с id " + id + " у пользователя с id "
-                    + userId + " не найдено");
+            throw new EntityNotFoundException(String.format("Бронирование с id %d у пользователя с id %d не найдено",
+                    id, userId));
         }
     }
 
@@ -102,12 +103,12 @@ public class BookingServiceImpl implements BookingService {
                 return BookingMapper.toDto(booking.get());
             } else {
                 log.warn("Бронирование с id {} у пользователя с id {} не найдено", id, userId);
-                throw new EntityNotFoundException("Бронирование с id " + id + " у пользователя с id "
-                        + userId + " не найдено");
+                throw new EntityNotFoundException(String.format("Бронирование с id %d у пользователя с id %d " +
+                        "не найдено", id, userId));
             }
         } else {
             log.warn("Бронирование с id {} не найдено", id);
-            throw new EntityNotFoundException("Бронирование с id " + id + " не найдено");
+            throw new EntityNotFoundException(String.format("Бронирование с id %d не найдено", id));
         }
     }
 
@@ -115,7 +116,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDtoForResponse> getAllByBooker(Long userId, State state) {
         if (!userRepository.existsById(userId)) {
             log.warn("Пользователь с id {} не найден", userId);
-            throw new EntityNotFoundException("Пользователь с id " + userId + " не найден");
+            throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime currentMoment = LocalDateTime.now();
@@ -150,7 +151,7 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDtoForResponse> getAllByOwner(Long userId, State state) {
         if (!userRepository.existsById(userId)) {
             log.warn("Пользователь с id {} не найден", userId);
-            throw new EntityNotFoundException("Пользователь с id " + userId + " не найден");
+            throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime currentMoment = LocalDateTime.now();
