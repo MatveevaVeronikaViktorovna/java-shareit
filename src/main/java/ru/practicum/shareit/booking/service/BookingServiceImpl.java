@@ -36,16 +36,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDtoForResponse create(Long userId, BookingDto bookingDto) {
         Booking booking = BookingMapper.toBooking(bookingDto);
-        if (booking.getEnd().isBefore(booking.getStart())) {
-            log.warn("Время окончания бронирования раньше чем время начала бронирования");
-            throw new BookingEndBeforeStartException("Время окончания бронирования раньше чем время начала " +
-                    "бронирования");
-        }
-        if (booking.getEnd().equals(booking.getStart())) {
-            log.warn("Время окончания бронирования совпадает со временем начала бронирования");
-            throw new BookingEndBeforeStartException("Время окончания бронирования совпадает со временем начала " +
-                    "бронирования");
-        }
         Optional<Item> item = itemRepository.findById(bookingDto.getItemId());
         if (item.isPresent()) {
             if (!item.get().getAvailable()) {
