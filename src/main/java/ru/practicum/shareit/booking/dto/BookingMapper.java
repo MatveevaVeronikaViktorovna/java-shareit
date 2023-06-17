@@ -1,13 +1,13 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.Data;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.user.dto.UserMapper;
 
-@Data
+@UtilityClass
 public class BookingMapper {
-    public static Booking toBooking(BookingDto dto) {
+    public Booking toBooking(BookingDto dto) {
         if (dto == null) return null;
         else {
             Booking booking = new Booking();
@@ -21,7 +21,7 @@ public class BookingMapper {
         }
     }
 
-    public static BookingDtoForResponse toDto(Booking booking) {
+    public BookingDtoForResponse toDto(Booking booking) {
         BookingDtoForResponse bookingDto = new BookingDtoForResponse();
         bookingDto.setId(booking.getId());
         bookingDto.setStart(booking.getStart());
