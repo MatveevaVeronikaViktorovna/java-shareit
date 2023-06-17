@@ -28,6 +28,7 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
     Item item;
+    @Column(name = "created")
     @NotNull
     LocalDateTime created;
 }

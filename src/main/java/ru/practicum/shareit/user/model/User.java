@@ -16,10 +16,11 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Column(name = "name")
     @NotBlank
     String name;
     @NotBlank
     @Email
-    @Column(unique = true)
+    @Column(name = "email", unique = true)
     String email;
 }

@@ -17,8 +17,10 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Column(name = "name")
     @NotBlank
     String name;
+    @Column(name = "description")
     @NotBlank
     String description;
     @Column(name = "is_available")

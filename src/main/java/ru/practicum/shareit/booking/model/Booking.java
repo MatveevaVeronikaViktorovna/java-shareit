@@ -30,6 +30,7 @@ public class Booking {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booker_id")
     User booker;
+    @Column(name = "status")
     @Enumerated(value = EnumType.STRING)
     @NotNull
     Status status;
