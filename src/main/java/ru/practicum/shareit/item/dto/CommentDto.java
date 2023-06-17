@@ -5,13 +5,16 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.dto.Create;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 public class CommentDto {
     Long id;
+    @Size(max = 1024)
     @NotBlank(groups = Create.class)
     String text;
     String authorName;
