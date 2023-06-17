@@ -11,12 +11,8 @@ public class BookingMapper {
         if (dto == null) return null;
         else {
             Booking booking = new Booking();
-            if (dto.getStart() != null) {
-                booking.setStart(dto.getStart());
-            }
-            if (dto.getEnd() != null) {
-                booking.setEnd(dto.getEnd());
-            }
+            booking.setStart(dto.getStart());
+            booking.setEnd(dto.getEnd());
             return booking;
         }
     }

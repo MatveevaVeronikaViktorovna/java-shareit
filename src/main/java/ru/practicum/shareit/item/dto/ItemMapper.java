@@ -10,15 +10,9 @@ public class ItemMapper {
         if (dto == null) return null;
         else {
             Item item = new Item();
-            if (dto.getName() != null) {
-                item.setName(dto.getName());
-            }
-            if (dto.getDescription() != null) {
-                item.setDescription(dto.getDescription());
-            }
-            if (dto.getAvailable() != null) {
-                item.setAvailable(dto.getAvailable());
-            }
+            item.setName(dto.getName());
+            item.setDescription(dto.getDescription());
+            item.setAvailable(dto.getAvailable());
             return item;
         }
     }

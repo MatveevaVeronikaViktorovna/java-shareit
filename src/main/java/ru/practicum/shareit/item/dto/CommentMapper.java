@@ -9,9 +9,7 @@ public class CommentMapper {
         if (dto == null) return null;
         else {
             Comment comment = new Comment();
-            if (dto.getText() != null) {
-                comment.setText(dto.getText());
-            }
+            comment.setText(dto.getText());
             return comment;
         }
     }
