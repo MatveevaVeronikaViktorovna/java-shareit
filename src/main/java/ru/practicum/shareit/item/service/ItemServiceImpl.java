@@ -83,7 +83,6 @@ public class ItemServiceImpl implements ItemService {
             log.warn("Вещь с id {} не найдена", id);
             throw new EntityNotFoundException(String.format("Вещь с id %d не найдена", id));
         });
-
         if (isThisOwnersItem(userId, id)) {
             if (newItem.getName() != null) {
                 oldItem.setName(newItem.getName());
