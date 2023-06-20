@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -34,6 +35,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
 
+    @Transactional
     @Override
     public ItemDto create(Long userId, ItemDto itemDto) {
         Item item = ItemMapper.toItem(itemDto);
@@ -49,6 +51,7 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toDto(newItem);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getAllByOwner(Long userId) {
         List<Item> thisOwnerItems = itemRepository.findAllByOwnerIdOrderByIdAsc(userId);
@@ -61,6 +64,7 @@ public class ItemServiceImpl implements ItemService {
         return items;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ItemDto getById(Long userId, Long id) {
         Item item = itemRepository.findById(id).orElseThrow( () -> {
@@ -77,6 +81,7 @@ public class ItemServiceImpl implements ItemService {
         return itemDto;
     }
 
+    @Transactional
     @Override
     public ItemDto update(Long userId, Long id, ItemDto itemDto) {
         Item newItem = ItemMapper.toItem(itemDto);
@@ -103,12 +108,14 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toDto(updatedItem);
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
         itemRepository.deleteById(id);
         log.info("Удалена вещь с id {}", id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> searchByText(Long userId, String text) {
         if (text == null || text.isBlank()) {
@@ -121,6 +128,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
+    @Transactional
     @Override
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
         List<Booking> bookings = bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(userId,
@@ -151,12 +159,14 @@ public class ItemServiceImpl implements ItemService {
         return CommentMapper.toDto(newComment);
     }
 
+    @Transactional(readOnly = true)
     private boolean isThisOwnersItem(Long userId, Long id) {
         Item item = itemRepository.findById(id).get();
         User owner = item.getOwner();
         return Objects.equals(owner.getId(), userId);
     }
 
+    @Transactional(readOnly = true)
     private ItemDto setLastBookingAndNextBooking(Item item) {
         ItemDto itemDto = ItemMapper.toDto(item);
         LocalDateTime currentMoment = LocalDateTime.now();
@@ -167,6 +177,7 @@ public class ItemServiceImpl implements ItemService {
         return itemDto;
     }
 
+    @Transactional(readOnly = true)
     private void setComments(ItemDto itemDto) {
         List<CommentDto> comments = commentRepository.findAllByItemId(itemDto.getId())
                 .stream()

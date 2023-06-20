@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -19,6 +20,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
 
+    @Transactional
     @Override
     public UserDto create(UserDto userDto) {
         User user = UserMapper.toUser(userDto);
@@ -27,6 +29,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toDto(newUser);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<UserDto> getAll() {
         return repository.findAll()
@@ -35,6 +38,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserDto getById(Long id) {
         User user = repository.findById(id).orElseThrow( () -> {
@@ -44,6 +48,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toDto(user);
     }
 
+    @Transactional
     @Override
     public UserDto update(Long id, UserDto userDto) {
         User newUser = UserMapper.toUser(userDto);
@@ -60,6 +65,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toDto(newUser);
     }
 
+    @Transactional
     @Override
     public void delete(Long id) {
         repository.deleteById(id);

@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.controller.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoForResponse;
@@ -32,6 +33,7 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     @Override
     public BookingDtoForResponse create(Long userId, BookingDto bookingDto) {
         Booking booking = BookingMapper.toBooking(bookingDto);
@@ -65,6 +67,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toDto(newBooking);
     }
 
+    @Transactional
     @Override
     public BookingDtoForResponse approveOrReject(Long userId, Long id, Boolean approved) {
         Booking booking = bookingRepository.findByIdAndItemOwnerId(id, userId).orElseThrow( () -> {
@@ -88,6 +91,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toDto(newBooking);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BookingDtoForResponse getById(Long userId, Long id) {
         Booking booking = bookingRepository.findById(id).orElseThrow( () -> {
@@ -104,6 +108,7 @@ public class BookingServiceImpl implements BookingService {
             }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<BookingDtoForResponse> getAllByBooker(Long userId, State state) {
         if (!userRepository.existsById(userId)) {
@@ -138,6 +143,7 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<BookingDtoForResponse> getAllByOwner(Long userId, State state) {
         if (!userRepository.existsById(userId)) {
