@@ -20,7 +20,6 @@ import static ru.practicum.shareit.booking.controller.BookingController.HEADER;
 public class ItemController {
 
     private final ItemService itemService;
-  //  private final String HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

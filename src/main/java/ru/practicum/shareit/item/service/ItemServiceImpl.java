@@ -91,24 +91,22 @@ public class ItemServiceImpl implements ItemService {
             throw new EntityNotFoundException(String.format("Вещь с id %d не найдена", id));
         }
         if (isThisOwnersItem(userId, id)) {
-            newItem.setId(id);
-            if (newItem.getName() == null) {
-                newItem.setName(oldItem.getName());
+            if (newItem.getName() != null) {
+                oldItem.setName(newItem.getName());
             }
-            if (newItem.getDescription() == null) {
-                newItem.setDescription(oldItem.getDescription());
+            if (newItem.getDescription() != null) {
+                oldItem.setDescription(newItem.getDescription());
             }
-            if (newItem.getAvailable() == null) {
-                newItem.setAvailable(oldItem.getAvailable());
+            if (newItem.getAvailable() != null) {
+                oldItem.setAvailable(newItem.getAvailable());
             }
-            newItem.setOwner(oldItem.getOwner());
         } else {
             log.warn("Вещь с id {} не найдена у владельца с id {}", id, userId);
             throw new EntityNotFoundException(String.format("Вещь с id %d не найдена у владельца с id %d", id, userId));
         }
-        Item updatedItem = itemRepository.save(newItem);
+        Item updatedItem = itemRepository.save(oldItem);
         log.info("Обновлена вещь c id {} на {}", id, updatedItem);
-        return ItemMapper.toDto(newItem);
+        return ItemMapper.toDto(updatedItem);
     }
 
     @Override
