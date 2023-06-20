@@ -22,6 +22,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -113,12 +114,10 @@ public class ItemServiceImpl implements ItemService {
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         } else {
-            List<Item> searchResults = itemRepository.findAllAvailableByText(text);
-            List<ItemDto> items = new ArrayList<>();
-            for (Item item : searchResults) {
-                items.add(ItemMapper.toDto(item));
-            }
-            return items;
+            return itemRepository.findAllAvailableByText(text)
+                    .stream()
+                    .map(ItemMapper::toDto)
+                    .collect(Collectors.toList());
         }
     }
 
