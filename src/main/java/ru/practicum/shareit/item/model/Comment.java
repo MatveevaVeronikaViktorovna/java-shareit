@@ -8,26 +8,27 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @Entity
-@Table(name = "items")
-public class Item {
+@Table(name = "comments")
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    @Column(name = "name")
     @NotBlank
-    String name;
-    @Column(name = "description")
-    @NotBlank
-    String description;
-    @Column(name = "is_available")
-    @NotNull
-    Boolean available;
+    String text;
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
-    User owner;
+    @JoinColumn(name = "author_id")
+    User author;
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id")
+    Item item;
+    @Column(name = "created")
+    @NotNull
+    LocalDateTime created;
 }

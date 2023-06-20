@@ -1,22 +1,21 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.item.dto;
 
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.user.dto.Create;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
-public class UserDto {
+public class CommentDto {
     Long id;
-    @Size(max = 128)
+    @Size(max = 1024)
     @NotBlank(groups = Create.class)
-    String name;
-    @Size(max = 128)
-    @NotBlank(groups = Create.class)
-    @Email(groups = {Create.class, Update.class})
-    String email;
+    String text;
+    String authorName;
+    LocalDateTime created;
 }
