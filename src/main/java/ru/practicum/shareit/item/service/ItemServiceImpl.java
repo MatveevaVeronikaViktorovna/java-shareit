@@ -168,12 +168,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void setComments(ItemDto itemDto) {
-        List<Comment> comments = commentRepository.findAllByItemId(itemDto.getId());
+        List<CommentDto> comments = commentRepository.findAllByItemId(itemDto.getId())
+                .stream()
+                .map(CommentMapper::toDto)
+                .collect(Collectors.toList());
+        itemDto.setComments(comments);
+
+   /*     List<Comment> comments = commentRepository.findAllByItemId(itemDto.getId());
         List<CommentDto> commentsDto = new ArrayList<>();
         for (Comment comment : comments) {
             commentsDto.add(CommentMapper.toDto(comment));
         }
-        itemDto.setComments(commentsDto);
+        itemDto.setComments(commentsDto); */
     }
 
 }
