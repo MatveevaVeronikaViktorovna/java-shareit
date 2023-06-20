@@ -38,7 +38,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDtoForResponse create(Long userId, BookingDto bookingDto) {
         Booking booking = BookingMapper.toBooking(bookingDto);
 
-        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow( () -> {
+        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> {
             log.warn("Вещь с id {} не найдена", bookingDto.getItemId());
             throw new EntityNotFoundException(String.format("Вещь с id %d не найдена", bookingDto.getItemId()));
         });
@@ -49,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
         }
         booking.setItem(item);
 
-        User booker = userRepository.findById(userId).orElseThrow( () -> {
+        User booker = userRepository.findById(userId).orElseThrow(() -> {
             log.warn("Пользователь с id {} не найден", userId);
             throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
         });
@@ -70,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDtoForResponse approveOrReject(Long userId, Long id, Boolean approved) {
-        Booking booking = bookingRepository.findByIdAndItemOwnerId(id, userId).orElseThrow( () -> {
+        Booking booking = bookingRepository.findByIdAndItemOwnerId(id, userId).orElseThrow(() -> {
             log.warn("Бронирование с id {} у пользователя с id {} не найдено", id, userId);
             throw new EntityNotFoundException(String.format("Бронирование с id %d у пользователя с id %d не найдено",
                     id, userId));
@@ -94,7 +94,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     @Override
     public BookingDtoForResponse getById(Long userId, Long id) {
-        Booking booking = bookingRepository.findById(id).orElseThrow( () -> {
+        Booking booking = bookingRepository.findById(id).orElseThrow(() -> {
             log.warn("Бронирование с id {} не найдено", id);
             throw new EntityNotFoundException(String.format("Бронирование с id %d не найдено", id));
         });
@@ -105,7 +105,7 @@ public class BookingServiceImpl implements BookingService {
             log.warn("Бронирование с id {} у пользователя с id {} не найдено", id, userId);
             throw new EntityNotFoundException(String.format("Бронирование с id %d у пользователя с id %d не найдено",
                     id, userId));
-            }
+        }
     }
 
     @Transactional(readOnly = true)

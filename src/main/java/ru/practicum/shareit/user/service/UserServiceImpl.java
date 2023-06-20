@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public UserDto getById(Long id) {
-        User user = repository.findById(id).orElseThrow( () -> {
+        User user = repository.findById(id).orElseThrow(() -> {
             log.warn("Пользователь с id {} не найден", id);
             throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", id));
         });
