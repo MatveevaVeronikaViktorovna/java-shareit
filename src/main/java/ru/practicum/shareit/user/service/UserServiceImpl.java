@@ -10,7 +10,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,13 +37,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getById(Long id) {
-        Optional<User> user = repository.findById(id);
-        if (user.isPresent()) {
-            return UserMapper.toDto(user.get());
-        } else {
+        User user = repository.findById(id).orElseThrow( () -> {
             log.warn("Пользователь с id {} не найден", id);
             throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", id));
-        }
+        });
+        return UserMapper.toDto(user);
     }
 
     @Override
