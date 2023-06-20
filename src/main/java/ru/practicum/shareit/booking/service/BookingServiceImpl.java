@@ -21,6 +21,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -131,11 +132,17 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED:
                 bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
         }
-        List<BookingDtoForResponse> bookingsForResponse = new ArrayList<>();
+
+        return bookings
+                .stream()
+                .map(BookingMapper::toDto)
+                .collect(Collectors.toList());
+
+   /*     List<BookingDtoForResponse> bookingsForResponse = new ArrayList<>();
         for (Booking booking : bookings) {
             bookingsForResponse.add(BookingMapper.toDto(booking));
         }
-        return bookingsForResponse;
+        return bookingsForResponse; */
     }
 
     @Override

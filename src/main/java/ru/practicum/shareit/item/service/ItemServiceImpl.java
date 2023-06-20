@@ -173,13 +173,6 @@ public class ItemServiceImpl implements ItemService {
                 .map(CommentMapper::toDto)
                 .collect(Collectors.toList());
         itemDto.setComments(comments);
-
-   /*     List<Comment> comments = commentRepository.findAllByItemId(itemDto.getId());
-        List<CommentDto> commentsDto = new ArrayList<>();
-        for (Comment comment : comments) {
-            commentsDto.add(CommentMapper.toDto(comment));
-        }
-        itemDto.setComments(commentsDto); */
     }
 
 }
