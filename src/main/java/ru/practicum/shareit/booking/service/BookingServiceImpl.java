@@ -132,17 +132,10 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED:
                 bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
         }
-
         return bookings
                 .stream()
                 .map(BookingMapper::toDto)
                 .collect(Collectors.toList());
-
-   /*     List<BookingDtoForResponse> bookingsForResponse = new ArrayList<>();
-        for (Booking booking : bookings) {
-            bookingsForResponse.add(BookingMapper.toDto(booking));
-        }
-        return bookingsForResponse; */
     }
 
     @Override
@@ -173,11 +166,10 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED:
                 bookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
         }
-        List<BookingDtoForResponse> bookingsForResponse = new ArrayList<>();
-        for (Booking booking : bookings) {
-            bookingsForResponse.add(BookingMapper.toDto(booking));
-        }
-        return bookingsForResponse;
+        return bookings
+                .stream()
+                .map(BookingMapper::toDto)
+                .collect(Collectors.toList());
     }
 
 }
