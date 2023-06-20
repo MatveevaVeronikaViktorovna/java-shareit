@@ -140,20 +140,19 @@ public class ItemServiceImpl implements ItemService {
                     "вещь в аренду, и только после окончания срока аренды.");
         }
         Comment comment = CommentMapper.toComment(commentDto);
-        Optional<User> author = userRepository.findById(userId);
-        if (author.isPresent()) {
-            comment.setAuthor(author.get());
-        } else {
+
+        User author = userRepository.findById(userId).orElseThrow( () -> {
             log.warn("Пользователь с id {} не найден", userId);
             throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
-        }
-        Optional<Item> item = itemRepository.findById(itemId);
-        if (item.isPresent()) {
-            comment.setItem(item.get());
-        } else {
+        });
+        comment.setAuthor(author);
+
+        Item item = itemRepository.findById(itemId).orElseThrow( () -> {
             log.warn("Вещь с id {} не найдена", itemId);
             throw new EntityNotFoundException(String.format("Вещь с id %d не найдена", itemId));
-        }
+        });
+        comment.setItem(item);
+
         comment.setCreated(LocalDateTime.now());
         Comment newComment = commentRepository.save(comment);
         log.info("Добавлен комментарий: {}", newComment);
