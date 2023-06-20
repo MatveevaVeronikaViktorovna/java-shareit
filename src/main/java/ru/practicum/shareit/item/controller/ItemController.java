@@ -12,13 +12,15 @@ import ru.practicum.shareit.user.dto.Create;
 
 import java.util.List;
 
+import static ru.practicum.shareit.booking.controller.BookingController.HEADER;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
 
     private final ItemService itemService;
-    private final String HEADER = "X-Sharer-User-Id";
+  //  private final String HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

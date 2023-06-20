@@ -16,7 +16,7 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
-    private final String HEADER = "X-Sharer-User-Id";
+    public static final String HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
