@@ -21,7 +21,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,32 +35,28 @@ public class BookingServiceImpl implements BookingService {
     public BookingDtoForResponse create(Long userId, BookingDto bookingDto) {
         Booking booking = BookingMapper.toBooking(bookingDto);
 
-        Optional<Item> item = itemRepository.findById(bookingDto.getItemId());
-        if (item.isPresent()) {
-            if (!item.get().getAvailable()) {
-                log.warn("Вещь с id {} недоступна для бронирования", bookingDto.getItemId());
-                throw new ItemNotAvailableException(String.format("Вещь с id %d недоступна для бронирования",
-                        bookingDto.getItemId()));
-            }
-            booking.setItem(item.get());
-        } else {
+        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow( () -> {
             log.warn("Вещь с id {} не найдена", bookingDto.getItemId());
             throw new EntityNotFoundException(String.format("Вещь с id %d не найдена", bookingDto.getItemId()));
+        });
+        if (!item.getAvailable()) {
+            log.warn("Вещь с id {} недоступна для бронирования", bookingDto.getItemId());
+            throw new ItemNotAvailableException(String.format("Вещь с id %d недоступна для бронирования",
+                    bookingDto.getItemId()));
         }
+        booking.setItem(item);
 
-        Optional<User> booker = userRepository.findById(userId);
-        if (booker.isPresent()) {
-            if (booking.getItem().getOwner().getId().equals(userId)) {
-                log.warn("Пользователь с id {} является владельцем вещи с id {} и не может ее забронировать",
-                        userId, bookingDto.getItemId());
-                throw new EntityNotFoundException(String.format("Пользователь с id %d является владельцем вещи " +
-                        "с id %d и не может ее забронировать", userId, bookingDto.getItemId()));
-            }
-            booking.setBooker(booker.get());
-        } else {
+        User booker = userRepository.findById(userId).orElseThrow( () -> {
             log.warn("Пользователь с id {} не найден", userId);
             throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
+        });
+        if (booking.getItem().getOwner().getId().equals(userId)) {
+            log.warn("Пользователь с id {} является владельцем вещи с id {} и не может ее забронировать", userId,
+                    bookingDto.getItemId());
+            throw new EntityNotFoundException(String.format("Пользователь с id %d является владельцем вещи с id %d " +
+                    "и не может ее забронировать", userId, bookingDto.getItemId()));
         }
+        booking.setBooker(booker);
 
         booking.setStatus(Status.WAITING);
         Booking newBooking = bookingRepository.save(booking);
@@ -71,44 +66,41 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDtoForResponse approveOrReject(Long userId, Long id, Boolean approved) {
-        Optional<Booking> bookingOptional = bookingRepository.findByIdAndItemOwnerId(id, userId);
-        if (bookingOptional.isPresent()) {
-            Booking booking = bookingOptional.get();
-            if (approved) {
-                if (booking.getStatus() == Status.APPROVED) {
-                    log.warn("Бронирование с id {} уже подтверждено пользователем с id {}", id, userId);
-                    throw new BookingAlreadyApprovedException(String.format("Бронирование с id %d уже подтверждено " +
-                            "пользователем с id %d", id, userId));
-                }
-                booking.setStatus(Status.APPROVED);
-            } else {
-                booking.setStatus(Status.REJECTED);
-            }
-            Booking newBooking = bookingRepository.save(booking);
-            return BookingMapper.toDto(newBooking);
-        } else {
+        Booking booking = bookingRepository.findByIdAndItemOwnerId(id, userId).orElseThrow( () -> {
             log.warn("Бронирование с id {} у пользователя с id {} не найдено", id, userId);
             throw new EntityNotFoundException(String.format("Бронирование с id %d у пользователя с id %d не найдено",
                     id, userId));
+        });
+
+        if (approved) {
+            if (booking.getStatus() == Status.APPROVED) {
+                log.warn("Бронирование с id {} уже подтверждено пользователем с id {}", id, userId);
+                throw new BookingAlreadyApprovedException(String.format("Бронирование с id %d уже подтверждено " +
+                        "пользователем с id %d", id, userId));
+            }
+            booking.setStatus(Status.APPROVED);
+        } else {
+            booking.setStatus(Status.REJECTED);
         }
+
+        Booking newBooking = bookingRepository.save(booking);
+        return BookingMapper.toDto(newBooking);
     }
 
     @Override
     public BookingDtoForResponse getById(Long userId, Long id) {
-        Optional<Booking> booking = bookingRepository.findById(id);
-        if (booking.isPresent()) {
-            if (booking.get().getBooker().getId().equals(userId) ||
-                    booking.get().getItem().getOwner().getId().equals(userId)) {
-                return BookingMapper.toDto(booking.get());
-            } else {
-                log.warn("Бронирование с id {} у пользователя с id {} не найдено", id, userId);
-                throw new EntityNotFoundException(String.format("Бронирование с id %d у пользователя с id %d " +
-                        "не найдено", id, userId));
-            }
-        } else {
+        Booking booking = bookingRepository.findById(id).orElseThrow( () -> {
             log.warn("Бронирование с id {} не найдено", id);
             throw new EntityNotFoundException(String.format("Бронирование с id %d не найдено", id));
-        }
+        });
+
+        if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
+            return BookingMapper.toDto(booking);
+        } else {
+            log.warn("Бронирование с id {} у пользователя с id {} не найдено", id, userId);
+            throw new EntityNotFoundException(String.format("Бронирование с id %d у пользователя с id %d не найдено",
+                    id, userId));
+            }
     }
 
     @Override

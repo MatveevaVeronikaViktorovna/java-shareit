@@ -36,13 +36,13 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto create(Long userId, ItemDto itemDto) {
         Item item = ItemMapper.toItem(itemDto);
-        Optional<User> owner = userRepository.findById(userId);
-        if (owner.isPresent()) {
-            item.setOwner(owner.get());
-        } else {
+
+        User owner = userRepository.findById(userId).orElseThrow( () -> {
             log.warn("Пользователь с id {} не найден", userId);
             throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
-        }
+        });
+        item.setOwner(owner);
+
         Item newItem = itemRepository.save(item);
         log.info("Добавленa вещь: {}", newItem);
         return ItemMapper.toDto(newItem);
@@ -62,34 +62,28 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getById(Long userId, Long id) {
-        Optional<Item> itemOptional = itemRepository.findById(id);
-        if (itemOptional.isPresent()) {
-            Item item = itemOptional.get();
-            ItemDto itemDto;
-            if (item.getOwner().getId().equals(userId)) {
-                itemDto = setLastBookingAndNextBooking(itemOptional.get());
-            } else {
-                itemDto = ItemMapper.toDto(item);
-            }
-            setComments(itemDto);
-            return itemDto;
-        } else {
+        Item item = itemRepository.findById(id).orElseThrow( () -> {
             log.warn("Вещь с id {} не найдена", id);
             throw new EntityNotFoundException(String.format("Вещь с id %d не найдена", id));
+        });
+        ItemDto itemDto;
+        if (item.getOwner().getId().equals(userId)) {
+            itemDto = setLastBookingAndNextBooking(item);
+        } else {
+            itemDto = ItemMapper.toDto(item);
         }
+        setComments(itemDto);
+        return itemDto;
     }
 
     @Override
     public ItemDto update(Long userId, Long id, ItemDto itemDto) {
         Item newItem = ItemMapper.toItem(itemDto);
-        Optional<Item> oldItemOptional = itemRepository.findById(id);
-        Item oldItem;
-        if (oldItemOptional.isPresent()) {
-            oldItem = oldItemOptional.get();
-        } else {
+        Item oldItem = itemRepository.findById(id).orElseThrow( () -> {
             log.warn("Вещь с id {} не найдена", id);
             throw new EntityNotFoundException(String.format("Вещь с id %d не найдена", id));
-        }
+        });
+
         if (isThisOwnersItem(userId, id)) {
             if (newItem.getName() != null) {
                 oldItem.setName(newItem.getName());
