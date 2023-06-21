@@ -16,12 +16,12 @@ public class ItemRequestMapper {
         }
     }
 
-    public ItemRequestDto toDto(ItemRequest itemRequest) {
-        ItemRequestDto itemRequestDto = new ItemRequestDto();
+    public ItemRequestDtoForResponse toDto(ItemRequest itemRequest) {
+        ItemRequestDtoForResponse itemRequestDto = new ItemRequestDtoForResponse();
         itemRequestDto.setId(itemRequest.getId());
         itemRequestDto.setDescription(itemRequest.getDescription());
-        itemRequestDto.setRequestor(UserMapper.toDto(itemRequest.getRequestor()));
         itemRequestDto.setCreated(itemRequest.getCreated());
         return itemRequestDto;
     }
+
 }

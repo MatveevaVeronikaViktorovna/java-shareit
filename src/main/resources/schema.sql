@@ -1,7 +1,16 @@
+DROP TABLE IF EXISTS comments, bookings, items, requests, users;
+
 CREATE TABLE IF NOT EXISTS users ( 
 	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, 
 	name varchar(128) NOT NULL,
 	email varchar(128) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS requests (
+	id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	description varchar(1024) NOT NULL,
+	requestor_id BIGINT REFERENCES users (id),
+	created TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS items (
@@ -9,7 +18,8 @@ CREATE TABLE IF NOT EXISTS items (
 	name varchar(128) NOT NULL,
 	description varchar(1024) NOT NULL,
 	is_available boolean NOT NULL,
-	owner_id BIGINT REFERENCES users (id)
+	owner_id BIGINT REFERENCES users (id),
+	request_id BIGINT REFERENCES requests (id)
 );
 
 CREATE TABLE IF NOT EXISTS bookings (
