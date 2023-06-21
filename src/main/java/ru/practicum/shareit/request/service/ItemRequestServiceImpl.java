@@ -65,6 +65,20 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Transactional(readOnly = true)
+    @Override
+    public ItemRequestDtoForResponse getById(Long userId, Long id) {
+        if (!userRepository.existsById(userId)) {
+            log.warn("Пользователь с id {} не найден", userId);
+            throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
+        }
+        ItemRequest request = itemRequestRepository.findById(id).orElseThrow(() -> {
+            log.warn("Запрос вещи с id {} не найден", id);
+            throw new EntityNotFoundException(String.format("Запрос вещи с id %d не найден", id));
+        });
+        return ItemRequestMapper.toDto(request);
+    }
+
+    @Transactional(readOnly = true)
     private void setItems(ItemRequestDtoForResponse dto) {
         List<ItemDtoForItemRequest> items = itemRepository.findAllByRequestIdOrderByIdAsc(dto.getId())
                 .stream()
