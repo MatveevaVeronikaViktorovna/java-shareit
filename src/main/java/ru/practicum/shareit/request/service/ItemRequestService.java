@@ -10,4 +10,5 @@ public interface ItemRequestService {
     ItemRequestDtoForResponse create(Long userId, ItemRequestDto itemRequestDto);
     List<ItemRequestDtoForResponse> getAllByRequestor(Long userId);
     ItemRequestDtoForResponse getById(Long userId,Long id);
+    List <ItemRequestDtoForResponse> getAll();
 }

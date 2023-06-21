@@ -4,9 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.booking.controller.State;
-import ru.practicum.shareit.booking.dto.BookingDtoForResponse;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoForResponse;
 import ru.practicum.shareit.request.service.ItemRequestService;
@@ -39,8 +36,15 @@ public class ItemRequestController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ItemRequestDtoForResponse getById(@RequestHeader(HEADER) Long userId,
-                           @PathVariable Long id) {
+                                             @PathVariable Long id) {
         return itemRequestService.getById(userId, id);
+    }
+
+    @GetMapping("/all")
+    @ResponseStatus(HttpStatus.OK)
+    public List <ItemRequestDtoForResponse> getAll() {
+                                            //@RequestParam String text) {
+        return itemRequestService.getAll();
     }
 
 

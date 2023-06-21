@@ -81,6 +81,15 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Transactional(readOnly = true)
+    @Override
+    public List<ItemRequestDtoForResponse> getAll() {
+        return ItemRequestRepository.findAll()
+                .stream()
+                .map(ItemRequestMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     private void setItems(ItemRequestDtoForResponse dto) {
         List<ItemDtoForItemRequest> items = itemRepository.findAllByRequestIdOrderByIdAsc(dto.getId())
                 .stream()
