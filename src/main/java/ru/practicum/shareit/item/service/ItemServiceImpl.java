@@ -49,8 +49,10 @@ public class ItemServiceImpl implements ItemService {
         });
         item.setOwner(owner);
 
-        Optional <ItemRequest> request = itemRequestRepository.findById(itemDto.getRequestId());
-        request.ifPresent(item::setRequest);
+        if (itemDto.getRequestId() != null) {
+            Optional<ItemRequest> request = itemRequestRepository.findById(itemDto.getRequestId());
+            request.ifPresent(item::setRequest);
+        }
 
         Item newItem = itemRepository.save(item);
         log.info("Добавленa вещь: {}", newItem);
