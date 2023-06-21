@@ -75,7 +75,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             log.warn("Запрос вещи с id {} не найден", id);
             throw new EntityNotFoundException(String.format("Запрос вещи с id %d не найден", id));
         });
-        return ItemRequestMapper.toDto(request);
+        ItemRequestDtoForResponse requestDto = ItemRequestMapper.toDto(request);
+        setItems(requestDto);
+        return requestDto;
     }
 
     @Transactional(readOnly = true)
