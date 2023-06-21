@@ -83,10 +83,11 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional(readOnly = true)
     @Override
     public List<ItemRequestDtoForResponse> getAll() {
-        return ItemRequestRepository.findAll()
+        return itemRequestRepository.findAll()
                 .stream()
                 .map(ItemRequestMapper::toDto)
                 .collect(Collectors.toList());
+        // setItems приписать и пагинацию сделать
     }
 
     @Transactional(readOnly = true)
