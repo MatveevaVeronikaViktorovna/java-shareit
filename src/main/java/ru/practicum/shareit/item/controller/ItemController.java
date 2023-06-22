@@ -20,6 +20,7 @@ import static ru.practicum.shareit.booking.controller.BookingController.HEADER;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/items")
+@Validated
 public class ItemController {
 
     private final ItemService itemService;
@@ -34,8 +35,8 @@ public class ItemController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ItemDto> getAllByOwner(@RequestHeader(HEADER) Long userId,
-                                       @RequestParam(defaultValue = "0") @Valid @PositiveOrZero Integer from,
-                                       @RequestParam(defaultValue = "20") @Valid @Positive Integer size) {
+                                       @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                       @RequestParam(defaultValue = "20") @Positive Integer size) {
         return itemService.getAllByOwner(userId, from, size);
     }
 
@@ -64,8 +65,8 @@ public class ItemController {
     @ResponseStatus(HttpStatus.OK)
     public List<ItemDto> searchByText(@RequestHeader(HEADER) Long userId,
                                       @RequestParam String text,
-                                      @RequestParam(defaultValue = "0") @Valid @PositiveOrZero Integer from,
-                                      @RequestParam(defaultValue = "20") @Valid @Positive Integer size) {
+                                      @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                      @RequestParam(defaultValue = "20") @Positive Integer size) {
         return itemService.searchByText(userId, text, from, size);
     }
 

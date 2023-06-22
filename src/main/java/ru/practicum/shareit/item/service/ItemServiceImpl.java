@@ -64,7 +64,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getAllByOwner(Long userId, Integer from, Integer size) {
-        Pageable page = PageRequest.of(from, size);
+        Pageable page = PageRequest.of(from/size, size);
         List<Item> thisOwnerItems = itemRepository.findAllByOwnerIdOrderByIdAsc(userId, page);
         List<ItemDto> items = new ArrayList<>();
         for (Item item : thisOwnerItems) {
@@ -132,7 +132,7 @@ public class ItemServiceImpl implements ItemService {
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         } else {
-            Pageable page = PageRequest.of(from, size);
+            Pageable page = PageRequest.of(from/size, size);
             return itemRepository.findAllAvailableByText(text, page)
                     .stream()
                     .map(ItemMapper::toDto)
