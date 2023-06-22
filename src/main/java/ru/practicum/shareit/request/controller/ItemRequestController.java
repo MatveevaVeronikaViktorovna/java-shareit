@@ -18,6 +18,7 @@ import static ru.practicum.shareit.booking.controller.BookingController.HEADER;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/requests")
+@Validated
 public class ItemRequestController {
 
     private final ItemRequestService itemRequestService;
@@ -25,7 +26,7 @@ public class ItemRequestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemRequestDtoForResponse create(@RequestHeader(HEADER) Long userId,
-                                 @Validated(Create.class) @RequestBody ItemRequestDto itemRequestDto) {
+                                            @Validated(Create.class) @RequestBody ItemRequestDto itemRequestDto) {
         return itemRequestService.create(userId, itemRequestDto);
     }
 
@@ -44,9 +45,10 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List <ItemRequestDtoForResponse> getAll(@RequestHeader(HEADER) Long userId,
-                                                   @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                                   @RequestParam(defaultValue = "20") @Positive Integer size) {
+    public List<ItemRequestDtoForResponse> getAll(@RequestHeader(HEADER) Long userId,
+                                                  @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                  @RequestParam(defaultValue = "20") @Positive Integer size) {
+        System.out.println("Проверка: в метод пошли следующие значения from - " + from + " size " + size);
         return itemRequestService.getAll(userId, from, size);
     }
 
