@@ -88,14 +88,23 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDtoForResponse> getAll(Long userId, Integer from, Integer size) {
         List<ItemRequestDtoForResponse> allDto = new ArrayList<>();
-        Sort sortByCreated = Sort.by(Sort.Direction.ASC, "created");
-        Pageable page = PageRequest.of(from, size, sortByCreated);
-        Page<ItemRequest> itemRequestPage = itemRequestRepository.findAll(page);
-        itemRequestPage.getContent().forEach(itemRequest -> {
+   //     Sort sortByCreated = Sort.by(Sort.Direction.ASC, "created");
+        Pageable page = PageRequest.of(from, size);
+   //     Page<ItemRequest> itemRequestPage = itemRequestRepository.findAll(page);
+
+        List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(userId, page);
+        itemRequests.forEach(itemRequest -> {
             ItemRequestDtoForResponse dto = ItemRequestMapper.toDto(itemRequest);
             setItems(dto);
             allDto.add(dto);
         });
+
+
+     /*   itemRequestPage.getContent().forEach(itemRequest -> {
+            ItemRequestDtoForResponse dto = ItemRequestMapper.toDto(itemRequest);
+            setItems(dto);
+            allDto.add(dto);
+        }); */
         return allDto;
     }
 
