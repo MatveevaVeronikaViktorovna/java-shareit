@@ -2,10 +2,8 @@ package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.EntityNotFoundException;
@@ -59,13 +57,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(userId);
-        List<ItemRequestDtoForResponse> dto = new ArrayList<>();
-        for (ItemRequest itemRequest : itemRequests) {
-            ItemRequestDtoForResponse itemRequestDtoForResponse = ItemRequestMapper.toDto(itemRequest);
-            setItems(itemRequestDtoForResponse);
-            dto.add(itemRequestDtoForResponse);
-        }
-        return dto;
+        List<ItemRequestDtoForResponse> allDto = new ArrayList<>();
+        itemRequests.forEach(itemRequest -> {
+            ItemRequestDtoForResponse dto = ItemRequestMapper.toDto(itemRequest);
+            setItems(dto);
+            allDto.add(dto);
+        });
+        return allDto;
     }
 
     @Transactional(readOnly = true)
@@ -87,24 +85,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional(readOnly = true)
     @Override
     public List<ItemRequestDtoForResponse> getAll(Long userId, Integer from, Integer size) {
-        List<ItemRequestDtoForResponse> allDto = new ArrayList<>();
-   //     Sort sortByCreated = Sort.by(Sort.Direction.ASC, "created");
         Pageable page = PageRequest.of(from, size);
-   //     Page<ItemRequest> itemRequestPage = itemRequestRepository.findAll(page);
-
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(userId, page);
+        List<ItemRequestDtoForResponse> allDto = new ArrayList<>();
         itemRequests.forEach(itemRequest -> {
             ItemRequestDtoForResponse dto = ItemRequestMapper.toDto(itemRequest);
             setItems(dto);
             allDto.add(dto);
         });
-
-
-     /*   itemRequestPage.getContent().forEach(itemRequest -> {
-            ItemRequestDtoForResponse dto = ItemRequestMapper.toDto(itemRequest);
-            setItems(dto);
-            allDto.add(dto);
-        }); */
         return allDto;
     }
 
