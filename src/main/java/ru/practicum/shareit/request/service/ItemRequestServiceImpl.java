@@ -2,6 +2,10 @@ package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.EntityNotFoundException;
@@ -82,12 +86,17 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemRequestDtoForResponse> getAll() {
-        return itemRequestRepository.findAll()
-                .stream()
-                .map(ItemRequestMapper::toDto)
-                .collect(Collectors.toList());
-        // setItems приписать и пагинацию сделать
+    public List<ItemRequestDtoForResponse> getAll(Long userId, Integer from, Integer size) {
+        List<ItemRequestDtoForResponse> allDto = new ArrayList<>();
+        Sort sortByCreated = Sort.by(Sort.Direction.ASC, "created");
+        Pageable page = PageRequest.of(from, size, sortByCreated);
+        Page<ItemRequest> itemRequestPage = itemRequestRepository.findAll(page);
+        itemRequestPage.getContent().forEach(itemRequest -> {
+            ItemRequestDtoForResponse dto = ItemRequestMapper.toDto(itemRequest);
+            setItems(dto);
+            allDto.add(dto);
+        });
+        return allDto;
     }
 
     @Transactional(readOnly = true)

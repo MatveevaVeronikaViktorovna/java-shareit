@@ -42,9 +42,10 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
-    public List <ItemRequestDtoForResponse> getAll() {
-                                            //@RequestParam String text) {
-        return itemRequestService.getAll();
+    public List <ItemRequestDtoForResponse> getAll(@RequestHeader(HEADER) Long userId,
+                                                   @RequestParam Integer from,
+                                                   @RequestParam Integer size) {
+        return itemRequestService.getAll(userId, from, size);
     }
 
 
