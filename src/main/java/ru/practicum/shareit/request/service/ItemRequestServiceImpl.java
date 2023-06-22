@@ -58,7 +58,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             log.warn("Пользователь с id {} не найден", userId);
             throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
-        List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(userId);
+        List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(userId);
         List<ItemRequestDtoForResponse> dto = new ArrayList<>();
         for (ItemRequest itemRequest : itemRequests) {
             ItemRequestDtoForResponse itemRequestDtoForResponse = ItemRequestMapper.toDto(itemRequest);
