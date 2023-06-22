@@ -9,6 +9,8 @@ import ru.practicum.shareit.request.dto.ItemRequestDtoForResponse;
 import ru.practicum.shareit.request.service.ItemRequestService;
 import ru.practicum.shareit.user.dto.Create;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 import static ru.practicum.shareit.booking.controller.BookingController.HEADER;
@@ -43,8 +45,8 @@ public class ItemRequestController {
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     public List <ItemRequestDtoForResponse> getAll(@RequestHeader(HEADER) Long userId,
-                                                   @RequestParam Integer from,
-                                                   @RequestParam Integer size) {
+                                                   @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                   @RequestParam(defaultValue = "20") @Positive Integer size) {
         return itemRequestService.getAll(userId, from, size);
     }
 
