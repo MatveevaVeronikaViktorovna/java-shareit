@@ -26,13 +26,14 @@ class UserServiceImplTest {
     private UserServiceImpl userService;
 
     @Test
-    void getAllWhenInvokedThenOk() {
+    void getAllWhenInvokedThenReturnedListOfUsers() {
         List<User> expectedUsers = List.of(new User());
+        List<UserDto> expectedUsersDto = UserMapper.toDto(expectedUsers);
         Mockito.when(userRepository.findAll()).thenReturn(expectedUsers);
 
         List<UserDto> users = userService.getAll();
 
-        assertEquals(1, users.size());
+        assertEquals(expectedUsersDto, users);
     }
 
     @Test
