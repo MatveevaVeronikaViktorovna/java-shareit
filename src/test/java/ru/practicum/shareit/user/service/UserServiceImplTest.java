@@ -2,10 +2,10 @@ package ru.practicum.shareit.user.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
+import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -24,6 +26,30 @@ class UserServiceImplTest {
 
     @InjectMocks
     private UserServiceImpl userService;
+
+    @Captor
+    private ArgumentCaptor<User> userArgumentCaptor;
+
+    @Test
+    void createUserWhenUserValidThenSavedUser() {
+        User expectedUser = new User();
+        UserDto expectedUserDto = UserMapper.toDto(expectedUser);
+        Mockito.when(userRepository.save(expectedUser)).thenReturn(expectedUser);
+
+        UserDto user = userService.create(expectedUserDto);
+
+        assertEquals(expectedUserDto, user);
+        verify(userRepository).save(expectedUser);
+    }
+
+    @Test
+    void createUserWhenEmailIsDuplicatedThenNotSavedUser() {
+        User expectedUser = new User();
+        UserDto expectedUserDto = UserMapper.toDto(expectedUser);
+        Mockito.when(userRepository.save(expectedUser)).thenThrow(DataIntegrityViolationException.class);
+
+        assertThrows(DataIntegrityViolationException.class, () -> userService.create(expectedUserDto));
+    }
 
     @Test
     void getAllWhenInvokedThenReturnedListOfUsers() {
@@ -46,12 +72,34 @@ class UserServiceImplTest {
         UserDto user = userService.getById(id);
 
         assertEquals(expectedUserDto, user);
-
     }
 
     @Test
     void getByIdWhenUserNotFoundThenThrownException() {
+        Long id = 0L;
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
 
+        assertThrows(EntityNotFoundException.class, () -> userService.getById(id));
     }
 
+    @Test
+    void updateWhenUserFoundThenUserUpdated() {
+        Long id = 0L;
+        User oldUser = new User();
+        oldUser.setName("name");
+        oldUser.setEmail("name@yandex.ru");
+
+        User newUser = new User();
+        newUser.setName("updatedName");
+        newUser.setEmail("updatedName@yandex.ru");
+        UserDto newUserDto = UserMapper.toDto(newUser);
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(oldUser));
+
+        UserDto updatedUser = userService.update(id, newUserDto);
+
+        verify(userRepository).save(userArgumentCaptor.capture());
+        User savedUser = userArgumentCaptor.getValue();
+        assertEquals("updatedName", savedUser.getName());
+        assertEquals("updatedName@yandex.ru", savedUser.getEmail());
+    }
 }
