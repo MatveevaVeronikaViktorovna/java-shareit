@@ -43,7 +43,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void createUserWhenEmailIsDuplicatedThenNotSavedUser() {
+    void createUserWhenEmailAlreadyExistThenNotSavedUser() {
         User expectedUser = new User();
         UserDto expectedUserDto = UserMapper.toDto(expectedUser);
         Mockito.when(userRepository.save(expectedUser)).thenThrow(DataIntegrityViolationException.class);
@@ -95,11 +95,82 @@ class UserServiceImplTest {
         UserDto newUserDto = UserMapper.toDto(newUser);
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(oldUser));
 
-        UserDto updatedUser = userService.update(id, newUserDto);
+        userService.update(id, newUserDto);
 
         verify(userRepository).save(userArgumentCaptor.capture());
         User savedUser = userArgumentCaptor.getValue();
         assertEquals("updatedName", savedUser.getName());
         assertEquals("updatedName@yandex.ru", savedUser.getEmail());
     }
+
+    @Test
+    void updateUserNameWhenUserFoundThenUpdatedOnlyName() {
+        Long id = 0L;
+        User oldUser = new User();
+        oldUser.setName("name");
+        oldUser.setEmail("name@yandex.ru");
+
+        User newUser = new User();
+        newUser.setName("updatedName");
+        UserDto newUserDto = UserMapper.toDto(newUser);
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(oldUser));
+
+        userService.update(id, newUserDto);
+
+        verify(userRepository).save(userArgumentCaptor.capture());
+        User savedUser = userArgumentCaptor.getValue();
+        assertEquals("updatedName", savedUser.getName());
+        assertEquals("name@yandex.ru", savedUser.getEmail());
+    }
+
+    @Test
+    void updateUserEmailWhenUserFoundThenUpdatedOnlyEmail() {
+        Long id = 0L;
+        User oldUser = new User();
+        oldUser.setName("name");
+        oldUser.setEmail("name@yandex.ru");
+
+        User newUser = new User();
+        newUser.setEmail("updatedName@yandex.ru");
+        UserDto newUserDto = UserMapper.toDto(newUser);
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(oldUser));
+
+        userService.update(id, newUserDto);
+
+        verify(userRepository).save(userArgumentCaptor.capture());
+        User savedUser = userArgumentCaptor.getValue();
+        assertEquals("name", savedUser.getName());
+        assertEquals("updatedName@yandex.ru", savedUser.getEmail());
+    }
+
+    @Test
+    void updateUserEmailWhenUserFoundAndEmailAlreadyExistThenNotUpdated() {
+        Long id = 0L;
+        User oldUser = new User();
+        User newUser = new User();
+        UserDto newUserDto = UserMapper.toDto(newUser);
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(oldUser));
+        Mockito.when(userRepository.save(Mockito.any(User.class))).thenThrow(DataIntegrityViolationException.class);
+
+        assertThrows(DataIntegrityViolationException.class, () -> userService.update(id, newUserDto));
+        }
+
+    @Test
+    void updateWhenUserNotFoundThenUserNotUpdated() {
+        Long id = 0L;
+        User newUser = new User();
+        UserDto newUserDto = UserMapper.toDto(newUser);
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> userService.update(id, newUserDto));
+        verify(userRepository, Mockito.never()).save(newUser);
+    }
+
+    @Test
+    void deleteWhenInvokedThenDeleteUser() {
+        Long id = 0L;
+        userService.delete(id);
+        verify(userRepository, Mockito.times(1)).deleteById(id);
+    }
+
 }
