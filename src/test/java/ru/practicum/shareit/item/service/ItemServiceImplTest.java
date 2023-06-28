@@ -99,7 +99,109 @@ class ItemServiceImplTest {
         assertEquals(false, savedItem.getAvailable());
     }
 
-    
+    @Test
+    void updateWhenItemFoundButOwnerWrongThenItemNotUpdated(){
+        Long userId = 0L;
+        Long ownerId = 1L;
+        User owner = new User();
+        owner.setId(ownerId);
 
+        Long id = 0L;
+        Item oldItem = new Item();
+        oldItem.setOwner(owner);
+
+        Item newItem = new Item();
+        ItemDto newItemDto = ItemMapper.toDto(newItem);
+        Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(oldItem));
+
+        assertThrows(EntityNotFoundException.class, () -> itemService.update(userId, id,newItemDto));
+        verify(itemRepository, Mockito.never()).save(Mockito.any(Item.class));
+    }
+
+    @Test
+    void updateNameWhenItemFoundAndOwnerCorrectThenUpdatedOnlyName(){
+        Long userId = 0L;
+        User owner = new User();
+        owner.setId(userId);
+
+        Long id = 0L;
+        Item oldItem = new Item();
+        oldItem.setId(id);
+        oldItem.setName("name");
+        oldItem.setDescription("description");
+        oldItem.setAvailable(true);
+        oldItem.setOwner(owner);
+
+        Item newItem = new Item();
+        newItem.setName("updatedName");
+        ItemDto newItemDto = ItemMapper.toDto(newItem);
+        Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(oldItem));
+
+        itemService.update(userId, id, newItemDto);
+
+        verify(itemRepository).save(itemArgumentCaptor.capture());
+        Item savedItem = itemArgumentCaptor.getValue();
+        assertEquals("updatedName", savedItem.getName());
+        assertEquals("description", savedItem.getDescription());
+        assertEquals(true, savedItem.getAvailable());
+    }
+
+    @Test
+    void updateDescriptionWhenItemFoundAndOwnerCorrectThenUpdatedOnlyDescription(){
+        Long userId = 0L;
+        User owner = new User();
+        owner.setId(userId);
+
+        Long id = 0L;
+        Item oldItem = new Item();
+        oldItem.setId(id);
+        oldItem.setName("name");
+        oldItem.setDescription("description");
+        oldItem.setAvailable(true);
+        oldItem.setOwner(owner);
+
+        Item newItem = new Item();
+        newItem.setDescription("updated description");
+        ItemDto newItemDto = ItemMapper.toDto(newItem);
+        Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(oldItem));
+
+        itemService.update(userId, id, newItemDto);
+
+        verify(itemRepository).save(itemArgumentCaptor.capture());
+        Item savedItem = itemArgumentCaptor.getValue();
+        assertEquals("name", savedItem.getName());
+        assertEquals("updated description", savedItem.getDescription());
+        assertEquals(true, savedItem.getAvailable());
+    }
+
+    @Test
+    void updateAvailableWhenItemFoundAndOwnerCorrectThenUpdatedOnlyAvailable(){
+        Long userId = 0L;
+        User owner = new User();
+        owner.setId(userId);
+
+        Long id = 0L;
+        Item oldItem = new Item();
+        oldItem.setId(id);
+        oldItem.setName("name");
+        oldItem.setDescription("description");
+        oldItem.setAvailable(true);
+        oldItem.setOwner(owner);
+
+        Item newItem = new Item();
+        newItem.setAvailable(false);
+        ItemDto newItemDto = ItemMapper.toDto(newItem);
+        Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(oldItem));
+
+        itemService.update(userId, id, newItemDto);
+
+        verify(itemRepository).save(itemArgumentCaptor.capture());
+        Item savedItem = itemArgumentCaptor.getValue();
+        assertEquals("name", savedItem.getName());
+        assertEquals("description", savedItem.getDescription());
+        assertEquals(false, savedItem.getAvailable());
+    }
+
+    
 
 }
