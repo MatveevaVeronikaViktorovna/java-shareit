@@ -27,7 +27,7 @@ public class UserMapper {
         return userDto;
     }
 
-    public static List<UserDto> toDto(List<User> users) {
+    public List<UserDto> toDto(List<User> users) {
         List<UserDto> result = new ArrayList<>();
 
         for (User user : users) {
