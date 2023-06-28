@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.service;
 
-import net.bytebuddy.agent.builder.AgentBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -69,13 +68,29 @@ class ItemServiceImplTest {
         ItemDto expectedItemDto = ItemMapper.toDto(expectedItem);
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> itemService.create(id,expectedItemDto));
+        assertThrows(EntityNotFoundException.class, () -> itemService.create(id, expectedItemDto));
 
         verify(itemRepository, Mockito.never()).save(expectedItem);
     }
 
     @Test
-    void getByIdWhenItemFoundAndRequestNotFromOwnerThenReturnedItem(){
+    void getAllByOwnerWhenInvokedThenReturnedListOfItems() {
+        Long userId = 0L;
+        Integer from = 0;
+        Integer size = 10;
+        Pageable page = PageRequest.of(from / size, size);
+        List<Item> expectedItems = List.of(new Item());
+        List<ItemDto> expectedItemsDto = ItemMapper.toDto(expectedItems);
+        expectedItemsDto.forEach(itemDto -> itemDto.setComments(Collections.emptyList()));
+        Mockito.when(itemRepository.findAllByOwnerIdOrderByIdAsc(userId, page)).thenReturn(expectedItems);
+
+        List<ItemDto> items = itemService.getAllByOwner(userId, from, size);
+
+        assertEquals(expectedItemsDto, items);
+    }
+
+    @Test
+    void getByIdWhenItemFoundAndRequestNotFromOwnerThenReturnedItem() {
         Long id = 0L;
         Long userId = 0L;
         Long ownerId = 1L;
@@ -89,11 +104,11 @@ class ItemServiceImplTest {
 
         ItemDto item = itemService.getById(userId, id);
 
-        assertEquals(expectedItemDto, item);;
+        assertEquals(expectedItemDto, item);
     }
 
     @Test
-    void getByIdWhenItemNotFoundThenNotReturnedItem(){
+    void getByIdWhenItemNotFoundThenNotReturnedItem() {
         Long id = 0L;
         Long userId = 0L;
         Mockito.when(itemRepository.findById(id)).thenReturn(Optional.empty());
@@ -102,7 +117,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void updateWhenItemFoundAndOwnerCorrectThenItemUpdated(){
+    void updateWhenItemFoundAndOwnerCorrectThenItemUpdated() {
         Long userId = 0L;
         User owner = new User();
         owner.setId(userId);
@@ -132,7 +147,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void updateWhenItemFoundButOwnerWrongThenItemNotUpdated(){
+    void updateWhenItemFoundButOwnerWrongThenItemNotUpdated() {
         Long userId = 0L;
         Long ownerId = 1L;
         User owner = new User();
@@ -146,12 +161,12 @@ class ItemServiceImplTest {
         ItemDto newItemDto = ItemMapper.toDto(newItem);
         Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(oldItem));
 
-        assertThrows(EntityNotFoundException.class, () -> itemService.update(userId, id,newItemDto));
+        assertThrows(EntityNotFoundException.class, () -> itemService.update(userId, id, newItemDto));
         verify(itemRepository, Mockito.never()).save(Mockito.any(Item.class));
     }
 
     @Test
-    void updateNameWhenItemFoundAndOwnerCorrectThenUpdatedOnlyName(){
+    void updateNameWhenItemFoundAndOwnerCorrectThenUpdatedOnlyName() {
         Long userId = 0L;
         User owner = new User();
         owner.setId(userId);
@@ -179,7 +194,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void updateDescriptionWhenItemFoundAndOwnerCorrectThenUpdatedOnlyDescription(){
+    void updateDescriptionWhenItemFoundAndOwnerCorrectThenUpdatedOnlyDescription() {
         Long userId = 0L;
         User owner = new User();
         owner.setId(userId);
@@ -207,7 +222,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void updateAvailableWhenItemFoundAndOwnerCorrectThenUpdatedOnlyAvailable(){
+    void updateAvailableWhenItemFoundAndOwnerCorrectThenUpdatedOnlyAvailable() {
         Long userId = 0L;
         User owner = new User();
         owner.setId(userId);
@@ -248,26 +263,15 @@ class ItemServiceImplTest {
         ItemDto newItemDto = ItemMapper.toDto(newItem);
         Mockito.when(itemRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> itemService.update(userId, id,newItemDto));
+        assertThrows(EntityNotFoundException.class, () -> itemService.update(userId, id, newItemDto));
         verify(itemRepository, Mockito.never()).save(Mockito.any(Item.class));
     }
 
     @Test
-    void getAllByOwnerWhenInvokedThenReturnedListOfItems(){
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from/size, size);
-        List<Item> expectedItems = List.of(new Item());
-        List<ItemDto> expectedItemsDto = ItemMapper.toDto(expectedItems);
-        Mockito.when(itemRepository.findAllByOwnerIdOrderByIdAsc(userId, page)).thenReturn(expectedItems);
-
-        List<ItemDto> items = itemService.getAllByOwner(userId, from, size);
-
-        assertEquals(expectedItemsDto, items);
-
+    void deleteWhenInvokedThenDeleteItem() {
+        Long id = 0L;
+        itemService.delete(id);
+        verify(itemRepository, Mockito.times(1)).deleteById(id);
     }
-
-
 
 }
