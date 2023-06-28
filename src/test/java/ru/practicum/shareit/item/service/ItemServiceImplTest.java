@@ -274,4 +274,38 @@ class ItemServiceImplTest {
         verify(itemRepository, Mockito.times(1)).deleteById(id);
     }
 
+    @Test
+    void searchByTextWhenInvokedThenReturnedListOfItems(){
+        Long userId = 0L;
+        Long id = 0L;
+        Item item = new Item();
+        item.setName("name");
+        item.setDescription("description");
+        String text = "eSC";
+        Integer from = 0;
+        Integer size = 10;
+        Pageable page = PageRequest.of(from / size, size);
+        List<Item> expectedItems = List.of(item);
+        List<ItemDto> expectedItemsDto = ItemMapper.toDto(expectedItems);
+        Mockito.when(itemRepository.findAllAvailableByText(text, page)).thenReturn(expectedItems);
+
+        List<ItemDto> items = itemService.searchByText(userId, text, from, size);
+
+        assertEquals(expectedItemsDto, items);
+    }
+
+    @Test
+    void searchByyTextWhenTextEmptyThenReturnedListOfItems(){
+        Long userId = 0L;
+        String text = "";
+        Integer from = 0;
+        Integer size = 10;
+
+        List<ItemDto> items = itemService.searchByText(userId, text, from, size);
+
+        assertEquals(Collections.emptyList(), items);
+    }
+
+
+
 }
