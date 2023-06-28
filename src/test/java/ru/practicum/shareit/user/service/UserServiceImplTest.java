@@ -119,6 +119,7 @@ class UserServiceImplTest {
 
         verify(userRepository).save(userArgumentCaptor.capture());
         User savedUser = userArgumentCaptor.getValue();
+        System.out.println(savedUser);
         assertEquals("updatedName", savedUser.getName());
         assertEquals("name@yandex.ru", savedUser.getEmail());
     }

@@ -116,7 +116,7 @@ public class ItemServiceImpl implements ItemService {
         }
         Item updatedItem = itemRepository.save(oldItem);
         log.info("Обновлена вещь c id {} на {}", id, updatedItem);
-        return ItemMapper.toDto(updatedItem);
+        return ItemMapper.toDto(oldItem);
     }
 
     @Transactional
