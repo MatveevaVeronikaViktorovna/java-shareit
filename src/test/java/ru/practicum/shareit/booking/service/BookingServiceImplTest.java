@@ -143,6 +143,6 @@ class BookingServiceImplTest {
         verify(bookingRepository, Mockito.never()).save(Mockito.any(Booking.class));
     }
 
-    
+
 
 }
