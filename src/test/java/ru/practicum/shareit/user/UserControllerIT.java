@@ -72,7 +72,7 @@ class UserControllerIT {
 
     @SneakyThrows
     @Test
-    void getAll() {
+    void getAllWhenInvokedThenReturnedListOfUsers() {
         UserDto userDto = new UserDto();
         userDto.setId(1L);
         userDto.setName("name");
@@ -91,7 +91,7 @@ class UserControllerIT {
 
     @SneakyThrows
     @Test
-    void getById() {
+    void getByIdWhenInvokedThenReturnedUser() {
         Long userId = 1L;
         UserDto userDto = new UserDto();
         userDto.setId(1L);
