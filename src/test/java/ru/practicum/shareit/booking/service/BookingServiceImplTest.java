@@ -86,7 +86,7 @@ class BookingServiceImplTest {
         requestBookingDto.setItemId(itemId);
         Mockito.when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> bookingService.create(userId,requestBookingDto));
+        assertThrows(EntityNotFoundException.class, () -> bookingService.create(userId, requestBookingDto));
 
         verify(bookingRepository, Mockito.never()).save(Mockito.any(Booking.class));
     }
@@ -104,7 +104,7 @@ class BookingServiceImplTest {
         Mockito.when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> bookingService.create(userId,requestBookingDto));
+        assertThrows(EntityNotFoundException.class, () -> bookingService.create(userId, requestBookingDto));
 
         verify(bookingRepository, Mockito.never()).save(Mockito.any(Booking.class));
     }
@@ -122,7 +122,7 @@ class BookingServiceImplTest {
 
         Mockito.when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
 
-        assertThrows(ItemNotAvailableException.class, () -> bookingService.create(userId,requestBookingDto));
+        assertThrows(ItemNotAvailableException.class, () -> bookingService.create(userId, requestBookingDto));
 
         verify(bookingRepository, Mockito.never()).save(Mockito.any(Booking.class));
     }
@@ -145,13 +145,13 @@ class BookingServiceImplTest {
         Mockito.when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(booker));
 
-        assertThrows(EntityNotFoundException.class, () -> bookingService.create(userId,requestBookingDto));
+        assertThrows(EntityNotFoundException.class, () -> bookingService.create(userId, requestBookingDto));
 
         verify(bookingRepository, Mockito.never()).save(Mockito.any(Booking.class));
     }
 
     @Test
-    void approveWhenBookingFoundAndApprovedIsTrueThenUpdatedBooking(){
+    void approveWhenBookingFoundAndApprovedIsTrueThenUpdatedBooking() {
         Boolean approved = true;
 
         Long userId = 0L;
@@ -180,7 +180,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void approveWhenBookingFoundAndApprovedIsFalseThenUpdatedBooking(){
+    void approveWhenBookingFoundAndApprovedIsFalseThenUpdatedBooking() {
         Boolean approved = false;
 
         Long userId = 0L;
@@ -209,7 +209,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void approveWhenBookingNotFoundThenNotUpdatedBooking(){
+    void approveWhenBookingNotFoundThenNotUpdatedBooking() {
         Boolean approved = true;
 
         Long userId = 0L;
@@ -234,7 +234,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void approveWhenBookingFoundAndApprovedIsTrueButBookingStatusIsApprovedThenNotUpdatedBooking(){
+    void approveWhenBookingFoundAndApprovedIsTrueButBookingStatusIsApprovedThenNotUpdatedBooking() {
         Boolean approved = true;
 
         Long userId = 0L;
@@ -259,7 +259,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getByIdWhenBookingFoundAndRequestFromBookerOrOwnerThenReturnedBooking(){
+    void getByIdWhenBookingFoundAndRequestFromBookerOrOwnerThenReturnedBooking() {
         Long userId = 0L;
         User booker = new User();
         booker.setId(userId);
@@ -282,16 +282,16 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getByIdWhenBookingNotFoundThenNotReturnedBooking(){
+    void getByIdWhenBookingNotFoundThenNotReturnedBooking() {
         Long userId = 0L;
         Long id = 0L;
         Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class,() -> bookingService.getById(userId, id));
+        assertThrows(EntityNotFoundException.class, () -> bookingService.getById(userId, id));
     }
 
     @Test
-    void getByIdWhenBookingFoundButRequestNotFromBookerOrOwnerThenNotReturnedBooking(){
+    void getByIdWhenBookingFoundButRequestNotFromBookerOrOwnerThenNotReturnedBooking() {
         Long userId = 99L;
 
         Long bookerId = 0L;
@@ -312,7 +312,7 @@ class BookingServiceImplTest {
         expectedBooking.setItem(item);
         Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(expectedBooking));
 
-        assertThrows(EntityNotFoundException.class,() -> bookingService.getById(userId, id));
+        assertThrows(EntityNotFoundException.class, () -> bookingService.getById(userId, id));
     }
 
     @Test
@@ -322,7 +322,7 @@ class BookingServiceImplTest {
         Integer size = 10;
         Mockito.when(userRepository.existsById(userId)).thenReturn(false);
 
-        assertThrows(EntityNotFoundException.class,() -> bookingService.getAllByBooker(userId,  State.ALL, from, size));
+        assertThrows(EntityNotFoundException.class, () -> bookingService.getAllByBooker(userId, State.ALL, from, size));
     }
 
     @Test
@@ -411,7 +411,7 @@ class BookingServiceImplTest {
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
         List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
-        Mockito.when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class),Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+        Mockito.when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
 
         List<BookingDtoForResponse> bookings = bookingService.getAllByBooker(userId, State.PAST, from, size);
 
@@ -442,7 +442,7 @@ class BookingServiceImplTest {
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
         List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
-        Mockito.when(bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class),Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+        Mockito.when(bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
 
         List<BookingDtoForResponse> bookings = bookingService.getAllByBooker(userId, State.FUTURE, from, size);
 
@@ -473,7 +473,7 @@ class BookingServiceImplTest {
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
         List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
-        Mockito.when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(Mockito.anyLong(), Mockito.any(Status.class),Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+        Mockito.when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(Mockito.anyLong(), Mockito.any(Status.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
 
         List<BookingDtoForResponse> bookings = bookingService.getAllByBooker(userId, State.WAITING, from, size);
 
@@ -504,7 +504,7 @@ class BookingServiceImplTest {
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
         List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
-        Mockito.when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(Mockito.anyLong(), Mockito.any(Status.class),Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+        Mockito.when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(Mockito.anyLong(), Mockito.any(Status.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
 
         List<BookingDtoForResponse> bookings = bookingService.getAllByBooker(userId, State.REJECTED, from, size);
 
@@ -519,7 +519,7 @@ class BookingServiceImplTest {
         Integer size = 10;
         Mockito.when(userRepository.existsById(userId)).thenReturn(false);
 
-        assertThrows(EntityNotFoundException.class,() -> bookingService.getAllByOwner(userId,  State.ALL, from, size));
+        assertThrows(EntityNotFoundException.class, () -> bookingService.getAllByOwner(userId, State.ALL, from, size));
     }
 
     @Test
@@ -608,7 +608,7 @@ class BookingServiceImplTest {
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
         List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
-        Mockito.when(bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class),Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+        Mockito.when(bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
 
         List<BookingDtoForResponse> bookings = bookingService.getAllByOwner(userId, State.PAST, from, size);
 
@@ -639,7 +639,7 @@ class BookingServiceImplTest {
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
         List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
-        Mockito.when(bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class),Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+        Mockito.when(bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
 
         List<BookingDtoForResponse> bookings = bookingService.getAllByOwner(userId, State.FUTURE, from, size);
 
@@ -670,7 +670,7 @@ class BookingServiceImplTest {
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
         List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
-        Mockito.when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(Mockito.anyLong(), Mockito.any(Status.class),Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+        Mockito.when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(Mockito.anyLong(), Mockito.any(Status.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
 
         List<BookingDtoForResponse> bookings = bookingService.getAllByOwner(userId, State.WAITING, from, size);
 
@@ -701,7 +701,7 @@ class BookingServiceImplTest {
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
         List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
-        Mockito.when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(Mockito.anyLong(), Mockito.any(Status.class),Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+        Mockito.when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(Mockito.anyLong(), Mockito.any(Status.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
 
         List<BookingDtoForResponse> bookings = bookingService.getAllByOwner(userId, State.REJECTED, from, size);
 
