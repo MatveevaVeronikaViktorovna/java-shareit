@@ -6,7 +6,10 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import ru.practicum.shareit.booking.dto.BookingDtoForItem;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.CommentWithoutBookingException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
@@ -131,6 +134,37 @@ class ItemServiceImplTest {
         Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(expectedItem));
 
         ItemDto item = itemService.getById(userId, id);
+
+        assertEquals(expectedItemDto, item);
+    }
+
+    @Test
+    void getByIdWhenItemFoundAndRequestFromOwnerThenReturnedItemWithLastBooking() {
+        Long ownerId = 0L;
+        User owner = new User();
+        owner.setId(ownerId);
+
+        Booking lastBooking = new Booking();
+        User booker = new User();
+        booker.setId(1L);
+        lastBooking.setBooker(booker);
+        Booking nextBooking = new Booking();
+        nextBooking.setBooker(booker);
+
+        Long id = 0L;
+        Item expectedItem = new Item();
+        expectedItem.setId(id);
+        expectedItem.setOwner(owner);
+        ItemDto expectedItemDto = ItemMapper.toDto(expectedItem);
+        expectedItemDto.setComments(Collections.emptyList());
+        expectedItemDto.setLastBooking(BookingMapper.toDtoForItem(lastBooking));
+        expectedItemDto.setNextBooking(BookingMapper.toDtoForItem(nextBooking));
+
+        Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(expectedItem));
+        Mockito.when(bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class), Mockito.any(Status.class))).thenReturn(Optional.of(lastBooking));
+        Mockito.when(bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(Mockito.anyLong(), Mockito.any(LocalDateTime.class), Mockito.any(Status.class))).thenReturn(Optional.of(nextBooking));
+
+        ItemDto item = itemService.getById(ownerId, id);
 
         assertEquals(expectedItemDto, item);
     }
