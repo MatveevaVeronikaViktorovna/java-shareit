@@ -8,7 +8,9 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoForResponse;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exception.BookingAlreadyApprovedException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.exception.ItemNotAvailableException;
 import ru.practicum.shareit.item.model.Item;
@@ -142,6 +144,116 @@ class BookingServiceImplTest {
 
         verify(bookingRepository, Mockito.never()).save(Mockito.any(Booking.class));
     }
+
+    @Test
+    void approveWhenBookingFoundAndApprovedIsTrueThenUpdatedBooking(){
+        Boolean approved = true;
+
+        Long userId = 0L;
+        User booker = new User();
+        booker.setId(userId);
+
+        Long itemId = 0L;
+        Item item = new Item();
+        item.setId(itemId);
+
+        Long id = 0L;
+        Booking oldBooking = new Booking();
+        oldBooking.setId(id);
+        oldBooking.setBooker(booker);
+        oldBooking.setItem(item);
+        oldBooking.setStatus(Status.WAITING);
+
+        Mockito.when(bookingRepository.findByIdAndItemOwnerId(Mockito.anyLong(), Mockito.anyLong())).thenReturn(Optional.of(oldBooking));
+        Mockito.when(bookingRepository.save(Mockito.any(Booking.class))).thenReturn(oldBooking);
+
+        bookingService.approveOrReject(userId, id, approved);
+
+        verify(bookingRepository).save(bookingArgumentCaptor.capture());
+        Booking savedBooking = bookingArgumentCaptor.getValue();
+        assertEquals(Status.APPROVED, savedBooking.getStatus());
+    }
+
+    @Test
+    void approveWhenBookingFoundAndApprovedIsFalseThenUpdatedBooking(){
+        Boolean approved = false;
+
+        Long userId = 0L;
+        User booker = new User();
+        booker.setId(userId);
+
+        Long itemId = 0L;
+        Item item = new Item();
+        item.setId(itemId);
+
+        Long id = 0L;
+        Booking oldBooking = new Booking();
+        oldBooking.setId(id);
+        oldBooking.setBooker(booker);
+        oldBooking.setItem(item);
+        oldBooking.setStatus(Status.WAITING);
+
+        Mockito.when(bookingRepository.findByIdAndItemOwnerId(Mockito.anyLong(), Mockito.anyLong())).thenReturn(Optional.of(oldBooking));
+        Mockito.when(bookingRepository.save(Mockito.any(Booking.class))).thenReturn(oldBooking);
+
+        bookingService.approveOrReject(userId, id, approved);
+
+        verify(bookingRepository).save(bookingArgumentCaptor.capture());
+        Booking savedBooking = bookingArgumentCaptor.getValue();
+        assertEquals(Status.REJECTED, savedBooking.getStatus());
+    }
+
+    @Test
+    void approveWhenBookingNotFoundThenNotUpdatedBooking(){
+        Boolean approved = true;
+
+        Long userId = 0L;
+        User booker = new User();
+        booker.setId(userId);
+
+        Long itemId = 0L;
+        Item item = new Item();
+        item.setId(itemId);
+
+        Long id = 0L;
+        Booking oldBooking = new Booking();
+        oldBooking.setId(id);
+        oldBooking.setBooker(booker);
+        oldBooking.setItem(item);
+        oldBooking.setStatus(Status.WAITING);
+
+        Mockito.when(bookingRepository.findByIdAndItemOwnerId(Mockito.anyLong(), Mockito.anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> bookingService.approveOrReject(userId, id, approved));
+        verify(bookingRepository, Mockito.never()).save(Mockito.any(Booking.class));
+    }
+
+    @Test
+    void approveWhenBookingFoundAndApprovedIsTrueButBookingStatusIsApprovedThenNotUpdatedBooking(){
+        Boolean approved = true;
+
+        Long userId = 0L;
+        User booker = new User();
+        booker.setId(userId);
+
+        Long itemId = 0L;
+        Item item = new Item();
+        item.setId(itemId);
+
+        Long id = 0L;
+        Booking oldBooking = new Booking();
+        oldBooking.setId(id);
+        oldBooking.setBooker(booker);
+        oldBooking.setItem(item);
+        oldBooking.setStatus(Status.APPROVED);
+
+        Mockito.when(bookingRepository.findByIdAndItemOwnerId(Mockito.anyLong(), Mockito.anyLong())).thenReturn(Optional.of(oldBooking));
+
+        assertThrows(BookingAlreadyApprovedException.class, () -> bookingService.approveOrReject(userId, id, approved));
+        verify(bookingRepository, Mockito.never()).save(Mockito.any(Booking.class));
+    }
+
+    
 
 
 
