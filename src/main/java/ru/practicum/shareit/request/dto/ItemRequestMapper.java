@@ -2,7 +2,9 @@ package ru.practicum.shareit.request.dto;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.dto.UserMapper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @UtilityClass
 public class ItemRequestMapper {
@@ -22,6 +24,15 @@ public class ItemRequestMapper {
         itemRequestDto.setDescription(itemRequest.getDescription());
         itemRequestDto.setCreated(itemRequest.getCreated());
         return itemRequestDto;
+    }
+
+    public List<ItemRequestDtoForResponse> toDto(List<ItemRequest> itemRequests) {
+        List<ItemRequestDtoForResponse> result = new ArrayList<>();
+
+        for (ItemRequest itemRequest : itemRequests) {
+            result.add(toDto(itemRequest));
+        }
+        return result;
     }
 
 }

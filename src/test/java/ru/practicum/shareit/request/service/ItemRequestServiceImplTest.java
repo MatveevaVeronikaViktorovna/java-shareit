@@ -16,6 +16,8 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -75,8 +77,27 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getAllByRequestorWhenRequestorFoundThenReturnedListOfItemRequest(){
-        
+        Long userId = 0L;
+        List<ItemRequest> expectedItemRequests = List.of(new ItemRequest());
+        List<ItemRequestDtoForResponse> expectedItemRequestsDto = ItemRequestMapper.toDto(expectedItemRequests);
+        expectedItemRequestsDto.forEach(itemRequestDtoForResponse -> itemRequestDtoForResponse.setItems(Collections.emptyList()));
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(userId)).thenReturn(expectedItemRequests);
+
+        List<ItemRequestDtoForResponse> itemRequests = itemRequestService.getAllByRequestor(userId);
+
+        assertEquals(expectedItemRequestsDto, itemRequests);
     }
+
+    @Test
+    void getAllByRequestorWhenRequestorNotFoundThenNotReturnedListOfItemRequest(){
+        Long userId = 0L;
+        Mockito.when(userRepository.existsById(userId)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> itemRequestService.getAllByRequestor(userId));
+    }
+
+    
 
 
 }

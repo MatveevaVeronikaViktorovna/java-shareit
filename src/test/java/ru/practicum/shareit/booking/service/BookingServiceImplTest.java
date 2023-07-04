@@ -375,7 +375,7 @@ class BookingServiceImplTest {
         currentBooking.setId(5L);
         List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking, rejectedBooking);
 
-        List<Booking> expectedBookings = List.of(currentBooking);
+        List<Booking>  expectedBookings = List.of(currentBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
         List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
