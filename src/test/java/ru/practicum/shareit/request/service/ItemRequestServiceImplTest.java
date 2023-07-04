@@ -97,7 +97,64 @@ class ItemRequestServiceImplTest {
         assertThrows(EntityNotFoundException.class, () -> itemRequestService.getAllByRequestor(userId));
     }
 
-    
+    @Test
+    void getByIdWhenRequestorFoundAndItemRequestFoundThenReturnedItemRequest(){
+        Long userId = 0L;
+        User requestor = new User();
+        requestor.setId(userId);
+
+        Long id = 0L;
+        ItemRequest expectedItemRequest = new ItemRequest();
+        expectedItemRequest.setId(id);
+        expectedItemRequest.setRequestor(requestor);
+        ItemRequestDtoForResponse expectedItemRequestDto = ItemRequestMapper.toDto(expectedItemRequest);
+        expectedItemRequestDto.setItems(Collections.emptyList());
+
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(itemRequestRepository.findById(id)).thenReturn(Optional.of(expectedItemRequest));
+
+        ItemRequestDtoForResponse itemRequest = itemRequestService.getById(userId, id);
+
+        assertEquals(expectedItemRequestDto,itemRequest);
+    }
+
+    @Test
+    void getByIdWhenRequestorNotFoundThenNotReturnedItemRequest(){
+        Long userId = 0L;
+        Long id = 0L;
+        Mockito.when(userRepository.existsById(userId)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> itemRequestService.getById(userId, id));
+    }
+
+    @Test
+    void getByIdWhenRequestorFoundButItemRequestFoundThenNotReturnedItemRequest(){
+        Long userId = 0L;
+        User requestor = new User();
+        requestor.setId(userId);
+        Long id = 0L;
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(itemRequestRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> itemRequestService.getById(userId, id));
+    }
+
+    @Test
+    void getAllWhenRequestorFoundThenReturnedListOfItemRequest(){
+        Long userId = 0L;
+        List<ItemRequest> expectedItemRequests = List.of(new ItemRequest());
+        List<ItemRequestDtoForResponse> expectedItemRequestsDto = ItemRequestMapper.toDto(expectedItemRequests);
+        expectedItemRequestsDto.forEach(itemRequestDtoForResponse -> itemRequestDtoForResponse.setItems(Collections.emptyList()));
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(userId)).thenReturn(expectedItemRequests);
+
+        List<ItemRequestDtoForResponse> itemRequests = itemRequestService.getAllByRequestor(userId);
+
+        assertEquals(expectedItemRequestsDto, itemRequests);
+    }
+
+
+
 
 
 }
