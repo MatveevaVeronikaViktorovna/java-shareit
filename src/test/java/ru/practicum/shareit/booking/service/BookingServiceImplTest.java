@@ -253,8 +253,64 @@ class BookingServiceImplTest {
         verify(bookingRepository, Mockito.never()).save(Mockito.any(Booking.class));
     }
 
-    
+    @Test
+    void getByIdWhenBookingFoundAndRequestFromBookerOrOwnerThenReturnedBooking(){
+        Long userId = 0L;
+        User booker = new User();
+        booker.setId(userId);
 
+        Long itemId = 0L;
+        Item item = new Item();
+        item.setId(itemId);
+
+        Long id = 0L;
+        Booking expectedBooking = new Booking();
+        expectedBooking.setId(id);
+        expectedBooking.setBooker(booker);
+        expectedBooking.setItem(item);
+        BookingDtoForResponse expectedBookingDto = BookingMapper.toDto(expectedBooking);
+        Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(expectedBooking));
+
+        BookingDtoForResponse booking = bookingService.getById(userId, id);
+
+        assertEquals(expectedBookingDto, booking);
+    }
+
+    @Test
+    void getByIdWhenBookingNotFoundThenNotReturnedBooking(){
+        Long userId = 0L;
+        Long id = 0L;
+        Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class,() -> bookingService.getById(userId, id));
+    }
+
+    @Test
+    void getByIdWhenBookingFoundButRequestNotFromBookerOrOwnerThenNotReturnedBooking(){
+        Long userId = 99L;
+
+        Long bookerId = 0L;
+        User booker = new User();
+        booker.setId(bookerId);
+
+        Long itemId = 0L;
+        Item item = new Item();
+        item.setId(itemId);
+        User owner = new User();
+        owner.setId(1L);
+        item.setOwner(owner);
+
+        Long id = 0L;
+        Booking expectedBooking = new Booking();
+        expectedBooking.setId(id);
+        expectedBooking.setBooker(booker);
+        expectedBooking.setItem(item);
+        Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(expectedBooking));
+
+        assertThrows(EntityNotFoundException.class,() -> bookingService.getById(userId, id));
+    }
+
+    
 
 
 }
