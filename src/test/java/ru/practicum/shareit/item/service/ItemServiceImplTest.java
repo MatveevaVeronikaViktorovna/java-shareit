@@ -18,6 +18,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
@@ -77,6 +78,27 @@ class ItemServiceImplTest {
         assertThrows(EntityNotFoundException.class, () -> itemService.create(id, expectedItemDto));
 
         verify(itemRepository, Mockito.never()).save(expectedItem);
+    }
+
+    @Test
+    void createWhenOwnerFoundAndRequestIdNotNullThenSavedItem() {
+        Long id = 0L;
+        User owner = new User();
+        Long requestId = 0L;
+        ItemRequest request = new ItemRequest();
+        request.setId(requestId);
+        Item expectedItem = new Item();
+        expectedItem.setOwner(owner);
+        expectedItem.setRequest(request);
+        ItemDto expectedItemDto = ItemMapper.toDto(expectedItem);
+        Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(owner));
+        Mockito.when(itemRequestRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(request));
+        Mockito.when(itemRepository.save(Mockito.any(Item.class))).thenReturn(expectedItem);
+
+        ItemDto item = itemService.create(id, expectedItemDto);
+
+        assertEquals(expectedItemDto, item);
+        verify(itemRepository).save(expectedItem);
     }
 
     @Test
