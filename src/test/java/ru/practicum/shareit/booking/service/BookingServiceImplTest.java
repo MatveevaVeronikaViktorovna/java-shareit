@@ -511,6 +511,202 @@ class BookingServiceImplTest {
         assertEquals(expectedBookingsDto, bookings);
     }
 
-    
+
+    @Test
+    void getAllByOwnerWhenOwnerNotFoundThenNotReturnedListOfBookings() {
+        Long userId = 0L;
+        Integer from = 0;
+        Integer size = 10;
+        Mockito.when(userRepository.existsById(userId)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class,() -> bookingService.getAllByOwner(userId,  State.ALL, from, size));
+    }
+
+    @Test
+    void getAllByOwnerWhenOwnerFoundAndStateIsAllThenReturnedListOfBookings() {
+        Long userId = 0L;
+        Integer from = 0;
+        Integer size = 10;
+        Pageable page = PageRequest.of(from / size, size);
+
+        Booking currentBooking = new Booking();
+        currentBooking.setId(1L);
+        Booking pastBooking = new Booking();
+        pastBooking.setId(2L);
+        Booking futureBooking = new Booking();
+        currentBooking.setId(3L);
+        Booking waitingBooking = new Booking();
+        currentBooking.setId(4L);
+        Booking rejectedBooking = new Booking();
+        currentBooking.setId(5L);
+        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking, rejectedBooking);
+
+        List<Booking> expectedBookings = allBookings;
+        expectedBookings.forEach(booking -> booking.setBooker(new User()));
+        expectedBookings.forEach(booking -> booking.setItem(new Item()));
+        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, page)).thenReturn(expectedBookings);
+
+        List<BookingDtoForResponse> bookings = bookingService.getAllByOwner(userId, State.ALL, from, size);
+
+        assertEquals(expectedBookingsDto, bookings);
+    }
+
+    @Test
+    void getAllByOwnerWhenOwnerFoundAndStateIsCurrentThenReturnedListOfBookings() {
+        Long userId = 0L;
+        Integer from = 0;
+        Integer size = 10;
+        Pageable page = PageRequest.of(from / size, size);
+
+        Booking currentBooking = new Booking();
+        currentBooking.setId(1L);
+        Booking pastBooking = new Booking();
+        pastBooking.setId(2L);
+        Booking futureBooking = new Booking();
+        currentBooking.setId(3L);
+        Booking waitingBooking = new Booking();
+        currentBooking.setId(4L);
+        Booking rejectedBooking = new Booking();
+        currentBooking.setId(5L);
+        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking, rejectedBooking);
+
+        List<Booking> expectedBookings = List.of(currentBooking);
+        expectedBookings.forEach(booking -> booking.setBooker(new User()));
+        expectedBookings.forEach(booking -> booking.setItem(new Item()));
+        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class), Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+
+        List<BookingDtoForResponse> bookings = bookingService.getAllByOwner(userId, State.CURRENT, from, size);
+
+        assertEquals(expectedBookingsDto, bookings);
+    }
+
+    @Test
+    void getAllByOwnerWhenOwnerFoundAndStateIsPastThenReturnedListOfBookings() {
+        Long userId = 0L;
+        Integer from = 0;
+        Integer size = 10;
+        Pageable page = PageRequest.of(from / size, size);
+
+        Booking currentBooking = new Booking();
+        currentBooking.setId(1L);
+        Booking pastBooking = new Booking();
+        pastBooking.setId(2L);
+        Booking futureBooking = new Booking();
+        currentBooking.setId(3L);
+        Booking waitingBooking = new Booking();
+        currentBooking.setId(4L);
+        Booking rejectedBooking = new Booking();
+        currentBooking.setId(5L);
+        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking, rejectedBooking);
+
+        List<Booking> expectedBookings = List.of(pastBooking);
+        expectedBookings.forEach(booking -> booking.setBooker(new User()));
+        expectedBookings.forEach(booking -> booking.setItem(new Item()));
+        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class),Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+
+        List<BookingDtoForResponse> bookings = bookingService.getAllByOwner(userId, State.PAST, from, size);
+
+        assertEquals(expectedBookingsDto, bookings);
+    }
+
+    @Test
+    void getAllByOwnerWhenOwnerFoundAndStateIsFutureThenReturnedListOfBookings() {
+        Long userId = 0L;
+        Integer from = 0;
+        Integer size = 10;
+        Pageable page = PageRequest.of(from / size, size);
+
+        Booking currentBooking = new Booking();
+        currentBooking.setId(1L);
+        Booking pastBooking = new Booking();
+        pastBooking.setId(2L);
+        Booking futureBooking = new Booking();
+        currentBooking.setId(3L);
+        Booking waitingBooking = new Booking();
+        currentBooking.setId(4L);
+        Booking rejectedBooking = new Booking();
+        currentBooking.setId(5L);
+        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking, rejectedBooking);
+
+        List<Booking> expectedBookings = List.of(futureBooking);
+        expectedBookings.forEach(booking -> booking.setBooker(new User()));
+        expectedBookings.forEach(booking -> booking.setItem(new Item()));
+        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class),Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+
+        List<BookingDtoForResponse> bookings = bookingService.getAllByOwner(userId, State.FUTURE, from, size);
+
+        assertEquals(expectedBookingsDto, bookings);
+    }
+
+    @Test
+    void getAllByOwnerWhenOwnerFoundAndStateIsWaitingThenReturnedListOfBookings() {
+        Long userId = 0L;
+        Integer from = 0;
+        Integer size = 10;
+        Pageable page = PageRequest.of(from / size, size);
+
+        Booking currentBooking = new Booking();
+        currentBooking.setId(1L);
+        Booking pastBooking = new Booking();
+        pastBooking.setId(2L);
+        Booking futureBooking = new Booking();
+        currentBooking.setId(3L);
+        Booking waitingBooking = new Booking();
+        currentBooking.setId(4L);
+        Booking rejectedBooking = new Booking();
+        currentBooking.setId(5L);
+        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking, rejectedBooking);
+
+        List<Booking> expectedBookings = List.of(waitingBooking);
+        expectedBookings.forEach(booking -> booking.setBooker(new User()));
+        expectedBookings.forEach(booking -> booking.setItem(new Item()));
+        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(Mockito.anyLong(), Mockito.any(Status.class),Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+
+        List<BookingDtoForResponse> bookings = bookingService.getAllByOwner(userId, State.WAITING, from, size);
+
+        assertEquals(expectedBookingsDto, bookings);
+    }
+
+    @Test
+    void getAllByOwnerWhenOwnerFoundAndStateIsRejectedThenReturnedListOfBookings() {
+        Long userId = 0L;
+        Integer from = 0;
+        Integer size = 10;
+        Pageable page = PageRequest.of(from / size, size);
+
+        Booking currentBooking = new Booking();
+        currentBooking.setId(1L);
+        Booking pastBooking = new Booking();
+        pastBooking.setId(2L);
+        Booking futureBooking = new Booking();
+        currentBooking.setId(3L);
+        Booking waitingBooking = new Booking();
+        currentBooking.setId(4L);
+        Booking rejectedBooking = new Booking();
+        currentBooking.setId(5L);
+        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking, rejectedBooking);
+
+        List<Booking> expectedBookings = List.of(rejectedBooking);
+        expectedBookings.forEach(booking -> booking.setBooker(new User()));
+        expectedBookings.forEach(booking -> booking.setItem(new Item()));
+        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(Mockito.anyLong(), Mockito.any(Status.class),Mockito.any(Pageable.class))).thenReturn(expectedBookings);
+
+        List<BookingDtoForResponse> bookings = bookingService.getAllByOwner(userId, State.REJECTED, from, size);
+
+        assertEquals(expectedBookingsDto, bookings);
+    }
+
 
 }
