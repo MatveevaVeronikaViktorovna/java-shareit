@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import ru.practicum.shareit.booking.controller.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoForResponse;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -18,6 +21,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -310,7 +314,51 @@ class BookingServiceImplTest {
         assertThrows(EntityNotFoundException.class,() -> bookingService.getById(userId, id));
     }
 
-    
+    @Test
+    void getAllByBookerWhenBookerFoundThenReturnedListOfBookings() {
+        Long userId = 0L;
+        Integer from = 0;
+        Integer size = 10;
+        Pageable page = PageRequest.of(from / size, size);
+        List<Booking> expectedBookings = List.of(new Booking());
+        expectedBookings.forEach(booking -> booking.setBooker(new User()));
+        expectedBookings.forEach(booking -> booking.setItem(new Item()));
+        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(bookingRepository.findAllByBookerIdOrderByStartDesc(userId, page)).thenReturn(expectedBookings);
+
+        List<BookingDtoForResponse> bookings = bookingService.getAllByBooker(userId, State.ALL, from, size);
+
+        assertEquals(expectedBookingsDto, bookings);
+    }
+
+    @Test
+    void getAllByBookerWhenBookerNotFoundThenNotReturnedListOfBookings() {
+        Long userId = 0L;
+        Integer from = 0;
+        Integer size = 10;
+        Mockito.when(userRepository.existsById(userId)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class,() -> bookingService.getAllByBooker(userId,  State.ALL, from, size));
+    }
+
+    @Test
+    void getAllByBookerWhenBookerFoundThenReturnedListOfBookings() {
+        Long userId = 0L;
+        Integer from = 0;
+        Integer size = 10;
+        Pageable page = PageRequest.of(from / size, size);
+        List<Booking> expectedBookings = List.of(new Booking());
+        expectedBookings.forEach(booking -> booking.setBooker(new User()));
+        expectedBookings.forEach(booking -> booking.setItem(new Item()));
+        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(bookingRepository.findAllByBookerIdOrderByStartDesc(userId, page)).thenReturn(expectedBookings);
+
+        List<BookingDtoForResponse> bookings = bookingService.getAllByBooker(userId, State.ALL, from, size);
+
+        assertEquals(expectedBookingsDto, bookings);
+    }
 
 
 }

@@ -32,13 +32,12 @@ public class ItemMapper {
         return itemDto;
     }
 
-    public List<ItemDto> toDto(List<Item>items) {
+    public List<ItemDto> toDto(List<Item> items) {
         List<ItemDto> result = new ArrayList<>();
 
         for (Item item : items) {
             result.add(toDto(item));
         }
-
         return result;
     }
 
