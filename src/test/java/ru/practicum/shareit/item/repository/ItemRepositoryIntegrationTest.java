@@ -11,7 +11,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 @DataJpaTest
-class ItemRepositoryIT {
+class ItemRepositoryIntegrationTest {
 
     @Autowired
     ItemRepository itemRepository;
@@ -19,7 +19,7 @@ class ItemRepositoryIT {
     @Autowired
     UserRepository userRepository;
 
-    @BeforeEach
+/*    @BeforeEach
     public void addItems() {
         User owner1 = new User();
         owner1.setId(1L);
@@ -54,7 +54,7 @@ class ItemRepositoryIT {
         request2.setId(2L);
         item2.setRequest(request2);
         itemRepository.save(item2);
-    }
+    } */
 
     @Test
     void findAllByOwnerIdOrderByIdAsc() {
