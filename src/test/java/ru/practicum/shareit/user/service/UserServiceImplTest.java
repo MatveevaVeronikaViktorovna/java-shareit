@@ -79,7 +79,8 @@ class UserServiceImplTest {
         Long id = 0L;
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> userService.getById(id));
+        final EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> userService.getById(id));
+        assertEquals("Пользователь с id 0 не найден", exception.getMessage());
     }
 
     @Test
