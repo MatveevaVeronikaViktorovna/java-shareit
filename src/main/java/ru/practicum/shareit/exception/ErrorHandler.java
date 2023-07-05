@@ -32,18 +32,6 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleBookingEndBeforeStartException(final BookingEndBeforeStartException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleBookingEndEqualStartException(final BookingEndEqualStartException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleConversionFailedException(final ConversionFailedException e) {
         return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS");
     }
