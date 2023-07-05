@@ -48,7 +48,6 @@ public class ItemRequestController {
     public List<ItemRequestDtoForResponse> getAll(@RequestHeader(HEADER) Long userId,
                                                   @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                   @RequestParam(defaultValue = "20") @Positive Integer size) {
-        System.out.println("Проверка: в метод пошли следующие значения from - " + from + " size " + size);
         return itemRequestService.getAll(userId, from, size);
     }
 
