@@ -37,7 +37,7 @@ class ItemRequestControllerIntegrationTest {
     void createWhenItemRequestIsValidThenReturnedItemRequest() {
         ItemRequestDtoForResponse itemRequestDtoForResponse = new ItemRequestDtoForResponse();
         ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(1l);
+        itemRequestDto.setId(1L);
         itemRequestDto.setDescription("description");
         Mockito.when(itemRequestService.create(Mockito.anyLong(), Mockito.any(ItemRequestDto.class)))
                 .thenReturn(itemRequestDtoForResponse);
@@ -60,7 +60,7 @@ class ItemRequestControllerIntegrationTest {
     void createWhenItemRequestIsNotValidThenReturnedBadRequest() {
         ItemRequestDtoForResponse itemRequestDtoForResponse = new ItemRequestDtoForResponse();
         ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(1l);
+        itemRequestDto.setId(1L);
         itemRequestDto.setDescription("");
 
         mockMvc.perform(post("/requests")
@@ -77,7 +77,7 @@ class ItemRequestControllerIntegrationTest {
     void getAllByRequestorWhenInvokedThenReturnedListOfItemRequests() {
         ItemRequestDtoForResponse itemRequestDtoForResponse = new ItemRequestDtoForResponse();
         ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(1l);
+        itemRequestDto.setId(1L);
         itemRequestDto.setDescription("description");
         Mockito.when(itemRequestService.getAllByRequestor(Mockito.anyLong()))
                 .thenReturn(List.of(itemRequestDtoForResponse));
@@ -99,7 +99,7 @@ class ItemRequestControllerIntegrationTest {
         Long id = 1L;
         ItemRequestDtoForResponse itemRequestDtoForResponse = new ItemRequestDtoForResponse();
         ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(1l);
+        itemRequestDto.setId(1L);
         itemRequestDto.setDescription("description");
         Mockito.when(itemRequestService.getById(Mockito.anyLong(), Mockito.anyLong()))
                 .thenReturn(itemRequestDtoForResponse);
@@ -120,7 +120,7 @@ class ItemRequestControllerIntegrationTest {
     void getAllWhenInvokedThenReturnedListOfItemRequests() {
         ItemRequestDtoForResponse itemRequestDtoForResponse = new ItemRequestDtoForResponse();
         ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(1l);
+        itemRequestDto.setId(1L);
         itemRequestDto.setDescription("description");
         Mockito.when(itemRequestService.getAll(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(List.of(itemRequestDtoForResponse));
