@@ -98,7 +98,7 @@ class ItemRepositoryIntegrationTest {
 
     @Test
     void findAllByRequestIdOrderByIdAsc() {
-        List<Item> actualItems = itemRepository.findAllByRequestIdOrderByIdAsc(user1.getId());
+        List<Item> actualItems = itemRepository.findAllByRequestIdOrderByIdAsc(request1.getId());
 
         assertEquals(1, actualItems.size());
         assertEquals("name1", actualItems.get(0).getName());
