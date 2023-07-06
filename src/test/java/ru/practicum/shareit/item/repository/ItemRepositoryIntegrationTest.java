@@ -31,32 +31,38 @@ class ItemRepositoryIntegrationTest {
     ItemRequestRepository itemRequestRepository;
 
     Pageable page = PageRequest.of(0, 20);
+    User user1;
+    User user2;
+    ItemRequest request1;
+    ItemRequest request2;
+    Item item1;
+    Item item2;
 
     @BeforeEach
     public void addItems() {
-        User user1 = new User();
+        user1 = new User();
         user1.setName("name1");
         user1.setEmail("name1@yandex.ru");
         userRepository.save(user1);
 
-        ItemRequest request1 = new ItemRequest();
+        request1 = new ItemRequest();
         request1.setDescription("description1");
         request1.setRequestor(user1);
         request1.setCreated(LocalDateTime.now());
         itemRequestRepository.save(request1);
 
-        User user2 = new User();
+        user2 = new User();
         user2.setName("name2");
         user2.setEmail("name2@yandex.ru");
         userRepository.save(user2);
 
-        ItemRequest request2 = new ItemRequest();
+        request2 = new ItemRequest();
         request2.setDescription("description2");
         request2.setRequestor(user1);
         request2.setCreated(LocalDateTime.now());
         itemRequestRepository.save(request2);
 
-        Item item1 = new Item();
+        item1 = new Item();
         item1.setName("name1");
         item1.setDescription("description1");
         item1.setAvailable(true);
@@ -64,7 +70,7 @@ class ItemRepositoryIntegrationTest {
         item1.setRequest(request1);
         itemRepository.save(item1);
 
-        Item item2 = new Item();
+        item2 = new Item();
         item2.setName("name2");
         item2.setDescription("description2");
         item2.setAvailable(true);
@@ -75,7 +81,7 @@ class ItemRepositoryIntegrationTest {
 
     @Test
     void findAllByOwnerIdOrderByIdAsc() {
-        List<Item> actualItems = itemRepository.findAllByOwnerIdOrderByIdAsc(1L, page);
+        List<Item> actualItems = itemRepository.findAllByOwnerIdOrderByIdAsc(user1.getId(), page);
 
         assertEquals(1, actualItems.size());
         assertEquals("name2", actualItems.get(0).getName());
@@ -92,7 +98,7 @@ class ItemRepositoryIntegrationTest {
 
     @Test
     void findAllByRequestIdOrderByIdAsc() {
-        List<Item> actualItems = itemRepository.findAllByRequestIdOrderByIdAsc(1L);
+        List<Item> actualItems = itemRepository.findAllByRequestIdOrderByIdAsc(user1.getId());
 
         assertEquals(1, actualItems.size());
         assertEquals("name1", actualItems.get(0).getName());
@@ -100,6 +106,8 @@ class ItemRepositoryIntegrationTest {
 
     @AfterEach
     public void deleteItems() {
+        userRepository.deleteAll();
+        itemRequestRepository.deleteAll();
         itemRepository.deleteAll();
     }
 }
