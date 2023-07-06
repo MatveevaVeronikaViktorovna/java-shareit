@@ -82,7 +82,8 @@ class ItemRequestRepositoryIntegrationTest {
 
     @Test
     void findAllByRequestorIdOrderByCreatedDesc() {
-        List<ItemRequest> actualItemRequests = itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(user1.getId());
+        List<ItemRequest> actualItemRequests = itemRequestRepository
+                .findAllByRequestorIdOrderByCreatedDesc(user1.getId());
 
         assertEquals(2, actualItemRequests.size());
         assertEquals("description2", actualItemRequests.get(0).getDescription());
@@ -91,7 +92,8 @@ class ItemRequestRepositoryIntegrationTest {
 
     @Test
     void findAllByRequestorIdNotOrderByCreatedDesc() {
-        List<ItemRequest> actualItemRequests = itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(user1.getId(), page);
+        List<ItemRequest> actualItemRequests = itemRequestRepository
+                .findAllByRequestorIdNotOrderByCreatedDesc(user1.getId(), page);
 
         assertEquals(0, actualItemRequests.size());
     }

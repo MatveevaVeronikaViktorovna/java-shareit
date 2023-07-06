@@ -82,9 +82,11 @@ class ItemRequestServiceImplTest {
         Long userId = 0L;
         List<ItemRequest> expectedItemRequests = List.of(new ItemRequest());
         List<ItemRequestDtoForResponse> expectedItemRequestsDto = ItemRequestMapper.toDto(expectedItemRequests);
-        expectedItemRequestsDto.forEach(itemRequestDtoForResponse -> itemRequestDtoForResponse.setItems(Collections.emptyList()));
+        expectedItemRequestsDto.forEach(itemRequestDtoForResponse -> itemRequestDtoForResponse
+                .setItems(Collections.emptyList()));
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
-        Mockito.when(itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(userId)).thenReturn(expectedItemRequests);
+        Mockito.when(itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(userId))
+                .thenReturn(expectedItemRequests);
 
         List<ItemRequestDtoForResponse> itemRequests = itemRequestService.getAllByRequestor(userId);
 
@@ -149,8 +151,10 @@ class ItemRequestServiceImplTest {
         Pageable page = PageRequest.of(from / size, size);
         List<ItemRequest> expectedItemRequests = List.of(new ItemRequest());
         List<ItemRequestDtoForResponse> expectedItemRequestsDto = ItemRequestMapper.toDto(expectedItemRequests);
-        expectedItemRequestsDto.forEach(itemRequestDtoForResponse -> itemRequestDtoForResponse.setItems(Collections.emptyList()));
-        Mockito.when(itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(userId, page)).thenReturn(expectedItemRequests);
+        expectedItemRequestsDto.forEach(itemRequestDtoForResponse -> itemRequestDtoForResponse
+                .setItems(Collections.emptyList()));
+        Mockito.when(itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(userId, page))
+                .thenReturn(expectedItemRequests);
 
         List<ItemRequestDtoForResponse> itemRequests = itemRequestService.getAll(userId, from, size);
 

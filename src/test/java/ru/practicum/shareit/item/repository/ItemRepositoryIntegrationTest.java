@@ -110,4 +110,5 @@ class ItemRepositoryIntegrationTest {
         itemRequestRepository.deleteAll();
         itemRepository.deleteAll();
     }
+
 }

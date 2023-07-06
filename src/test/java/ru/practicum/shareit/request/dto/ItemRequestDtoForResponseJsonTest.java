@@ -32,4 +32,5 @@ class ItemRequestDtoForResponseJsonTest {
         assertThat(result).extractingJsonPathStringValue("$.created").isEqualTo("2023-07-06T13:14:00");
         assertThat(result).extractingJsonPathValue("$.items").isEqualTo(Collections.emptyList());
     }
+
 }

@@ -97,7 +97,8 @@ class ItemControllerIntegrationTest {
         itemDto.setName("name");
         itemDto.setDescription("description");
         itemDto.setAvailable(true);
-        Mockito.when(itemService.getAllByOwner(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(List.of(itemDto));
+        Mockito.when(itemService.getAllByOwner(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(List.of(itemDto));
 
         String result = mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", 1L))
@@ -141,7 +142,8 @@ class ItemControllerIntegrationTest {
         itemDto.setName("name");
         itemDto.setDescription("description");
         itemDto.setAvailable(true);
-        Mockito.when(itemService.update(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(ItemDto.class))).thenReturn(itemDto);
+        Mockito.when(itemService.update(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(ItemDto.class)))
+                .thenReturn(itemDto);
 
         String result = mockMvc.perform(patch("/items/{id}", itemId)
                         .header("X-Sharer-User-Id", 1L)
@@ -175,7 +177,8 @@ class ItemControllerIntegrationTest {
         itemDto.setName("name");
         itemDto.setDescription("description");
         itemDto.setAvailable(true);
-        Mockito.when(itemService.searchByText(Mockito.anyLong(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(List.of(itemDto));
+        Mockito.when(itemService.searchByText(Mockito.anyLong(), Mockito.anyString(), Mockito.anyInt(),
+                Mockito.anyInt())).thenReturn(List.of(itemDto));
 
         String result = mockMvc.perform(get("/items/search")
                         .header("X-Sharer-User-Id", 1L)
@@ -197,7 +200,8 @@ class ItemControllerIntegrationTest {
         CommentDto commentDto = new CommentDto();
         commentDto.setId(1L);
         commentDto.setText("text");
-        Mockito.when(itemService.addComment(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(CommentDto.class))).thenReturn(commentDto);
+        Mockito.when(itemService.addComment(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(CommentDto.class)))
+                .thenReturn(commentDto);
 
         String result = mockMvc.perform(post("/items/{itemId}/comment", itemId)
                         .header("X-Sharer-User-Id", 1L)
@@ -226,7 +230,8 @@ class ItemControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(commentDto)))
                 .andExpect(status().isBadRequest());
 
-        verify(itemService, Mockito.never()).addComment(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(CommentDto.class));
+        verify(itemService, Mockito.never()).addComment(Mockito.anyLong(), Mockito.anyLong(),
+                Mockito.any(CommentDto.class));
     }
 
 }

@@ -14,7 +14,7 @@ import ru.practicum.shareit.request.service.ItemRequestService;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -39,7 +39,8 @@ class ItemRequestControllerIntegrationTest {
         ItemRequestDto itemRequestDto = new ItemRequestDto();
         itemRequestDto.setId(1l);
         itemRequestDto.setDescription("description");
-        Mockito.when(itemRequestService.create(Mockito.anyLong(), Mockito.any(ItemRequestDto.class))).thenReturn(itemRequestDtoForResponse);
+        Mockito.when(itemRequestService.create(Mockito.anyLong(), Mockito.any(ItemRequestDto.class)))
+                .thenReturn(itemRequestDtoForResponse);
 
         String result = mockMvc.perform(post("/requests")
                         .header("X-Sharer-User-Id", 1L)
@@ -78,7 +79,8 @@ class ItemRequestControllerIntegrationTest {
         ItemRequestDto itemRequestDto = new ItemRequestDto();
         itemRequestDto.setId(1l);
         itemRequestDto.setDescription("description");
-        Mockito.when(itemRequestService.getAllByRequestor(Mockito.anyLong())).thenReturn(List.of(itemRequestDtoForResponse));
+        Mockito.when(itemRequestService.getAllByRequestor(Mockito.anyLong()))
+                .thenReturn(List.of(itemRequestDtoForResponse));
 
         String result = mockMvc.perform(get("/requests")
                         .header("X-Sharer-User-Id", 1L))
@@ -99,7 +101,8 @@ class ItemRequestControllerIntegrationTest {
         ItemRequestDto itemRequestDto = new ItemRequestDto();
         itemRequestDto.setId(1l);
         itemRequestDto.setDescription("description");
-        Mockito.when(itemRequestService.getById(Mockito.anyLong(), Mockito.anyLong())).thenReturn(itemRequestDtoForResponse);
+        Mockito.when(itemRequestService.getById(Mockito.anyLong(), Mockito.anyLong()))
+                .thenReturn(itemRequestDtoForResponse);
 
         String result = mockMvc.perform(get("/requests/{id}", id)
                         .header("X-Sharer-User-Id", 1L))
@@ -119,7 +122,8 @@ class ItemRequestControllerIntegrationTest {
         ItemRequestDto itemRequestDto = new ItemRequestDto();
         itemRequestDto.setId(1l);
         itemRequestDto.setDescription("description");
-        Mockito.when(itemRequestService.getAll(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt())).thenReturn(List.of(itemRequestDtoForResponse));
+        Mockito.when(itemRequestService.getAll(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(List.of(itemRequestDtoForResponse));
 
         String result = mockMvc.perform(get("/requests/all")
                         .header("X-Sharer-User-Id", 1L))
@@ -131,7 +135,5 @@ class ItemRequestControllerIntegrationTest {
         assertEquals(objectMapper.writeValueAsString(List.of(itemRequestDtoForResponse)), result);
         verify(itemRequestService).getAll(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt());
     }
-
-
 
 }

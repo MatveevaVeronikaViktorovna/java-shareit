@@ -155,4 +155,5 @@ class UserControllerIntegrationTest {
 
         verify(userService).delete(Mockito.anyLong());
     }
+
 }

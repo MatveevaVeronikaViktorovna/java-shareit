@@ -64,4 +64,5 @@ class BookingServiceImplIntegrationTest {
         assertThat(booking.getStart(), equalTo(bookingDto.getStart()));
         assertThat(booking.getEnd(), equalTo(bookingDto.getEnd()));
     }
+
 }

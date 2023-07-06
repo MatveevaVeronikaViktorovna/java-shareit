@@ -124,7 +124,8 @@ class BookingRepositoryIntegrationTest {
 
     @Test
     void findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc() {
-        List<Booking> actualBookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(booker.getId(), LocalDateTime.now().plusDays(1L), LocalDateTime.now(), page);
+        List<Booking> actualBookings = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(booker.getId(),
+                LocalDateTime.now().plusDays(1L), LocalDateTime.now(), page);
 
         assertEquals(1, actualBookings.size());
         assertEquals(earliestBooking.getId(), actualBookings.get(0).getId());
@@ -132,7 +133,8 @@ class BookingRepositoryIntegrationTest {
 
     @Test
     void findAllByBookerIdAndEndBeforeOrderByStartDesc() {
-        List<Booking> actualBookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(booker.getId(), LocalDateTime.now().plusDays(4L), page);
+        List<Booking> actualBookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(booker.getId(),
+                LocalDateTime.now().plusDays(4L), page);
 
         assertEquals(2, actualBookings.size());
         assertEquals(mediumBooking.getId(), actualBookings.get(0).getId());
@@ -141,7 +143,8 @@ class BookingRepositoryIntegrationTest {
 
     @Test
     void findAllByBookerIdAndStartAfterOrderByStartDesc() {
-        List<Booking> actualBookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(booker.getId(), LocalDateTime.now().plusDays(1L), page);
+        List<Booking> actualBookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(booker.getId(),
+                LocalDateTime.now().plusDays(1L), page);
 
         assertEquals(2, actualBookings.size());
         assertEquals(latestBooking.getId(), actualBookings.get(0).getId());
@@ -150,7 +153,8 @@ class BookingRepositoryIntegrationTest {
 
     @Test
     void findAllByBookerIdAndStatusOrderByStartDesc() {
-        List<Booking> actualBookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(booker.getId(), Status.WAITING, page);
+        List<Booking> actualBookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(booker.getId(),
+                Status.WAITING, page);
 
         assertEquals(1, actualBookings.size());
         assertEquals(earliestBooking.getId(), actualBookings.get(0).getId());
@@ -169,7 +173,8 @@ class BookingRepositoryIntegrationTest {
 
     @Test
     void findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc() {
-        List<Booking> actualBookings = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(owner.getId(), LocalDateTime.now().plusDays(1L), LocalDateTime.now(), page);
+        List<Booking> actualBookings = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(owner.getId(),
+                LocalDateTime.now().plusDays(1L), LocalDateTime.now(), page);
 
         assertEquals(1, actualBookings.size());
         assertEquals(earliestBooking.getId(), actualBookings.get(0).getId());
@@ -177,7 +182,8 @@ class BookingRepositoryIntegrationTest {
 
     @Test
     void findAllByItemOwnerIdAndEndBeforeOrderByStartDesc() {
-        List<Booking> actualBookings = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(owner.getId(), LocalDateTime.now().plusDays(4L), page);
+        List<Booking> actualBookings = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(owner.getId(),
+                LocalDateTime.now().plusDays(4L), page);
 
         assertEquals(2, actualBookings.size());
         assertEquals(mediumBooking.getId(), actualBookings.get(0).getId());
@@ -186,7 +192,8 @@ class BookingRepositoryIntegrationTest {
 
     @Test
     void findAllByItemOwnerIdAndStartAfterOrderByStartDesc() {
-        List<Booking> actualBookings = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(owner.getId(), LocalDateTime.now().plusDays(1L), page);
+        List<Booking> actualBookings = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(owner.getId(),
+                LocalDateTime.now().plusDays(1L), page);
 
         assertEquals(2, actualBookings.size());
         assertEquals(latestBooking.getId(), actualBookings.get(0).getId());
@@ -195,7 +202,8 @@ class BookingRepositoryIntegrationTest {
 
     @Test
     void findAllByItemOwnerIdAndStatusOrderByStartDesc() {
-        List<Booking> actualBookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(owner.getId(), Status.WAITING, page);
+        List<Booking> actualBookings = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(owner.getId(),
+                Status.WAITING, page);
 
         assertEquals(1, actualBookings.size());
         assertEquals(earliestBooking.getId(), actualBookings.get(0).getId());
@@ -203,7 +211,8 @@ class BookingRepositoryIntegrationTest {
 
     @Test
     void findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc() {
-        Optional<Booking> booking = bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(item1.getId(), LocalDateTime.now().plusDays(20), Status.WAITING);
+        Optional<Booking> booking = bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(item1.getId(),
+                LocalDateTime.now().plusDays(20), Status.WAITING);
 
         assertTrue(booking.isPresent());
         assertEquals(earliestBooking.getId(), booking.get().getId());
@@ -211,7 +220,8 @@ class BookingRepositoryIntegrationTest {
 
     @Test
     void findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc() {
-        Optional<Booking> booking = bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(item1.getId(), LocalDateTime.now().minusDays(20), Status.WAITING);
+        Optional<Booking> booking = bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(item1.getId(),
+                LocalDateTime.now().minusDays(20), Status.WAITING);
 
         assertTrue(booking.isPresent());
         assertEquals(earliestBooking.getId(), booking.get().getId());
@@ -219,7 +229,8 @@ class BookingRepositoryIntegrationTest {
 
     @Test
     void findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc() {
-        List<Booking> actualBookings = bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(booker.getId(), item1.getId(), LocalDateTime.now().plusDays(90));
+        List<Booking> actualBookings = bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(booker.getId(),
+                item1.getId(), LocalDateTime.now().plusDays(90));
 
         assertEquals(3, actualBookings.size());
         assertEquals(latestBooking.getId(), actualBookings.get(0).getId());
@@ -234,4 +245,5 @@ class BookingRepositoryIntegrationTest {
         itemRepository.deleteAll();
         bookingRepository.deleteAll();
     }
+
 }

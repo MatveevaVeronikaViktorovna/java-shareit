@@ -40,7 +40,8 @@ class BookingControllerIntegrationTest {
         bookingDto.setStart(LocalDateTime.now().plusDays(10L));
         bookingDto.setEnd(LocalDateTime.now().plusDays(20L));
         bookingDto.setItemId(1L);
-        Mockito.when(bookingService.create(Mockito.anyLong(), Mockito.any(BookingDto.class))).thenReturn(bookingDtoForResponse);
+        Mockito.when(bookingService.create(Mockito.anyLong(), Mockito.any(BookingDto.class)))
+                .thenReturn(bookingDtoForResponse);
 
         String result = mockMvc.perform(post("/bookings")
                         .header("X-Sharer-User-Id", 1L)
@@ -63,7 +64,8 @@ class BookingControllerIntegrationTest {
         bookingDto.setStart(LocalDateTime.now().minusDays(10L));
         bookingDto.setEnd(LocalDateTime.now().plusDays(20L));
         bookingDto.setItemId(1L);
-        Mockito.when(bookingService.create(Mockito.anyLong(), Mockito.any(BookingDto.class))).thenReturn(bookingDtoForResponse);
+        Mockito.when(bookingService.create(Mockito.anyLong(), Mockito.any(BookingDto.class)))
+                .thenReturn(bookingDtoForResponse);
 
         mockMvc.perform(post("/bookings")
                         .header("X-Sharer-User-Id", 1L)
@@ -71,7 +73,7 @@ class BookingControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(bookingDto)))
                 .andExpect(status().isBadRequest());
 
-       verify(bookingService, Mockito.never()).create(Mockito.anyLong(), Mockito.any(BookingDto.class));
+        verify(bookingService, Mockito.never()).create(Mockito.anyLong(), Mockito.any(BookingDto.class));
     }
 
     @SneakyThrows
@@ -83,7 +85,8 @@ class BookingControllerIntegrationTest {
         bookingDto.setStart(LocalDateTime.now().plusDays(10L));
         bookingDto.setEnd(LocalDateTime.now().plusDays(20L));
         bookingDto.setItemId(1L);
-        Mockito.when(bookingService.approveOrReject(Mockito.anyLong(), Mockito.anyLong(), Mockito.anyBoolean())).thenReturn(bookingDtoForResponse);
+        Mockito.when(bookingService.approveOrReject(Mockito.anyLong(), Mockito.anyLong(), Mockito.anyBoolean()))
+                .thenReturn(bookingDtoForResponse);
 
         String result = mockMvc.perform(patch("/bookings/{id}", id)
                         .header("X-Sharer-User-Id", 1L)
@@ -127,7 +130,8 @@ class BookingControllerIntegrationTest {
         bookingDto.setStart(LocalDateTime.now().plusDays(10L));
         bookingDto.setEnd(LocalDateTime.now().plusDays(20L));
         bookingDto.setItemId(1L);
-        Mockito.when(bookingService.getAllByBooker(Mockito.anyLong(), Mockito.any(State.class), Mockito.anyInt(), Mockito.anyInt())).thenReturn(List.of(bookingDtoForResponse));
+        Mockito.when(bookingService.getAllByBooker(Mockito.anyLong(), Mockito.any(State.class), Mockito.anyInt(),
+                Mockito.anyInt())).thenReturn(List.of(bookingDtoForResponse));
 
         String result = mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", 1L))
@@ -137,7 +141,8 @@ class BookingControllerIntegrationTest {
                 .getContentAsString();
 
         assertEquals(objectMapper.writeValueAsString(List.of(bookingDtoForResponse)), result);
-        verify(bookingService).getAllByBooker(Mockito.anyLong(), Mockito.any(State.class), Mockito.anyInt(), Mockito.anyInt());
+        verify(bookingService).getAllByBooker(Mockito.anyLong(), Mockito.any(State.class), Mockito.anyInt(),
+                Mockito.anyInt());
     }
 
     @SneakyThrows
@@ -148,7 +153,8 @@ class BookingControllerIntegrationTest {
         bookingDto.setStart(LocalDateTime.now().plusDays(10L));
         bookingDto.setEnd(LocalDateTime.now().plusDays(20L));
         bookingDto.setItemId(1L);
-        Mockito.when(bookingService.getAllByOwner(Mockito.anyLong(), Mockito.any(State.class), Mockito.anyInt(), Mockito.anyInt())).thenReturn(List.of(bookingDtoForResponse));
+        Mockito.when(bookingService.getAllByOwner(Mockito.anyLong(), Mockito.any(State.class), Mockito.anyInt(),
+                Mockito.anyInt())).thenReturn(List.of(bookingDtoForResponse));
 
         String result = mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", 1L))
@@ -158,7 +164,8 @@ class BookingControllerIntegrationTest {
                 .getContentAsString();
 
         assertEquals(objectMapper.writeValueAsString(List.of(bookingDtoForResponse)), result);
-        verify(bookingService).getAllByOwner(Mockito.anyLong(), Mockito.any(State.class), Mockito.anyInt(), Mockito.anyInt());
+        verify(bookingService).getAllByOwner(Mockito.anyLong(), Mockito.any(State.class), Mockito.anyInt(),
+                Mockito.anyInt());
     }
 
 }

@@ -112,4 +112,5 @@ class CommentRepositoryIntegrationTest {
         itemRepository.deleteAll();
         commentRepository.deleteAll();
     }
+
 }

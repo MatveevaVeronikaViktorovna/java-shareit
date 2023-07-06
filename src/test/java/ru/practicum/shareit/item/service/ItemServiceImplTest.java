@@ -6,7 +6,6 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.shareit.booking.dto.BookingDtoForItem;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -161,8 +160,10 @@ class ItemServiceImplTest {
         expectedItemDto.setNextBooking(BookingMapper.toDtoForItem(nextBooking));
 
         Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(expectedItem));
-        Mockito.when(bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(Mockito.anyLong(), Mockito.any(LocalDateTime.class), Mockito.any(Status.class))).thenReturn(Optional.of(lastBooking));
-        Mockito.when(bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(Mockito.anyLong(), Mockito.any(LocalDateTime.class), Mockito.any(Status.class))).thenReturn(Optional.of(nextBooking));
+        Mockito.when(bookingRepository.findFirstByItemIdAndStartBeforeAndStatusOrderByStartDesc(Mockito.anyLong(),
+                Mockito.any(LocalDateTime.class), Mockito.any(Status.class))).thenReturn(Optional.of(lastBooking));
+        Mockito.when(bookingRepository.findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(Mockito.anyLong(),
+                Mockito.any(LocalDateTime.class), Mockito.any(Status.class))).thenReturn(Optional.of(nextBooking));
 
         ItemDto item = itemService.getById(ownerId, id);
 
@@ -384,7 +385,8 @@ class ItemServiceImplTest {
         expectedComment.setAuthor(author);
         CommentDto expectedCommentDto = CommentMapper.toDto(expectedComment);
 
-        Mockito.when(bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(LocalDateTime.class))).thenReturn(List.of(new Booking()));
+        Mockito.when(bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(),
+                Mockito.anyLong(), Mockito.any(LocalDateTime.class))).thenReturn(List.of(new Booking()));
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(author));
         Mockito.when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
         Mockito.when(commentRepository.save(Mockito.any(Comment.class))).thenReturn(expectedComment);
@@ -400,9 +402,11 @@ class ItemServiceImplTest {
         Long userId = 0L;
         Long itemId = 0L;
         CommentDto requestCommentDto = new CommentDto();
-        Mockito.when(bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(LocalDateTime.class))).thenReturn(Collections.emptyList());
+        Mockito.when(bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(),
+                Mockito.anyLong(), Mockito.any(LocalDateTime.class))).thenReturn(Collections.emptyList());
 
-        assertThrows(CommentWithoutBookingException.class, () -> itemService.addComment(userId, itemId, requestCommentDto));
+        assertThrows(CommentWithoutBookingException.class, () -> itemService
+                .addComment(userId, itemId, requestCommentDto));
         verify(commentRepository, Mockito.never()).save(Mockito.any(Comment.class));
     }
 
@@ -412,7 +416,8 @@ class ItemServiceImplTest {
         Long itemId = 0L;
         CommentDto requestCommentDto = new CommentDto();
 
-        Mockito.when(bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(LocalDateTime.class))).thenReturn(List.of(new Booking()));
+        Mockito.when(bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(),
+                Mockito.anyLong(), Mockito.any(LocalDateTime.class))).thenReturn(List.of(new Booking()));
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> itemService.addComment(userId, itemId, requestCommentDto));
@@ -427,7 +432,8 @@ class ItemServiceImplTest {
         Long itemId = 0L;
         CommentDto requestCommentDto = new CommentDto();
 
-        Mockito.when(bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(LocalDateTime.class))).thenReturn(List.of(new Booking()));
+        Mockito.when(bookingRepository.findAllByBookerIdAndItemIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(),
+                Mockito.anyLong(), Mockito.any(LocalDateTime.class))).thenReturn(List.of(new Booking()));
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(author));
         Mockito.when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 

@@ -39,7 +39,8 @@ class ItemRequestServiceImplIntegrationTest {
 
         service.create(user1.getId(), itemRequestDto);
 
-        TypedQuery<ItemRequest> query = em.createQuery("Select ir from ItemRequest ir where ir.description = :description", ItemRequest.class);
+        TypedQuery<ItemRequest> query = em
+                .createQuery("Select ir from ItemRequest ir where ir.description = :description", ItemRequest.class);
         ItemRequest itemRequest = query
                 .setParameter("description", itemRequestDto.getDescription())
                 .getSingleResult();
@@ -49,4 +50,5 @@ class ItemRequestServiceImplIntegrationTest {
         assertThat(itemRequest.getRequestor().getId(), equalTo(itemRequestDto.getRequestor().getId()));
         assertThat(itemRequest.getCreated(), notNullValue());
     }
+
 }
