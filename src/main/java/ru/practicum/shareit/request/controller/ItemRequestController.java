@@ -51,5 +51,4 @@ public class ItemRequestController {
         return itemRequestService.getAll(userId, from, size);
     }
 
-
 }

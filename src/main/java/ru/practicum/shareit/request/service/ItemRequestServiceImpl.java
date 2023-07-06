@@ -85,7 +85,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional(readOnly = true)
     @Override
     public List<ItemRequestDtoForResponse> getAll(Long userId, Integer from, Integer size) {
-        Pageable page = PageRequest.of(from/size, size);
+        Pageable page = PageRequest.of(from / size, size);
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(userId, page);
         List<ItemRequestDtoForResponse> allDto = new ArrayList<>();
         itemRequests.forEach(itemRequest -> {

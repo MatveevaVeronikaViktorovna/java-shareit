@@ -10,7 +10,6 @@ import ru.practicum.shareit.item.dto.Update;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.dto.Create;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;

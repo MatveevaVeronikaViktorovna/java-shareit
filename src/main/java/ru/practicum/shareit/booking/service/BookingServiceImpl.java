@@ -117,7 +117,7 @@ public class BookingServiceImpl implements BookingService {
             log.warn("Пользователь с id {} не найден", userId);
             throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
-        Pageable page = PageRequest.of(from/size, size);
+        Pageable page = PageRequest.of(from / size, size);
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime currentMoment = LocalDateTime.now();
         switch (state) {
@@ -132,7 +132,8 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, currentMoment, page);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId, currentMoment, page);
+                bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId, currentMoment,
+                        page);
                 break;
             case WAITING:
                 bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING, page);
@@ -153,7 +154,7 @@ public class BookingServiceImpl implements BookingService {
             log.warn("Пользователь с id {} не найден", userId);
             throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
-        Pageable page = PageRequest.of(from/size, size);
+        Pageable page = PageRequest.of(from / size, size);
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime currentMoment = LocalDateTime.now();
         switch (state) {
