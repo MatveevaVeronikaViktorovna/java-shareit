@@ -10,13 +10,11 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
@@ -27,7 +25,7 @@ class UserServiceImplIntegrationTest {
     private final UserService service;
 
     @Test
-    void create(){
+    void create() {
         UserDto userDto = new UserDto();
         userDto.setId(1L);
         userDto.setName("name");
@@ -46,7 +44,7 @@ class UserServiceImplIntegrationTest {
     }
 
     @Test
-    void getAll(){
+    void getAll() {
         UserDto userDto = new UserDto();
         userDto.setId(1L);
         userDto.setName("name");
@@ -61,7 +59,7 @@ class UserServiceImplIntegrationTest {
         service.create(userDto2);
 
         TypedQuery<User> query = em.createQuery("Select u from User u", User.class);
-        List <User> users = query
+        List<User> users = query
                 .getResultList();
 
         assertThat(users.size(), equalTo(2));
@@ -74,7 +72,7 @@ class UserServiceImplIntegrationTest {
     }
 
     @Test
-    void getById(){
+    void getById() {
         UserDto userDto = new UserDto();
         userDto.setId(1L);
         userDto.setName("name");
@@ -99,7 +97,7 @@ class UserServiceImplIntegrationTest {
     }
 
     @Test
-    void update(){
+    void update() {
         UserDto userDto = new UserDto();
         userDto.setId(1L);
         userDto.setName("name");
@@ -123,7 +121,7 @@ class UserServiceImplIntegrationTest {
     }
 
     @Test
-    void delete(){
+    void delete() {
         UserDto userDto = new UserDto();
         userDto.setId(1L);
         userDto.setName("name");
@@ -139,7 +137,7 @@ class UserServiceImplIntegrationTest {
         service.delete(userDto.getId());
 
         TypedQuery<User> query = em.createQuery("Select u from User u", User.class);
-        List <User> users = query
+        List<User> users = query
                 .getResultList();
 
         assertThat(users.size(), equalTo(1));
