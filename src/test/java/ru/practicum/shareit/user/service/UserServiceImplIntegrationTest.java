@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityManager;
@@ -15,6 +16,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @Transactional
 @SpringBootTest
@@ -27,7 +29,6 @@ class UserServiceImplIntegrationTest {
     @Test
     void create() {
         UserDto userDto = new UserDto();
-        userDto.setId(1L);
         userDto.setName("name");
         userDto.setEmail("name@yandex.ru");
 
@@ -46,104 +47,84 @@ class UserServiceImplIntegrationTest {
     @Test
     void getAll() {
         UserDto userDto = new UserDto();
-        userDto.setId(1L);
         userDto.setName("name");
         userDto.setEmail("name@yandex.ru");
 
         UserDto userDto2 = new UserDto();
-        userDto2.setId(2L);
         userDto2.setName("name2");
         userDto2.setEmail("name2@yandex.ru");
 
-        service.create(userDto);
-        service.create(userDto2);
+        List<UserDto> sourceUsers = List.of(userDto, userDto2);
+        for (UserDto user : sourceUsers) {
+            User entity = UserMapper.toUser(user);
+            em.persist(entity);
+        }
+        em.flush();
 
-        TypedQuery<User> query = em.createQuery("Select u from User u", User.class);
-        List<User> users = query
-                .getResultList();
+        List<UserDto> targetUsers = service.getAll();
 
-        assertThat(users.size(), equalTo(2));
-        assertThat(users.get(0).getId(), notNullValue());
-        assertThat(users.get(0).getName(), equalTo(userDto.getName()));
-        assertThat(users.get(0).getEmail(), equalTo(userDto.getEmail()));
-        assertThat(users.get(1).getId(), notNullValue());
-        assertThat(users.get(1).getName(), equalTo(userDto2.getName()));
-        assertThat(users.get(1).getEmail(), equalTo(userDto2.getEmail()));
+        assertThat(targetUsers, hasSize(sourceUsers.size()));
+        for (UserDto sourceUser : sourceUsers) {
+            assertThat(targetUsers, hasItem(allOf(
+                    hasProperty("id", notNullValue()),
+                    hasProperty("name", equalTo(sourceUser.getName())),
+                    hasProperty("email", equalTo(sourceUser.getEmail()))
+            )));
+        }
     }
 
     @Test
     void getById() {
         UserDto userDto = new UserDto();
-        userDto.setId(1L);
         userDto.setName("name");
         userDto.setEmail("name@yandex.ru");
+        User sourceUser = UserMapper.toUser(userDto);
+        em.persist(sourceUser);
+        em.flush();
 
-        UserDto userDto2 = new UserDto();
-        userDto2.setId(2L);
-        userDto2.setName("name2");
-        userDto2.setEmail("name2@yandex.ru");
+        UserDto targetUser = service.getById(sourceUser.getId());
 
-        service.create(userDto);
-        service.create(userDto2);
-
-        TypedQuery<User> query = em.createQuery("Select u from User u where u.id = :id", User.class);
-        User user = query
-                .setParameter("id", userDto.getId())
-                .getSingleResult();
-
-        assertThat(user.getId(), notNullValue());
-        assertThat(user.getName(), equalTo(userDto.getName()));
-        assertThat(user.getEmail(), equalTo(userDto.getEmail()));
+        assertThat(targetUser.getId(), notNullValue());
+        assertThat(targetUser.getName(), equalTo(userDto.getName()));
+        assertThat(targetUser.getEmail(), equalTo(userDto.getEmail()));
     }
 
     @Test
     void update() {
         UserDto userDto = new UserDto();
-        userDto.setId(1L);
         userDto.setName("name");
         userDto.setEmail("name@yandex.ru");
+        User sourceUser = UserMapper.toUser(userDto);
+        em.persist(sourceUser);
+        em.flush();
 
         UserDto userDtoForUpdate = new UserDto();
         userDtoForUpdate.setName("name2");
         userDtoForUpdate.setEmail("name2@yandex.ru");
 
-        service.create(userDto);
-        service.update(userDto.getId(), userDtoForUpdate);
+        UserDto targetUser = service.update(sourceUser.getId(), userDtoForUpdate);
 
-        TypedQuery<User> query = em.createQuery("Select u from User u where u.id = :id", User.class);
-        User user = query
-                .setParameter("id", userDto.getId())
-                .getSingleResult();
-
-        assertThat(user.getId(), notNullValue());
-        assertThat(user.getName(), equalTo(userDtoForUpdate.getName()));
-        assertThat(user.getEmail(), equalTo(userDtoForUpdate.getEmail()));
+        assertThat(targetUser.getId(), notNullValue());
+        assertThat(targetUser.getName(), equalTo(userDtoForUpdate.getName()));
+        assertThat(targetUser.getEmail(), equalTo(userDtoForUpdate.getEmail()));
     }
 
     @Test
     void delete() {
         UserDto userDto = new UserDto();
-        userDto.setId(1L);
         userDto.setName("name");
         userDto.setEmail("name@yandex.ru");
+        User sourceUser = UserMapper.toUser(userDto);
+        em.persist(sourceUser);
+        em.flush();
 
-        UserDto userDto2 = new UserDto();
-        userDto2.setId(2L);
-        userDto2.setName("name2");
-        userDto2.setEmail("name2@yandex.ru");
-
-        service.create(userDto);
-        service.create(userDto2);
-        service.delete(userDto.getId());
+        service.delete(sourceUser.getId());
 
         TypedQuery<User> query = em.createQuery("Select u from User u", User.class);
         List<User> users = query
                 .getResultList();
 
-        assertThat(users.size(), equalTo(1));
-        assertThat(users.get(0).getId(), notNullValue());
-        assertThat(users.get(0).getName(), equalTo(userDto2.getName()));
-        assertThat(users.get(0).getEmail(), equalTo(userDto2.getEmail()));
+        assertThat(users.size(), equalTo(0));
     }
 
 }
