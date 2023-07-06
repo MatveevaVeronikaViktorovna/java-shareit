@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -224,5 +225,13 @@ class BookingRepositoryIntegrationTest {
         assertEquals(latestBooking.getId(), actualBookings.get(0).getId());
         assertEquals(mediumBooking.getId(), actualBookings.get(1).getId());
         assertEquals(earliestBooking.getId(), actualBookings.get(2).getId());
+    }
+
+    @AfterEach
+    public void deleteItems() {
+        userRepository.deleteAll();
+        itemRequestRepository.deleteAll();
+        itemRepository.deleteAll();
+        bookingRepository.deleteAll();
     }
 }

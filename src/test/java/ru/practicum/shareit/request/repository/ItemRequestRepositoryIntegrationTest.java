@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.repository;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,4 +95,12 @@ class ItemRequestRepositoryIntegrationTest {
 
         assertEquals(0, actualItemRequests.size());
     }
+
+    @AfterEach
+    public void deleteItems() {
+        userRepository.deleteAll();
+        itemRequestRepository.deleteAll();
+        itemRepository.deleteAll();
+    }
+
 }
