@@ -5,8 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
@@ -19,36 +18,38 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
-class ItemRepositoryIntegrationTest {
+class CommentRepositoryIntegrationTest {
 
     @Autowired
-    ItemRepository itemRepository;
+    CommentRepository commentRepository;
 
     @Autowired
     UserRepository userRepository;
 
     @Autowired
+    ItemRepository itemRepository;
+
+    @Autowired
     ItemRequestRepository itemRequestRepository;
 
-    Pageable page = PageRequest.of(0, 20);
 
     @BeforeEach
-    public void addItems() {
+    public void addComments() {
         User user1 = new User();
         user1.setName("name1");
         user1.setEmail("name1@yandex.ru");
         userRepository.save(user1);
+
+        User user2 = new User();
+        user2.setName("name2");
+        user2.setEmail("name2@yandex.ru");
+        userRepository.save(user2);
 
         ItemRequest request1 = new ItemRequest();
         request1.setDescription("description1");
         request1.setRequestor(user1);
         request1.setCreated(LocalDateTime.now());
         itemRequestRepository.save(request1);
-
-        User user2 = new User();
-        user2.setName("name2");
-        user2.setEmail("name2@yandex.ru");
-        userRepository.save(user2);
 
         ItemRequest request2 = new ItemRequest();
         request2.setDescription("description2");
@@ -71,35 +72,32 @@ class ItemRepositoryIntegrationTest {
         item2.setOwner(user1);
         item2.setRequest(request2);
         itemRepository.save(item2);
+
+        Comment comment1 = new Comment();
+        comment1.setText("comment1");
+        comment1.setAuthor(user1);
+        comment1.setItem(item2);
+        comment1.setCreated(LocalDateTime.now());
+        commentRepository.save(comment1);
+
+        Comment comment2 = new Comment();
+        comment2.setText("comment2");
+        comment2.setAuthor(user2);
+        comment2.setItem(item1);
+        comment2.setCreated(LocalDateTime.now());
+        commentRepository.save(comment2);
     }
 
     @Test
-    void findAllByOwnerIdOrderByIdAsc() {
-        List<Item> actualItems = itemRepository.findAllByOwnerIdOrderByIdAsc(1L, page);
+    void findAllByItemId() {
+        List<Comment> actualComments = commentRepository.findAllByItemId(2L);
 
-        assertEquals(1, actualItems.size());
-        assertEquals("name2", actualItems.get(0).getName());
-    }
-
-    @Test
-    void findAllAvailableByText() {
-        List<Item> actualItems = itemRepository.findAllAvailableByText("name", page);
-
-        assertEquals(2, actualItems.size());
-        assertEquals("name1", actualItems.get(0).getName());
-        assertEquals("name2", actualItems.get(1).getName());
-    }
-
-    @Test
-    void findAllByRequestIdOrderByIdAsc() {
-        List<Item> actualItems = itemRepository.findAllByRequestIdOrderByIdAsc(1L);
-
-        assertEquals(1, actualItems.size());
-        assertEquals("name1", actualItems.get(0).getName());
+        assertEquals(1, actualComments.size());
+        assertEquals("comment1", actualComments.get(0).getText());
     }
 
     @AfterEach
     public void deleteItems() {
-        itemRepository.deleteAll();
+        commentRepository.deleteAll();
     }
 }
