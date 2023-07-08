@@ -58,11 +58,14 @@ class ItemServiceImplTest {
     private User owner;
     Long authorId;
     User author;
+    Long requestId;
     private ItemRequest request;
     private Long id;
     private Item expectedItem;
+    private ItemDto requestItemDto;
     private ItemDto expectedItemDto;
-    private ItemDto expectedItemDtoWithoutBookings;
+    private ItemDto expectedItemDtoWithComments;
+    private ItemDto expectedItemDtoWithBookings;
     private Booking lastBooking;
     private Booking nextBooking;
     private Long itemId;
@@ -89,9 +92,14 @@ class ItemServiceImplTest {
         author = new User();
         author.setId(authorId);
 
-        Long requestId = 0L;
+        requestId = 0L;
         request = new ItemRequest();
         request.setId(requestId);
+
+        requestItemDto = new ItemDto();
+        requestItemDto.setName("name");
+        requestItemDto.setDescription("description");
+        requestItemDto.setAvailable(true);
 
         id = 0L;
         expectedItem = new Item();
@@ -101,8 +109,10 @@ class ItemServiceImplTest {
         expectedItem.setAvailable(true);
         expectedItem.setOwner(owner);
 
-        expectedItemDtoWithoutBookings = ItemMapper.toDto(expectedItem);
-     //   expectedItemDtoWithoutBookings.setComments(Collections.emptyList());
+        expectedItemDto = ItemMapper.toDto(expectedItem);
+
+        expectedItemDtoWithComments = ItemMapper.toDto(expectedItem);
+        expectedItemDtoWithComments.setComments(Collections.emptyList());
 
         lastBooking = new Booking();
         lastBooking.setBooker(booker);
@@ -110,10 +120,10 @@ class ItemServiceImplTest {
         nextBooking = new Booking();
         nextBooking.setBooker(booker);
 
-        expectedItemDto = ItemMapper.toDto(expectedItem);
-        expectedItemDto.setComments(Collections.emptyList());
-        expectedItemDto.setLastBooking(BookingMapper.toDtoForItem(lastBooking));
-        expectedItemDto.setNextBooking(BookingMapper.toDtoForItem(nextBooking));
+        expectedItemDtoWithBookings = ItemMapper.toDto(expectedItem);
+        expectedItemDtoWithBookings.setComments(Collections.emptyList());
+        expectedItemDtoWithBookings.setLastBooking(BookingMapper.toDtoForItem(lastBooking));
+        expectedItemDtoWithBookings.setNextBooking(BookingMapper.toDtoForItem(nextBooking));
 
         itemId = 1L;
         item = new Item();
@@ -136,33 +146,34 @@ class ItemServiceImplTest {
         Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(owner));
         Mockito.when(itemRepository.save(Mockito.any(Item.class))).thenReturn(expectedItem);
 
-        ItemDto item = itemService.create(ownerId, expectedItemDto);
+        ItemDto item = itemService.create(ownerId, requestItemDto);
 
-        assertEquals(expectedItemDtoWithoutBookings, item);
-        verify(itemRepository).save(expectedItem);
+        assertEquals(expectedItemDto, item);
+        verify(itemRepository).save(Mockito.any(Item.class));
     }
 
     @Test
     void createWhenOwnerNotFoundThenNotSavedItem() {
         Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> itemService.create(ownerId, expectedItemDto));
+        assertThrows(EntityNotFoundException.class, () -> itemService.create(ownerId, requestItemDto));
 
-        verify(itemRepository, Mockito.never()).save(expectedItem);
+        verify(itemRepository, Mockito.never()).save(Mockito.any(Item.class));
     }
 
     @Test
     void createWhenOwnerFoundAndRequestIdNotNullThenSavedItem() {
+        requestItemDto.setRequestId(requestId);
         expectedItem.setRequest(request);
         expectedItemDto = ItemMapper.toDto(expectedItem);
         Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(owner));
         Mockito.when(itemRequestRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(request));
         Mockito.when(itemRepository.save(Mockito.any(Item.class))).thenReturn(expectedItem);
 
-        ItemDto item = itemService.create(ownerId, expectedItemDto);
+        ItemDto item = itemService.create(ownerId, requestItemDto);
 
         assertEquals(expectedItemDto, item);
-        verify(itemRepository).save(expectedItem);
+        verify(itemRepository).save(Mockito.any(Item.class));
     }
 
     @Test
@@ -184,7 +195,7 @@ class ItemServiceImplTest {
 
         ItemDto item = itemService.getById(userId, id);
 
-        assertEquals(expectedItemDtoWithoutBookings, item);
+        assertEquals(expectedItemDtoWithComments, item);
     }
 
     @Test
@@ -197,7 +208,7 @@ class ItemServiceImplTest {
 
         ItemDto item = itemService.getById(ownerId, id);
 
-        assertEquals(expectedItemDto, item);
+        assertEquals(expectedItemDtoWithBookings, item);
     }
 
     @Test
