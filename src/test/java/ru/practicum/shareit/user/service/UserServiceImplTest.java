@@ -2,15 +2,17 @@ package ru.practicum.shareit.user.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.dto.UserDtoMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,10 +32,12 @@ class UserServiceImplTest {
     @Captor
     private ArgumentCaptor<User> userArgumentCaptor;
 
+    private final UserDtoMapper mapper = Mappers.getMapper(UserDtoMapper.class);
+
     @Test
     void createUserWhenUserValidThenSavedUser() {
         User expectedUser = new User();
-        UserDto expectedUserDto = UserMapper.toDto(expectedUser);
+        UserDto expectedUserDto = mapper.userToDto(expectedUser);
         Mockito.when(userRepository.save(expectedUser)).thenReturn(expectedUser);
 
         UserDto user = userService.create(expectedUserDto);
@@ -45,7 +49,7 @@ class UserServiceImplTest {
     @Test
     void createUserWhenEmailAlreadyExistThenNotSavedUser() {
         User expectedUser = new User();
-        UserDto expectedUserDto = UserMapper.toDto(expectedUser);
+        UserDto expectedUserDto = mapper.userToDto(expectedUser);
         Mockito.when(userRepository.save(expectedUser)).thenThrow(DataIntegrityViolationException.class);
 
         assertThrows(DataIntegrityViolationException.class, () -> userService.create(expectedUserDto));
@@ -54,7 +58,10 @@ class UserServiceImplTest {
     @Test
     void getAllWhenInvokedThenReturnedListOfUsers() {
         List<User> expectedUsers = List.of(new User());
-        List<UserDto> expectedUsersDto = UserMapper.toDto(expectedUsers);
+        List<UserDto> expectedUsersDto = new ArrayList<>();
+        for (User user : expectedUsers) {
+            expectedUsersDto.add(mapper.userToDto(user));
+        }
         Mockito.when(userRepository.findAll()).thenReturn(expectedUsers);
 
         List<UserDto> users = userService.getAll();
@@ -66,7 +73,7 @@ class UserServiceImplTest {
     void getByIdWhenUserFoundThenReturnedUser() {
         Long id = 0L;
         User expectedUser = new User();
-        UserDto expectedUserDto = UserMapper.toDto(expectedUser);
+        UserDto expectedUserDto = mapper.userToDto(expectedUser);
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(expectedUser));
 
         UserDto user = userService.getById(id);
@@ -94,7 +101,7 @@ class UserServiceImplTest {
         User newUser = new User();
         newUser.setName("updatedName");
         newUser.setEmail("updatedName@yandex.ru");
-        UserDto newUserDto = UserMapper.toDto(newUser);
+        UserDto newUserDto = mapper.userToDto(newUser);
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(oldUser));
 
         userService.update(id, newUserDto);
@@ -114,7 +121,7 @@ class UserServiceImplTest {
 
         User newUser = new User();
         newUser.setName("updatedName");
-        UserDto newUserDto = UserMapper.toDto(newUser);
+        UserDto newUserDto = mapper.userToDto(newUser);
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(oldUser));
 
         userService.update(id, newUserDto);
@@ -135,7 +142,7 @@ class UserServiceImplTest {
 
         User newUser = new User();
         newUser.setEmail("updatedName@yandex.ru");
-        UserDto newUserDto = UserMapper.toDto(newUser);
+        UserDto newUserDto = mapper.userToDto(newUser);
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(oldUser));
 
         userService.update(id, newUserDto);
@@ -151,7 +158,7 @@ class UserServiceImplTest {
         Long id = 0L;
         User oldUser = new User();
         User newUser = new User();
-        UserDto newUserDto = UserMapper.toDto(newUser);
+        UserDto newUserDto = mapper.userToDto(newUser);
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(oldUser));
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenThrow(DataIntegrityViolationException.class);
 
@@ -162,7 +169,7 @@ class UserServiceImplTest {
     void updateWhenUserNotFoundThenUserNotUpdated() {
         Long id = 0L;
         User newUser = new User();
-        UserDto newUserDto = UserMapper.toDto(newUser);
+        UserDto newUserDto = mapper.userToDto(newUser);
         Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> userService.update(id, newUserDto));

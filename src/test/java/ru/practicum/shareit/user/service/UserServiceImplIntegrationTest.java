@@ -2,10 +2,11 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.dto.UserDtoMapper;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityManager;
@@ -25,6 +26,8 @@ class UserServiceImplIntegrationTest {
 
     private final EntityManager em;
     private final UserService service;
+
+    private final UserDtoMapper mapper = Mappers.getMapper(UserDtoMapper.class);
 
     @Test
     void create() {
@@ -56,7 +59,7 @@ class UserServiceImplIntegrationTest {
 
         List<UserDto> sourceUsers = List.of(userDto, userDto2);
         for (UserDto user : sourceUsers) {
-            User entity = UserMapper.toUser(user);
+            User entity = mapper.dtoToUser(user);
             em.persist(entity);
         }
         em.flush();
@@ -78,7 +81,7 @@ class UserServiceImplIntegrationTest {
         UserDto userDto = new UserDto();
         userDto.setName("name");
         userDto.setEmail("name@yandex.ru");
-        User sourceUser = UserMapper.toUser(userDto);
+        User sourceUser = mapper.dtoToUser(userDto);
         em.persist(sourceUser);
         em.flush();
 
@@ -94,7 +97,7 @@ class UserServiceImplIntegrationTest {
         UserDto userDto = new UserDto();
         userDto.setName("name");
         userDto.setEmail("name@yandex.ru");
-        User sourceUser = UserMapper.toUser(userDto);
+        User sourceUser = mapper.dtoToUser(userDto);
         em.persist(sourceUser);
         em.flush();
 
@@ -114,7 +117,7 @@ class UserServiceImplIntegrationTest {
         UserDto userDto = new UserDto();
         userDto.setName("name");
         userDto.setEmail("name@yandex.ru");
-        User sourceUser = UserMapper.toUser(userDto);
+        User sourceUser = mapper.dtoToUser(userDto);
         em.persist(sourceUser);
         em.flush();
 

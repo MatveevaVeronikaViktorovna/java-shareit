@@ -2,11 +2,12 @@ package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.dto.UserDtoMapper;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityManager;
@@ -25,6 +26,8 @@ class ItemRequestServiceImplIntegrationTest {
     private final EntityManager em;
     private final ItemRequestService service;
 
+    private UserDtoMapper mapper = Mappers.getMapper(UserDtoMapper.class);
+
     @Test
     void create() {
         User user1 = new User();
@@ -35,7 +38,7 @@ class ItemRequestServiceImplIntegrationTest {
 
         ItemRequestDto itemRequestDto = new ItemRequestDto();
         itemRequestDto.setDescription("description");
-        itemRequestDto.setRequestor(UserMapper.toDto(user1));
+        itemRequestDto.setRequestor(mapper.userToDto(user1));
 
         service.create(user1.getId(), itemRequestDto);
 

@@ -1,15 +1,19 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.experimental.UtilityClass;
+import org.mapstruct.factory.Mappers;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.dto.UserDtoMapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @UtilityClass
 public class BookingMapper {
+
+    private UserDtoMapper mapper = Mappers.getMapper(UserDtoMapper.class);
+
     public Booking toBooking(BookingDto dto) {
         if (dto == null) return null;
         else {
@@ -25,7 +29,7 @@ public class BookingMapper {
         bookingDto.setId(booking.getId());
         bookingDto.setStart(booking.getStart());
         bookingDto.setEnd(booking.getEnd());
-        bookingDto.setBooker(UserMapper.toDto(booking.getBooker()));
+        bookingDto.setBooker(mapper.userToDto(booking.getBooker()));
         bookingDto.setItem(ItemMapper.toDto(booking.getItem()));
         bookingDto.setStatus(booking.getStatus());
         return bookingDto;
