@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +19,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.pagination.CustomPageRequest;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
@@ -64,7 +64,7 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getAllByOwner(Long userId, Integer from, Integer size) {
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = CustomPageRequest.of(from, size);
         List<Item> thisOwnerItems = itemRepository.findAllByOwnerIdOrderByIdAsc(userId, page);
         List<ItemDto> items = new ArrayList<>();
         for (Item item : thisOwnerItems) {
@@ -132,7 +132,7 @@ public class ItemServiceImpl implements ItemService {
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         } else {
-            Pageable page = PageRequest.of(from / size, size);
+            Pageable page = CustomPageRequest.of(from, size);
             return itemRepository.findAllAvailableByText(text, page)
                     .stream()
                     .map(ItemMapper::toDto)

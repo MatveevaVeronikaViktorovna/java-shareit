@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +17,7 @@ import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.exception.ItemNotAvailableException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.pagination.CustomPageRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -117,7 +117,7 @@ public class BookingServiceImpl implements BookingService {
             log.warn("Пользователь с id {} не найден", userId);
             throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = CustomPageRequest.of(from, size);
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime currentMoment = LocalDateTime.now();
         switch (state) {
@@ -154,7 +154,7 @@ public class BookingServiceImpl implements BookingService {
             log.warn("Пользователь с id {} не найден", userId);
             throw new EntityNotFoundException(String.format("Пользователь с id %d не найден", userId));
         }
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = CustomPageRequest.of(from, size);
         List<Booking> bookings = new ArrayList<>();
         LocalDateTime currentMoment = LocalDateTime.now();
         switch (state) {
