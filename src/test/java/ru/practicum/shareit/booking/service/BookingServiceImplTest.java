@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.controller.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -19,6 +18,7 @@ import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.exception.ItemNotAvailableException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.pagination.CustomPageRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -48,14 +48,20 @@ class BookingServiceImplTest {
     private BookingDto requestBookingDto;
     private BookingDtoForResponse expectedBookingDto;
     Long id;
-    private Booking expectedBooking;
     private Long userId;
     private User booker;
-    private Long itemId;
     private Item item;
     private User owner;
     private Integer from = 0;
     private Integer size = 10;
+    Pageable page = CustomPageRequest.of(from, size);
+    private Booking expectedBooking;
+    private Booking currentBooking;
+    private Booking pastBooking;
+    private Booking futureBooking;
+    private Booking waitingBooking;
+    private Booking rejectedBooking;
+    private List<Booking> allBookings;
 
     @BeforeEach
     public void addBookings() {
@@ -63,7 +69,7 @@ class BookingServiceImplTest {
         booker = new User();
         booker.setId(userId);
 
-        itemId = 0L;
+        Long itemId = 0L;
         item = new Item();
         item.setId(itemId);
         item.setAvailable(true);
@@ -83,6 +89,20 @@ class BookingServiceImplTest {
 
         from = 0;
         size = 10;
+
+        currentBooking = new Booking();
+        currentBooking.setId(1L);
+        pastBooking = new Booking();
+        pastBooking.setId(2L);
+        futureBooking = new Booking();
+        currentBooking.setId(3L);
+        waitingBooking = new Booking();
+        currentBooking.setId(4L);
+        rejectedBooking = new Booking();
+        currentBooking.setId(5L);
+
+        allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking,
+                rejectedBooking);
     }
 
     @Test
@@ -230,24 +250,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByBookerWhenBookerFoundAndStateIsAllThenReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
-
-        Booking currentBooking = new Booking();
-        currentBooking.setId(1L);
-        Booking pastBooking = new Booking();
-        pastBooking.setId(2L);
-        Booking futureBooking = new Booking();
-        currentBooking.setId(3L);
-        Booking waitingBooking = new Booking();
-        currentBooking.setId(4L);
-        Booking rejectedBooking = new Booking();
-        currentBooking.setId(5L);
-        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking,
-                rejectedBooking);
-
         List<Booking> expectedBookings = allBookings;
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
@@ -262,24 +264,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByBookerWhenBookerFoundAndStateIsCurrentThenReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
-
-        Booking currentBooking = new Booking();
-        currentBooking.setId(1L);
-        Booking pastBooking = new Booking();
-        pastBooking.setId(2L);
-        Booking futureBooking = new Booking();
-        currentBooking.setId(3L);
-        Booking waitingBooking = new Booking();
-        currentBooking.setId(4L);
-        Booking rejectedBooking = new Booking();
-        currentBooking.setId(5L);
-        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking,
-                rejectedBooking);
-
         List<Booking> expectedBookings = List.of(currentBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
@@ -296,24 +280,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByBookerWhenBookerFoundAndStateIsPastThenReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
-
-        Booking currentBooking = new Booking();
-        currentBooking.setId(1L);
-        Booking pastBooking = new Booking();
-        pastBooking.setId(2L);
-        Booking futureBooking = new Booking();
-        currentBooking.setId(3L);
-        Booking waitingBooking = new Booking();
-        currentBooking.setId(4L);
-        Booking rejectedBooking = new Booking();
-        currentBooking.setId(5L);
-        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking,
-                rejectedBooking);
-
         List<Booking> expectedBookings = List.of(pastBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
@@ -329,24 +295,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByBookerWhenBookerFoundAndStateIsFutureThenReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
-
-        Booking currentBooking = new Booking();
-        currentBooking.setId(1L);
-        Booking pastBooking = new Booking();
-        pastBooking.setId(2L);
-        Booking futureBooking = new Booking();
-        currentBooking.setId(3L);
-        Booking waitingBooking = new Booking();
-        currentBooking.setId(4L);
-        Booking rejectedBooking = new Booking();
-        currentBooking.setId(5L);
-        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking,
-                rejectedBooking);
-
         List<Booking> expectedBookings = List.of(futureBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
@@ -362,23 +310,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByBookerWhenBookerFoundAndStateIsWaitingThenReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
-
-        Booking currentBooking = new Booking();
-        currentBooking.setId(1L);
-        Booking pastBooking = new Booking();
-        pastBooking.setId(2L);
-        Booking futureBooking = new Booking();
-        currentBooking.setId(3L);
-        Booking waitingBooking = new Booking();
-        currentBooking.setId(4L);
-        Booking rejectedBooking = new Booking();
-        currentBooking.setId(5L);
-        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking, rejectedBooking);
-
         List<Booking> expectedBookings = List.of(waitingBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
@@ -394,24 +325,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByBookerWhenBookerFoundAndStateIsRejectedThenReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
-
-        Booking currentBooking = new Booking();
-        currentBooking.setId(1L);
-        Booking pastBooking = new Booking();
-        pastBooking.setId(2L);
-        Booking futureBooking = new Booking();
-        currentBooking.setId(3L);
-        Booking waitingBooking = new Booking();
-        currentBooking.setId(4L);
-        Booking rejectedBooking = new Booking();
-        currentBooking.setId(5L);
-        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking,
-                rejectedBooking);
-
         List<Booking> expectedBookings = List.of(rejectedBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
@@ -428,9 +341,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByOwnerWhenOwnerNotFoundThenNotReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
         Mockito.when(userRepository.existsById(userId)).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () -> bookingService.getAllByOwner(userId, State.ALL, from, size));
@@ -438,24 +348,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByOwnerWhenOwnerFoundAndStateIsAllThenReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
-
-        Booking currentBooking = new Booking();
-        currentBooking.setId(1L);
-        Booking pastBooking = new Booking();
-        pastBooking.setId(2L);
-        Booking futureBooking = new Booking();
-        currentBooking.setId(3L);
-        Booking waitingBooking = new Booking();
-        currentBooking.setId(4L);
-        Booking rejectedBooking = new Booking();
-        currentBooking.setId(5L);
-        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking,
-                rejectedBooking);
-
         List<Booking> expectedBookings = allBookings;
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
@@ -470,24 +362,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByOwnerWhenOwnerFoundAndStateIsCurrentThenReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
-
-        Booking currentBooking = new Booking();
-        currentBooking.setId(1L);
-        Booking pastBooking = new Booking();
-        pastBooking.setId(2L);
-        Booking futureBooking = new Booking();
-        currentBooking.setId(3L);
-        Booking waitingBooking = new Booking();
-        currentBooking.setId(4L);
-        Booking rejectedBooking = new Booking();
-        currentBooking.setId(5L);
-        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking,
-                rejectedBooking);
-
         List<Booking> expectedBookings = List.of(currentBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
@@ -503,24 +377,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByOwnerWhenOwnerFoundAndStateIsPastThenReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
-
-        Booking currentBooking = new Booking();
-        currentBooking.setId(1L);
-        Booking pastBooking = new Booking();
-        pastBooking.setId(2L);
-        Booking futureBooking = new Booking();
-        currentBooking.setId(3L);
-        Booking waitingBooking = new Booking();
-        currentBooking.setId(4L);
-        Booking rejectedBooking = new Booking();
-        currentBooking.setId(5L);
-        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking,
-                rejectedBooking);
-
         List<Booking> expectedBookings = List.of(pastBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
@@ -536,24 +392,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByOwnerWhenOwnerFoundAndStateIsFutureThenReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
-
-        Booking currentBooking = new Booking();
-        currentBooking.setId(1L);
-        Booking pastBooking = new Booking();
-        pastBooking.setId(2L);
-        Booking futureBooking = new Booking();
-        currentBooking.setId(3L);
-        Booking waitingBooking = new Booking();
-        currentBooking.setId(4L);
-        Booking rejectedBooking = new Booking();
-        currentBooking.setId(5L);
-        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking,
-                rejectedBooking);
-
         List<Booking> expectedBookings = List.of(futureBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
@@ -569,24 +407,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByOwnerWhenOwnerFoundAndStateIsWaitingThenReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
-
-        Booking currentBooking = new Booking();
-        currentBooking.setId(1L);
-        Booking pastBooking = new Booking();
-        pastBooking.setId(2L);
-        Booking futureBooking = new Booking();
-        currentBooking.setId(3L);
-        Booking waitingBooking = new Booking();
-        currentBooking.setId(4L);
-        Booking rejectedBooking = new Booking();
-        currentBooking.setId(5L);
-        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking,
-                rejectedBooking);
-
         List<Booking> expectedBookings = List.of(waitingBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
@@ -602,23 +422,6 @@ class BookingServiceImplTest {
 
     @Test
     void getAllByOwnerWhenOwnerFoundAndStateIsRejectedThenReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
-
-        Booking currentBooking = new Booking();
-        currentBooking.setId(1L);
-        Booking pastBooking = new Booking();
-        pastBooking.setId(2L);
-        Booking futureBooking = new Booking();
-        currentBooking.setId(3L);
-        Booking waitingBooking = new Booking();
-        currentBooking.setId(4L);
-        Booking rejectedBooking = new Booking();
-        currentBooking.setId(5L);
-        List<Booking> allBookings = List.of(currentBooking, pastBooking, futureBooking, waitingBooking, rejectedBooking);
-
         List<Booking> expectedBookings = List.of(rejectedBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
