@@ -16,22 +16,50 @@ class BookingDtoForItemJsonTest {
 
     @Autowired
     private JacksonTester<BookingDtoForItem> json;
+    private final BookingDtoForItem bookingDto = new BookingDtoForItem();
 
     @Test
-    void testBookingDtoForItem() throws Exception {
-        BookingDtoForItem bookingDto = new BookingDtoForItem();
+    void testBookingDtoForItemId() throws Exception {
         bookingDto.setId(1L);
-        bookingDto.setStart(LocalDateTime.of(2023, 7, 6, 13, 14, 0));
-        bookingDto.setEnd(LocalDateTime.of(2023, 7, 16, 13, 14, 0));
-        bookingDto.setBookerId(1L);
-        bookingDto.setStatus(Status.WAITING);
 
         JsonContent<BookingDtoForItem> result = json.write(bookingDto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+    }
+
+    @Test
+    void testBookingDtoForItemStart() throws Exception {
+        bookingDto.setStart(LocalDateTime.of(2023, 7, 6, 13, 14, 0));
+
+        JsonContent<BookingDtoForItem> result = json.write(bookingDto);
+
         assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo("2023-07-06T13:14:00");
+    }
+
+    @Test
+    void testBookingDtoForItemEnd() throws Exception {
+        bookingDto.setEnd(LocalDateTime.of(2023, 7, 16, 13, 14, 0));
+
+        JsonContent<BookingDtoForItem> result = json.write(bookingDto);
+
         assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo("2023-07-16T13:14:00");
+    }
+
+    @Test
+    void testBookingDtoForItemBookerId() throws Exception {
+        bookingDto.setBookerId(1L);
+
+        JsonContent<BookingDtoForItem> result = json.write(bookingDto);
+
         assertThat(result).extractingJsonPathNumberValue("$.bookerId").isEqualTo(1);
+    }
+
+    @Test
+    void testBookingDtoForItemStatus() throws Exception {
+        bookingDto.setStatus(Status.WAITING);
+
+        JsonContent<BookingDtoForItem> result = json.write(bookingDto);
+
         assertThat(result).extractingJsonPathValue("$.status").isEqualTo(Status.WAITING.toString());
     }
 

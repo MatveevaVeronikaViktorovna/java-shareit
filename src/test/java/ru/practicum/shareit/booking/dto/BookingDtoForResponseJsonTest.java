@@ -6,8 +6,6 @@ import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 import ru.practicum.shareit.booking.model.Status;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 
@@ -18,22 +16,41 @@ class BookingDtoForResponseJsonTest {
 
     @Autowired
     private JacksonTester<BookingDtoForResponse> json;
+    private final BookingDtoForResponse bookingDto = new BookingDtoForResponse();
 
     @Test
-    void testBookingDtoForResponse() throws Exception {
-        BookingDtoForResponse bookingDto = new BookingDtoForResponse();
+    void testBookingDtoForResponseId() throws Exception {
         bookingDto.setId(1L);
-        bookingDto.setStart(LocalDateTime.of(2023, 7, 6, 13, 14, 0));
-        bookingDto.setEnd(LocalDateTime.of(2023, 7, 16, 13, 14, 0));
-        bookingDto.setBooker(new UserDto());
-        bookingDto.setItem(new ItemDto());
-        bookingDto.setStatus(Status.WAITING);
 
         JsonContent<BookingDtoForResponse> result = json.write(bookingDto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+    }
+
+    @Test
+    void testBookingDtoForResponseStart() throws Exception {
+        bookingDto.setStart(LocalDateTime.of(2023, 7, 6, 13, 14, 0));
+
+        JsonContent<BookingDtoForResponse> result = json.write(bookingDto);
+
         assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo("2023-07-06T13:14:00");
+    }
+
+    @Test
+    void testBookingDtoForResponseEnd() throws Exception {
+        bookingDto.setEnd(LocalDateTime.of(2023, 7, 16, 13, 14, 0));
+
+        JsonContent<BookingDtoForResponse> result = json.write(bookingDto);
+
         assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo("2023-07-16T13:14:00");
+    }
+
+    @Test
+    void testBookingDtoForResponseStatus() throws Exception {
+        bookingDto.setStatus(Status.WAITING);
+
+        JsonContent<BookingDtoForResponse> result = json.write(bookingDto);
+
         assertThat(result).extractingJsonPathValue("$.status").isEqualTo(Status.WAITING.toString());
     }
 
