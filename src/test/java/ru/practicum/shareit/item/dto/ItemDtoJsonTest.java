@@ -15,27 +15,59 @@ class ItemDtoJsonTest {
 
     @Autowired
     private JacksonTester<ItemDto> json;
+    private final ItemDto itemDto = new ItemDto();
 
     @Test
-    void testItemDto() throws Exception {
-        ItemDto itemDto = new ItemDto();
+    void testItemDtoId() throws Exception {
         itemDto.setId(1L);
-        itemDto.setName("name");
-        itemDto.setDescription("description");
-        itemDto.setAvailable(true);
-        itemDto.setLastBooking(null);
-        itemDto.setNextBooking(null);
-        itemDto.setComments(Collections.emptyList());
-        itemDto.setRequestId(1L);
 
         JsonContent<ItemDto> result = json.write(itemDto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+    }
+
+    @Test
+    void testItemDtoName() throws Exception {
+        itemDto.setName("name");
+
+        JsonContent<ItemDto> result = json.write(itemDto);
+
         assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("name");
+    }
+
+    @Test
+    void testItemDtoDescription() throws Exception {
+        itemDto.setDescription("description");
+
+        JsonContent<ItemDto> result = json.write(itemDto);
+
         assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo("description");
+    }
+
+    @Test
+    void testItemDtoAvailable() throws Exception {
+        itemDto.setAvailable(true);
+
+        JsonContent<ItemDto> result = json.write(itemDto);
+
         assertThat(result).extractingJsonPathBooleanValue("$.available").isEqualTo(true);
-        assertThat(result).extractingJsonPathValue("$.lastBooking").isEqualTo(null);
-        assertThat(result).extractingJsonPathValue("$.nextBooking").isEqualTo(null);
+    }
+
+    @Test
+    void testItemDtoComments() throws Exception {
+        itemDto.setComments(Collections.emptyList());
+
+        JsonContent<ItemDto> result = json.write(itemDto);
+
+        assertThat(result).extractingJsonPathValue("$.comments").isEqualTo(Collections.emptyList());
+    }
+
+    @Test
+    void testItemDtoRequestId() throws Exception {
+        itemDto.setRequestId(1L);
+
+        JsonContent<ItemDto> result = json.write(itemDto);
+
         assertThat(result).extractingJsonPathNumberValue("$.requestId").isEqualTo(1);
     }
 

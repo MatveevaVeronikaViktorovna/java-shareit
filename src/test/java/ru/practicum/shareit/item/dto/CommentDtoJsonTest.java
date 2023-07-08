@@ -15,20 +15,41 @@ class CommentDtoJsonTest {
 
     @Autowired
     private JacksonTester<CommentDto> json;
+    private final CommentDto commentDto = new CommentDto();
 
     @Test
-    void testCommentDto() throws Exception {
-        CommentDto commentDto = new CommentDto();
+    void testCommentDtoId() throws Exception {
         commentDto.setId(1L);
-        commentDto.setText("text");
-        commentDto.setAuthorName("name");
-        commentDto.setCreated(LocalDateTime.of(2023, 7, 6, 13, 14, 0));
 
         JsonContent<CommentDto> result = json.write(commentDto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+    }
+
+    @Test
+    void testCommentDtoText() throws Exception {
+        commentDto.setText("text");
+
+        JsonContent<CommentDto> result = json.write(commentDto);
+
         assertThat(result).extractingJsonPathStringValue("$.text").isEqualTo("text");
+    }
+
+    @Test
+    void testCommentDtoAuthorName() throws Exception {
+        commentDto.setAuthorName("name");
+
+        JsonContent<CommentDto> result = json.write(commentDto);
+
         assertThat(result).extractingJsonPathStringValue("$.authorName").isEqualTo("name");
+    }
+
+    @Test
+    void testCommentDtoCreated() throws Exception {
+        commentDto.setCreated(LocalDateTime.of(2023, 7, 6, 13, 14, 0));
+
+        JsonContent<CommentDto> result = json.write(commentDto);
+
         assertThat(result).extractingJsonPathStringValue("$.created").isEqualTo("2023-07-06T13:14:00");
     }
 

@@ -13,18 +13,32 @@ class UserDtoJsonTest {
 
     @Autowired
     private JacksonTester<UserDto> json;
+    private final UserDto userDto = new UserDto();
 
     @Test
-    void testUserDto() throws Exception {
-        UserDto userDto = new UserDto();
+    void testUserDtoId() throws Exception {
         userDto.setId(1L);
-        userDto.setName("name");
-        userDto.setEmail("name@yandex.ru");
 
         JsonContent<UserDto> result = json.write(userDto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+    }
+
+    @Test
+    void testUserDtoName() throws Exception {
+        userDto.setName("name");
+
+        JsonContent<UserDto> result = json.write(userDto);
+
         assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("name");
+    }
+
+    @Test
+    void testUserDtoEmail() throws Exception {
+        userDto.setEmail("name@yandex.ru");
+
+        JsonContent<UserDto> result = json.write(userDto);
+
         assertThat(result).extractingJsonPathStringValue("$.email").isEqualTo("name@yandex.ru");
     }
 

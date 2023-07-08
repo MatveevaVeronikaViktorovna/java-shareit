@@ -16,20 +16,41 @@ class ItemRequestDtoForResponseJsonTest {
 
     @Autowired
     private JacksonTester<ItemRequestDtoForResponse> json;
+    private final ItemRequestDtoForResponse itemRequestDto = new ItemRequestDtoForResponse();
 
     @Test
-    void testItemRequestDtoForResponse() throws Exception {
-        ItemRequestDtoForResponse itemRequestDto = new ItemRequestDtoForResponse();
+    void testItemRequestDtoForResponseId() throws Exception {
         itemRequestDto.setId(1L);
-        itemRequestDto.setDescription("description");
-        itemRequestDto.setCreated(LocalDateTime.of(2023, 7, 6, 13, 14, 0));
-        itemRequestDto.setItems(Collections.emptyList());
 
         JsonContent<ItemRequestDtoForResponse> result = json.write(itemRequestDto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
+    }
+
+    @Test
+    void testItemRequestDtoForResponseDescription() throws Exception {
+        itemRequestDto.setDescription("description");
+
+        JsonContent<ItemRequestDtoForResponse> result = json.write(itemRequestDto);
+
         assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo("description");
+    }
+
+    @Test
+    void testItemRequestDtoForResponseCreated() throws Exception {
+        itemRequestDto.setCreated(LocalDateTime.of(2023, 7, 6, 13, 14, 0));
+
+        JsonContent<ItemRequestDtoForResponse> result = json.write(itemRequestDto);
+
         assertThat(result).extractingJsonPathStringValue("$.created").isEqualTo("2023-07-06T13:14:00");
+    }
+
+    @Test
+    void testItemRequestDtoForResponseItems() throws Exception {
+        itemRequestDto.setItems(Collections.emptyList());
+
+        JsonContent<ItemRequestDtoForResponse> result = json.write(itemRequestDto);
+
         assertThat(result).extractingJsonPathValue("$.items").isEqualTo(Collections.emptyList());
     }
 
