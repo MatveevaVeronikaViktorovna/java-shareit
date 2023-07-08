@@ -2,6 +2,7 @@ package ru.practicum.shareit.request.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +33,20 @@ class ItemRequestControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+    private ItemRequestDtoForResponse itemRequestDtoForResponse;
+    private ItemRequestDto itemRequestDto;
+
+    @BeforeEach
+    public void addItemRequests() {
+        itemRequestDtoForResponse = new ItemRequestDtoForResponse();
+        itemRequestDto = new ItemRequestDto();
+        itemRequestDto.setId(1L);
+        itemRequestDto.setDescription("description");
+    }
 
     @SneakyThrows
     @Test
     void createWhenItemRequestIsValidThenReturnedItemRequest() {
-        ItemRequestDtoForResponse itemRequestDtoForResponse = new ItemRequestDtoForResponse();
-        ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(1L);
-        itemRequestDto.setDescription("description");
         Mockito.when(itemRequestService.create(Mockito.anyLong(), Mockito.any(ItemRequestDto.class)))
                 .thenReturn(itemRequestDtoForResponse);
 
@@ -59,8 +66,6 @@ class ItemRequestControllerIntegrationTest {
     @SneakyThrows
     @Test
     void createWhenItemRequestIsNotValidThenReturnedBadRequest() {
-        ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(1L);
         itemRequestDto.setDescription("");
 
         mockMvc.perform(post("/requests")
@@ -75,10 +80,6 @@ class ItemRequestControllerIntegrationTest {
     @SneakyThrows
     @Test
     void getAllByRequestorWhenInvokedThenReturnedListOfItemRequests() {
-        ItemRequestDtoForResponse itemRequestDtoForResponse = new ItemRequestDtoForResponse();
-        ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(1L);
-        itemRequestDto.setDescription("description");
         Mockito.when(itemRequestService.getAllByRequestor(Mockito.anyLong()))
                 .thenReturn(List.of(itemRequestDtoForResponse));
 
@@ -97,10 +98,6 @@ class ItemRequestControllerIntegrationTest {
     @Test
     void getByIdWhenInvokedThenReturnedItemRequest() {
         Long id = 1L;
-        ItemRequestDtoForResponse itemRequestDtoForResponse = new ItemRequestDtoForResponse();
-        ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(1L);
-        itemRequestDto.setDescription("description");
         Mockito.when(itemRequestService.getById(Mockito.anyLong(), Mockito.anyLong()))
                 .thenReturn(itemRequestDtoForResponse);
 
@@ -118,10 +115,6 @@ class ItemRequestControllerIntegrationTest {
     @SneakyThrows
     @Test
     void getAllWhenInvokedThenReturnedListOfItemRequests() {
-        ItemRequestDtoForResponse itemRequestDtoForResponse = new ItemRequestDtoForResponse();
-        ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setId(1L);
-        itemRequestDto.setDescription("description");
         Mockito.when(itemRequestService.getAll(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(List.of(itemRequestDtoForResponse));
 

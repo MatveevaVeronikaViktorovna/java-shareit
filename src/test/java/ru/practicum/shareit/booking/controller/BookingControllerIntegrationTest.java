@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +33,22 @@ class BookingControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+    private BookingDtoForResponse bookingDtoForResponse;
+    private BookingDto bookingDto;
+
+    @BeforeEach
+    public void addBookings() {
+        bookingDtoForResponse = new BookingDtoForResponse();
+
+        bookingDto = new BookingDto();
+        bookingDto.setStart(LocalDateTime.now().plusDays(10L));
+        bookingDto.setEnd(LocalDateTime.now().plusDays(20L));
+        bookingDto.setItemId(1L);
+    }
 
     @SneakyThrows
     @Test
     void createWhenBookingIsValidThenReturnedBooking() {
-        BookingDtoForResponse bookingDtoForResponse = new BookingDtoForResponse();
-        BookingDto bookingDto = new BookingDto();
-        bookingDto.setStart(LocalDateTime.now().plusDays(10L));
-        bookingDto.setEnd(LocalDateTime.now().plusDays(20L));
-        bookingDto.setItemId(1L);
         Mockito.when(bookingService.create(Mockito.anyLong(), Mockito.any(BookingDto.class)))
                 .thenReturn(bookingDtoForResponse);
 
@@ -60,13 +68,7 @@ class BookingControllerIntegrationTest {
     @SneakyThrows
     @Test
     void createWhenBookingIsNotValidThenReturnedBadRequest() {
-        BookingDtoForResponse bookingDtoForResponse = new BookingDtoForResponse();
-        BookingDto bookingDto = new BookingDto();
         bookingDto.setStart(LocalDateTime.now().minusDays(10L));
-        bookingDto.setEnd(LocalDateTime.now().plusDays(20L));
-        bookingDto.setItemId(1L);
-        Mockito.when(bookingService.create(Mockito.anyLong(), Mockito.any(BookingDto.class)))
-                .thenReturn(bookingDtoForResponse);
 
         mockMvc.perform(post("/bookings")
                         .header(HEADER, 1L)
@@ -81,11 +83,6 @@ class BookingControllerIntegrationTest {
     @Test
     void approveWhenInvokedThenReturnedBooking() {
         Long id = 1L;
-        BookingDtoForResponse bookingDtoForResponse = new BookingDtoForResponse();
-        BookingDto bookingDto = new BookingDto();
-        bookingDto.setStart(LocalDateTime.now().plusDays(10L));
-        bookingDto.setEnd(LocalDateTime.now().plusDays(20L));
-        bookingDto.setItemId(1L);
         Mockito.when(bookingService.approveOrReject(Mockito.anyLong(), Mockito.anyLong(), Mockito.anyBoolean()))
                 .thenReturn(bookingDtoForResponse);
 
@@ -105,11 +102,6 @@ class BookingControllerIntegrationTest {
     @Test
     void getByIdWhenInvokedThenReturnedBooking() {
         Long id = 1L;
-        BookingDtoForResponse bookingDtoForResponse = new BookingDtoForResponse();
-        BookingDto bookingDto = new BookingDto();
-        bookingDto.setStart(LocalDateTime.now().plusDays(10L));
-        bookingDto.setEnd(LocalDateTime.now().plusDays(20L));
-        bookingDto.setItemId(1L);
         Mockito.when(bookingService.getById(Mockito.anyLong(), Mockito.anyLong())).thenReturn(bookingDtoForResponse);
 
         String result = mockMvc.perform(get("/bookings/{id}", id)
@@ -126,11 +118,6 @@ class BookingControllerIntegrationTest {
     @SneakyThrows
     @Test
     void getAllByBookerWhenInvokedThenReturnedListOfBooking() {
-        BookingDtoForResponse bookingDtoForResponse = new BookingDtoForResponse();
-        BookingDto bookingDto = new BookingDto();
-        bookingDto.setStart(LocalDateTime.now().plusDays(10L));
-        bookingDto.setEnd(LocalDateTime.now().plusDays(20L));
-        bookingDto.setItemId(1L);
         Mockito.when(bookingService.getAllByBooker(Mockito.anyLong(), Mockito.any(State.class), Mockito.anyInt(),
                 Mockito.anyInt())).thenReturn(List.of(bookingDtoForResponse));
 
@@ -149,11 +136,6 @@ class BookingControllerIntegrationTest {
     @SneakyThrows
     @Test
     void getAllByOwnerWhenInvokedThenReturnedListOfBooking() {
-        BookingDtoForResponse bookingDtoForResponse = new BookingDtoForResponse();
-        BookingDto bookingDto = new BookingDto();
-        bookingDto.setStart(LocalDateTime.now().plusDays(10L));
-        bookingDto.setEnd(LocalDateTime.now().plusDays(20L));
-        bookingDto.setItemId(1L);
         Mockito.when(bookingService.getAllByOwner(Mockito.anyLong(), Mockito.any(State.class), Mockito.anyInt(),
                 Mockito.anyInt())).thenReturn(List.of(bookingDtoForResponse));
 

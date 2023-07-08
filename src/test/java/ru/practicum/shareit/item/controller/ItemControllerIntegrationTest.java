@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +33,25 @@ class ItemControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @SneakyThrows
-    @Test
-    void createWhenItemIsValidThenReturnedItem() {
-        ItemDto itemDto = new ItemDto();
+    private ItemDto itemDto;
+    private CommentDto commentDto;
+
+    @BeforeEach
+    public void addItems() {
+        itemDto = new ItemDto();
         itemDto.setId(1L);
         itemDto.setName("name");
         itemDto.setDescription("description");
         itemDto.setAvailable(true);
+
+        commentDto = new CommentDto();
+        commentDto.setId(1L);
+        commentDto.setText("text");
+    }
+
+    @SneakyThrows
+    @Test
+    void createWhenItemIsValidThenReturnedItem() {
         Mockito.when(itemService.create(Mockito.anyLong(), Mockito.any(ItemDto.class))).thenReturn(itemDto);
 
         String result = mockMvc.perform(post("/items")
@@ -58,11 +70,7 @@ class ItemControllerIntegrationTest {
     @SneakyThrows
     @Test
     void createWhenItemIsNotValidThenReturnedBadRequest() {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
         itemDto.setName("");
-        itemDto.setDescription("description");
-        itemDto.setAvailable(true);
 
         mockMvc.perform(post("/items")
                         .header(HEADER, 1L)
@@ -76,12 +84,6 @@ class ItemControllerIntegrationTest {
     @SneakyThrows
     @Test
     void createWithoutHeaderThenReturnedBadRequest() {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
-        itemDto.setName("name");
-        itemDto.setDescription("description");
-        itemDto.setAvailable(true);
-
         mockMvc.perform(post("/items")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDto)))
@@ -93,11 +95,6 @@ class ItemControllerIntegrationTest {
     @SneakyThrows
     @Test
     void getAllByOwnerWhenInvokedThenReturnedListOfItems() {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
-        itemDto.setName("name");
-        itemDto.setDescription("description");
-        itemDto.setAvailable(true);
         Mockito.when(itemService.getAllByOwner(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(List.of(itemDto));
 
@@ -116,11 +113,6 @@ class ItemControllerIntegrationTest {
     @Test
     void getByIdWhenInvokedThenReturnedItem() {
         Long itemId = 1L;
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
-        itemDto.setName("name");
-        itemDto.setDescription("description");
-        itemDto.setAvailable(true);
         Mockito.when(itemService.getById(Mockito.anyLong(), Mockito.anyLong())).thenReturn(itemDto);
 
         String result = mockMvc.perform(get("/items/{id}", itemId)
@@ -138,11 +130,6 @@ class ItemControllerIntegrationTest {
     @Test
     void updateWhenItemIsValidThenReturnedUpdatedItem() {
         Long itemId = 1L;
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
-        itemDto.setName("name");
-        itemDto.setDescription("description");
-        itemDto.setAvailable(true);
         Mockito.when(itemService.update(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(ItemDto.class)))
                 .thenReturn(itemDto);
 
@@ -173,11 +160,6 @@ class ItemControllerIntegrationTest {
     @SneakyThrows
     @Test
     void searchByTextWhenInvokedThenReturnedListOfItems() {
-        ItemDto itemDto = new ItemDto();
-        itemDto.setId(1L);
-        itemDto.setName("name");
-        itemDto.setDescription("description");
-        itemDto.setAvailable(true);
         Mockito.when(itemService.searchByText(Mockito.anyLong(), Mockito.anyString(), Mockito.anyInt(),
                 Mockito.anyInt())).thenReturn(List.of(itemDto));
 
@@ -198,9 +180,6 @@ class ItemControllerIntegrationTest {
     @Test
     void addCommentWhenCommentIsValidThenReturnedComment() {
         Long itemId = 1L;
-        CommentDto commentDto = new CommentDto();
-        commentDto.setId(1L);
-        commentDto.setText("text");
         Mockito.when(itemService.addComment(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(CommentDto.class)))
                 .thenReturn(commentDto);
 
@@ -221,8 +200,6 @@ class ItemControllerIntegrationTest {
     @Test
     void addCommentWhenCommentNotValidThenReturnedBadRequest() {
         Long itemId = 1L;
-        CommentDto commentDto = new CommentDto();
-        commentDto.setId(1L);
         commentDto.setText("");
 
         mockMvc.perform(post("/items/{itemId}/comment", itemId)

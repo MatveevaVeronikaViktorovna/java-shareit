@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,19 @@ class UserControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @SneakyThrows
-    @Test
-    void createWhenUserIsValidThenReturnedUser() {
-        UserDto userDto = new UserDto();
+    private UserDto userDto;
+
+    @BeforeEach
+    public void addUsers() {
+        userDto = new UserDto();
         userDto.setId(1L);
         userDto.setName("name");
         userDto.setEmail("name@yandex.ru");
+    }
+
+    @SneakyThrows
+    @Test
+    void createWhenUserIsValidThenReturnedUser() {
         Mockito.when(userService.create(Mockito.any(UserDto.class))).thenReturn(userDto);
 
         String result = mockMvc.perform(post("/users")
@@ -54,10 +61,7 @@ class UserControllerIntegrationTest {
     @SneakyThrows
     @Test
     void createWhenUserIsNotValidThenReturnedBadRequest() {
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
         userDto.setName("");
-        userDto.setEmail("name@yandex.ru");
 
         mockMvc.perform(post("/users")
                         .contentType("application/json")
@@ -70,10 +74,6 @@ class UserControllerIntegrationTest {
     @SneakyThrows
     @Test
     void getAllWhenInvokedThenReturnedListOfUsers() {
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
-        userDto.setName("name");
-        userDto.setEmail("name@yandex.ru");
         Mockito.when(userService.getAll()).thenReturn(List.of(userDto));
 
         String result = mockMvc.perform(get("/users"))
@@ -90,10 +90,6 @@ class UserControllerIntegrationTest {
     @Test
     void getByIdWhenInvokedThenReturnedUser() {
         Long userId = 1L;
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
-        userDto.setName("name");
-        userDto.setEmail("name@yandex.ru");
         Mockito.when(userService.getById(Mockito.anyLong())).thenReturn(userDto);
 
         String result = mockMvc.perform(get("/users/{id}", userId))
@@ -110,10 +106,6 @@ class UserControllerIntegrationTest {
     @Test
     void updateWhenUserIsValidThenReturnedUpdatedUser() {
         Long userId = 1L;
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
-        userDto.setName("name");
-        userDto.setEmail("name@yandex.ru");
         Mockito.when(userService.update(Mockito.anyLong(), Mockito.any(UserDto.class))).thenReturn(userDto);
 
         String result = mockMvc.perform(patch("/users/{id}", userId)
@@ -132,9 +124,6 @@ class UserControllerIntegrationTest {
     @Test
     void updateWhenUserIsNotValidThenReturnedBadRequest() {
         Long userId = 1L;
-        UserDto userDto = new UserDto();
-        userDto.setId(1L);
-        userDto.setName("name");
         userDto.setEmail("nameyandex.ru");
 
         mockMvc.perform(patch("/users/{id}", userId)
