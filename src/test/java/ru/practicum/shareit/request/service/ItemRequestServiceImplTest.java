@@ -7,10 +7,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.pagination.CustomPageRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoForResponse;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
@@ -45,10 +45,12 @@ class ItemRequestServiceImplTest {
     private Long userId;
     private User requestor;
     private ItemRequestDto requestItemRequestDto;
+    private Long id;
     private ItemRequest expectedItemRequest;
     private ItemRequestDtoForResponse expectedItemRequestDto;
-
-
+    private Integer from = 0;
+    private Integer size = 10;
+    private Pageable page = CustomPageRequest.of(from, size);
 
     @BeforeEach
     public void addItemRequests() {
@@ -58,10 +60,16 @@ class ItemRequestServiceImplTest {
 
         requestItemRequestDto = new ItemRequestDto();
 
+        id = 0L;
         expectedItemRequest = new ItemRequest();
+        expectedItemRequest.setId(id);
         expectedItemRequest.setRequestor(requestor);
 
         expectedItemRequestDto = ItemRequestMapper.toDto(expectedItemRequest);
+
+        from = 0;
+        size = 10;
+        page = CustomPageRequest.of(from, size);
     }
 
     @Test
@@ -109,12 +117,7 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getByIdWhenRequestorFoundAndItemRequestFoundThenReturnedItemRequest() {
-        Long id = 0L;
-        expectedItemRequest.setId(id);
-        expectedItemRequest.setRequestor(requestor);
-        ItemRequestDtoForResponse expectedItemRequestDto = ItemRequestMapper.toDto(expectedItemRequest);
         expectedItemRequestDto.setItems(Collections.emptyList());
-
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(itemRequestRepository.findById(id)).thenReturn(Optional.of(expectedItemRequest));
 
@@ -125,19 +128,13 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getByIdWhenRequestorNotFoundThenNotReturnedItemRequest() {
-        Long userId = 0L;
-        Long id = 0L;
         Mockito.when(userRepository.existsById(userId)).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () -> itemRequestService.getById(userId, id));
     }
 
     @Test
-    void getByIdWhenRequestorFoundButItemRequestFoundThenNotReturnedItemRequest() {
-        Long userId = 0L;
-        User requestor = new User();
-        requestor.setId(userId);
-        Long id = 0L;
+    void getByIdWhenRequestorFoundButItemRequestNotFoundThenNotReturnedItemRequest() {
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(itemRequestRepository.findById(id)).thenReturn(Optional.empty());
 
@@ -146,10 +143,6 @@ class ItemRequestServiceImplTest {
 
     @Test
     void getAllWhenInvokedThenReturnedListOfItemRequest() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
-        Pageable page = PageRequest.of(from / size, size);
         List<ItemRequest> expectedItemRequests = List.of(new ItemRequest());
         List<ItemRequestDtoForResponse> expectedItemRequestsDto = ItemRequestMapper.toDto(expectedItemRequests);
         expectedItemRequestsDto.forEach(itemRequestDtoForResponse -> itemRequestDtoForResponse
