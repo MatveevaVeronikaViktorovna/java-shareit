@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.booking.controller.BookingController.HEADER;
 
 @WebMvcTest(controllers = ItemController.class)
 class ItemControllerIntegrationTest {
@@ -42,7 +43,7 @@ class ItemControllerIntegrationTest {
         Mockito.when(itemService.create(Mockito.anyLong(), Mockito.any(ItemDto.class))).thenReturn(itemDto);
 
         String result = mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1L)
+                        .header(HEADER, 1L)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isCreated())
@@ -64,7 +65,7 @@ class ItemControllerIntegrationTest {
         itemDto.setAvailable(true);
 
         mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1L)
+                        .header(HEADER, 1L)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isBadRequest());
@@ -101,7 +102,7 @@ class ItemControllerIntegrationTest {
                 .thenReturn(List.of(itemDto));
 
         String result = mockMvc.perform(get("/items")
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER, 1L))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -123,7 +124,7 @@ class ItemControllerIntegrationTest {
         Mockito.when(itemService.getById(Mockito.anyLong(), Mockito.anyLong())).thenReturn(itemDto);
 
         String result = mockMvc.perform(get("/items/{id}", itemId)
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER, 1L))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -146,7 +147,7 @@ class ItemControllerIntegrationTest {
                 .thenReturn(itemDto);
 
         String result = mockMvc.perform(patch("/items/{id}", itemId)
-                        .header("X-Sharer-User-Id", 1L)
+                        .header(HEADER, 1L)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemDto)))
                 .andExpect(status().isOk())
@@ -181,7 +182,7 @@ class ItemControllerIntegrationTest {
                 Mockito.anyInt())).thenReturn(List.of(itemDto));
 
         String result = mockMvc.perform(get("/items/search")
-                        .header("X-Sharer-User-Id", 1L)
+                        .header(HEADER, 1L)
                         .param("text", "name"))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -204,7 +205,7 @@ class ItemControllerIntegrationTest {
                 .thenReturn(commentDto);
 
         String result = mockMvc.perform(post("/items/{itemId}/comment", itemId)
-                        .header("X-Sharer-User-Id", 1L)
+                        .header(HEADER, 1L)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(commentDto)))
                 .andExpect(status().isOk())
@@ -225,7 +226,7 @@ class ItemControllerIntegrationTest {
         commentDto.setText("");
 
         mockMvc.perform(post("/items/{itemId}/comment", itemId)
-                        .header("X-Sharer-User-Id", 1L)
+                        .header(HEADER, 1L)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(commentDto)))
                 .andExpect(status().isBadRequest());

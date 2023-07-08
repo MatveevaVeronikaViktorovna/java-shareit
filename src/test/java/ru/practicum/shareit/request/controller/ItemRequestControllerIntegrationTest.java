@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.booking.controller.BookingController.HEADER;
 
 @WebMvcTest(controllers = ItemRequestController.class)
 class ItemRequestControllerIntegrationTest {
@@ -43,7 +44,7 @@ class ItemRequestControllerIntegrationTest {
                 .thenReturn(itemRequestDtoForResponse);
 
         String result = mockMvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", 1L)
+                        .header(HEADER, 1L)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemRequestDto)))
                 .andExpect(status().isCreated())
@@ -58,13 +59,12 @@ class ItemRequestControllerIntegrationTest {
     @SneakyThrows
     @Test
     void createWhenItemRequestIsNotValidThenReturnedBadRequest() {
-        ItemRequestDtoForResponse itemRequestDtoForResponse = new ItemRequestDtoForResponse();
         ItemRequestDto itemRequestDto = new ItemRequestDto();
         itemRequestDto.setId(1L);
         itemRequestDto.setDescription("");
 
         mockMvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", 1L)
+                        .header(HEADER, 1L)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(itemRequestDto)))
                 .andExpect(status().isBadRequest());
@@ -83,7 +83,7 @@ class ItemRequestControllerIntegrationTest {
                 .thenReturn(List.of(itemRequestDtoForResponse));
 
         String result = mockMvc.perform(get("/requests")
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER, 1L))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -105,7 +105,7 @@ class ItemRequestControllerIntegrationTest {
                 .thenReturn(itemRequestDtoForResponse);
 
         String result = mockMvc.perform(get("/requests/{id}", id)
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER, 1L))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -126,7 +126,7 @@ class ItemRequestControllerIntegrationTest {
                 .thenReturn(List.of(itemRequestDtoForResponse));
 
         String result = mockMvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER, 1L))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()

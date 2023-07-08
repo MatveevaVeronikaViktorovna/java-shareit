@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.booking.controller.BookingController.HEADER;
 
 @WebMvcTest(controllers = BookingController.class)
 class BookingControllerIntegrationTest {
@@ -44,7 +45,7 @@ class BookingControllerIntegrationTest {
                 .thenReturn(bookingDtoForResponse);
 
         String result = mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1L)
+                        .header(HEADER, 1L)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(bookingDto)))
                 .andExpect(status().isCreated())
@@ -68,7 +69,7 @@ class BookingControllerIntegrationTest {
                 .thenReturn(bookingDtoForResponse);
 
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1L)
+                        .header(HEADER, 1L)
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(bookingDto)))
                 .andExpect(status().isBadRequest());
@@ -89,7 +90,7 @@ class BookingControllerIntegrationTest {
                 .thenReturn(bookingDtoForResponse);
 
         String result = mockMvc.perform(patch("/bookings/{id}", id)
-                        .header("X-Sharer-User-Id", 1L)
+                        .header(HEADER, 1L)
                         .param("approved", "true"))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -112,7 +113,7 @@ class BookingControllerIntegrationTest {
         Mockito.when(bookingService.getById(Mockito.anyLong(), Mockito.anyLong())).thenReturn(bookingDtoForResponse);
 
         String result = mockMvc.perform(get("/bookings/{id}", id)
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER, 1L))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -134,7 +135,7 @@ class BookingControllerIntegrationTest {
                 Mockito.anyInt())).thenReturn(List.of(bookingDtoForResponse));
 
         String result = mockMvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER, 1L))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -157,7 +158,7 @@ class BookingControllerIntegrationTest {
                 Mockito.anyInt())).thenReturn(List.of(bookingDtoForResponse));
 
         String result = mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", 1L))
+                        .header(HEADER, 1L))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
