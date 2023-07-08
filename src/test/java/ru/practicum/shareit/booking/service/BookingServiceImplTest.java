@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -44,29 +45,48 @@ class BookingServiceImplTest {
 
     @Captor
     private ArgumentCaptor<Booking> bookingArgumentCaptor;
+    private BookingDto requestBookingDto;
+    private BookingDtoForResponse expectedBookingDto;
+    Long id;
+    private Booking expectedBooking;
+    private Long userId;
+    private User booker;
+    private Long itemId;
+    private Item item;
+    private User owner;
+    private Integer from = 0;
+    private Integer size = 10;
 
-    @Test
-    void createWhenItemFoundAndAvailableAndBookerFoundAndNotOwnerThenSavedBooking() {
-        Long userId = 0L;
-        User booker = new User();
+    @BeforeEach
+    public void addBookings() {
+        userId = 0L;
+        booker = new User();
         booker.setId(userId);
 
-        Long itemId = 0L;
-        Item item = new Item();
+        itemId = 0L;
+        item = new Item();
         item.setId(itemId);
         item.setAvailable(true);
-        User owner = new User();
+        owner = new User();
         owner.setId(1L);
         item.setOwner(owner);
 
-        BookingDto requestBookingDto = new BookingDto();
+        requestBookingDto = new BookingDto();
         requestBookingDto.setItemId(itemId);
 
-        Booking expectedBooking = new Booking();
+        id = 0L;
+        expectedBooking = new Booking();
         expectedBooking.setBooker(booker);
         expectedBooking.setItem(item);
-        BookingDtoForResponse expectedBookingDto = BookingMapper.toDto(expectedBooking);
 
+        expectedBookingDto = BookingMapper.toDto(expectedBooking);
+
+        from = 0;
+        size = 10;
+    }
+
+    @Test
+    void createWhenItemFoundAndAvailableAndBookerFoundAndNotOwnerThenSavedBooking() {
         Mockito.when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(booker));
         Mockito.when(bookingRepository.save(Mockito.any(Booking.class))).thenReturn(expectedBooking);
@@ -77,13 +97,8 @@ class BookingServiceImplTest {
         verify(bookingRepository).save(Mockito.any(Booking.class));
     }
 
-
     @Test
     void createWhenItemNotFoundThenNotSavedBooking() {
-        Long userId = 0L;
-        Long itemId = 0L;
-        BookingDto requestBookingDto = new BookingDto();
-        requestBookingDto.setItemId(itemId);
         Mockito.when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> bookingService.create(userId, requestBookingDto));
@@ -93,14 +108,6 @@ class BookingServiceImplTest {
 
     @Test
     void createWhenUserNotFoundThenNotSavedBooking() {
-        Long userId = 0L;
-
-        Long itemId = 0L;
-        Item item = new Item();
-        item.setAvailable(true);
-
-        BookingDto requestBookingDto = new BookingDto();
-        requestBookingDto.setItemId(itemId);
         Mockito.when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
@@ -111,15 +118,7 @@ class BookingServiceImplTest {
 
     @Test
     void createWhenItemFoundButNotAvailableAndBookerFoundAndNotOwnerThenNotSavedBooking() {
-        Long userId = 0L;
-
-        Long itemId = 0L;
-        Item item = new Item();
         item.setAvailable(false);
-
-        BookingDto requestBookingDto = new BookingDto();
-        requestBookingDto.setItemId(itemId);
-
         Mockito.when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
 
         assertThrows(ItemNotAvailableException.class, () -> bookingService.create(userId, requestBookingDto));
@@ -129,19 +128,7 @@ class BookingServiceImplTest {
 
     @Test
     void createWhenItemFoundAndAvailableAndBookerFoundButEqualOwnerThenNotSavedBooking() {
-        Long userId = 0L;
-        User booker = new User();
-        booker.setId(userId);
-
-        Long itemId = 0L;
-        Item item = new Item();
-        item.setAvailable(true);
-        User owner = new User();
         owner.setId(userId);
-        item.setOwner(owner);
-
-        BookingDto requestBookingDto = new BookingDto();
-        requestBookingDto.setItemId(itemId);
         Mockito.when(itemRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(item));
         Mockito.when(userRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(booker));
 
@@ -153,25 +140,12 @@ class BookingServiceImplTest {
     @Test
     void approveWhenBookingFoundAndApprovedIsTrueThenUpdatedBooking() {
         Boolean approved = true;
-
-        Long userId = 0L;
-        User booker = new User();
-        booker.setId(userId);
-
-        Long itemId = 0L;
-        Item item = new Item();
-        item.setId(itemId);
-
-        Long id = 0L;
-        Booking oldBooking = new Booking();
-        oldBooking.setId(id);
-        oldBooking.setBooker(booker);
-        oldBooking.setItem(item);
-        oldBooking.setStatus(Status.WAITING);
+        expectedBooking.setId(id);
+        expectedBooking.setStatus(Status.WAITING);
 
         Mockito.when(bookingRepository.findByIdAndItemOwnerId(Mockito.anyLong(), Mockito.anyLong()))
-                .thenReturn(Optional.of(oldBooking));
-        Mockito.when(bookingRepository.save(Mockito.any(Booking.class))).thenReturn(oldBooking);
+                .thenReturn(Optional.of(expectedBooking));
+        Mockito.when(bookingRepository.save(Mockito.any(Booking.class))).thenReturn(expectedBooking);
 
         bookingService.approveOrReject(userId, id, approved);
 
@@ -183,25 +157,12 @@ class BookingServiceImplTest {
     @Test
     void approveWhenBookingFoundAndApprovedIsFalseThenUpdatedBooking() {
         Boolean approved = false;
-
-        Long userId = 0L;
-        User booker = new User();
-        booker.setId(userId);
-
-        Long itemId = 0L;
-        Item item = new Item();
-        item.setId(itemId);
-
-        Long id = 0L;
-        Booking oldBooking = new Booking();
-        oldBooking.setId(id);
-        oldBooking.setBooker(booker);
-        oldBooking.setItem(item);
-        oldBooking.setStatus(Status.WAITING);
+        expectedBooking.setId(id);
+        expectedBooking.setStatus(Status.WAITING);
 
         Mockito.when(bookingRepository.findByIdAndItemOwnerId(Mockito.anyLong(), Mockito.anyLong()))
-                .thenReturn(Optional.of(oldBooking));
-        Mockito.when(bookingRepository.save(Mockito.any(Booking.class))).thenReturn(oldBooking);
+                .thenReturn(Optional.of(expectedBooking));
+        Mockito.when(bookingRepository.save(Mockito.any(Booking.class))).thenReturn(expectedBooking);
 
         bookingService.approveOrReject(userId, id, approved);
 
@@ -213,22 +174,8 @@ class BookingServiceImplTest {
     @Test
     void approveWhenBookingNotFoundThenNotUpdatedBooking() {
         Boolean approved = true;
-
-        Long userId = 0L;
-        User booker = new User();
-        booker.setId(userId);
-
-        Long itemId = 0L;
-        Item item = new Item();
-        item.setId(itemId);
-
-        Long id = 0L;
-        Booking oldBooking = new Booking();
-        oldBooking.setId(id);
-        oldBooking.setBooker(booker);
-        oldBooking.setItem(item);
-        oldBooking.setStatus(Status.WAITING);
-
+        expectedBooking.setId(id);
+        expectedBooking.setStatus(Status.WAITING);
         Mockito.when(bookingRepository.findByIdAndItemOwnerId(Mockito.anyLong(), Mockito.anyLong()))
                 .thenReturn(Optional.empty());
 
@@ -239,24 +186,11 @@ class BookingServiceImplTest {
     @Test
     void approveWhenBookingFoundAndApprovedIsTrueButBookingStatusIsApprovedThenNotUpdatedBooking() {
         Boolean approved = true;
-
-        Long userId = 0L;
-        User booker = new User();
-        booker.setId(userId);
-
-        Long itemId = 0L;
-        Item item = new Item();
-        item.setId(itemId);
-
-        Long id = 0L;
-        Booking oldBooking = new Booking();
-        oldBooking.setId(id);
-        oldBooking.setBooker(booker);
-        oldBooking.setItem(item);
-        oldBooking.setStatus(Status.APPROVED);
+        expectedBooking.setId(id);
+        expectedBooking.setStatus(Status.APPROVED);
 
         Mockito.when(bookingRepository.findByIdAndItemOwnerId(Mockito.anyLong(), Mockito.anyLong()))
-                .thenReturn(Optional.of(oldBooking));
+                .thenReturn(Optional.of(expectedBooking));
 
         assertThrows(BookingAlreadyApprovedException.class, () -> bookingService.approveOrReject(userId, id, approved));
         verify(bookingRepository, Mockito.never()).save(Mockito.any(Booking.class));
@@ -264,20 +198,6 @@ class BookingServiceImplTest {
 
     @Test
     void getByIdWhenBookingFoundAndRequestFromBookerOrOwnerThenReturnedBooking() {
-        Long userId = 0L;
-        User booker = new User();
-        booker.setId(userId);
-
-        Long itemId = 0L;
-        Item item = new Item();
-        item.setId(itemId);
-
-        Long id = 0L;
-        Booking expectedBooking = new Booking();
-        expectedBooking.setId(id);
-        expectedBooking.setBooker(booker);
-        expectedBooking.setItem(item);
-        BookingDtoForResponse expectedBookingDto = BookingMapper.toDto(expectedBooking);
         Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(expectedBooking));
 
         BookingDtoForResponse booking = bookingService.getById(userId, id);
@@ -287,8 +207,6 @@ class BookingServiceImplTest {
 
     @Test
     void getByIdWhenBookingNotFoundThenNotReturnedBooking() {
-        Long userId = 0L;
-        Long id = 0L;
         Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> bookingService.getById(userId, id));
@@ -296,34 +214,15 @@ class BookingServiceImplTest {
 
     @Test
     void getByIdWhenBookingFoundButRequestNotFromBookerOrOwnerThenNotReturnedBooking() {
-        Long userId = 99L;
+        Long requestorId = 99L;
 
-        Long bookerId = 0L;
-        User booker = new User();
-        booker.setId(bookerId);
-
-        Long itemId = 0L;
-        Item item = new Item();
-        item.setId(itemId);
-        User owner = new User();
-        owner.setId(1L);
-        item.setOwner(owner);
-
-        Long id = 0L;
-        Booking expectedBooking = new Booking();
-        expectedBooking.setId(id);
-        expectedBooking.setBooker(booker);
-        expectedBooking.setItem(item);
         Mockito.when(bookingRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(expectedBooking));
 
-        assertThrows(EntityNotFoundException.class, () -> bookingService.getById(userId, id));
+        assertThrows(EntityNotFoundException.class, () -> bookingService.getById(requestorId, id));
     }
 
     @Test
     void getAllByBookerWhenBookerNotFoundThenNotReturnedListOfBookings() {
-        Long userId = 0L;
-        Integer from = 0;
-        Integer size = 10;
         Mockito.when(userRepository.existsById(userId)).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class, () -> bookingService.getAllByBooker(userId, State.ALL, from, size));
