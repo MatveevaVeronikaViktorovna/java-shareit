@@ -6,9 +6,20 @@ import ru.practicum.shareit.booking.model.Booking;
 import java.util.List;
 
 @Mapper
-public interface BookingDtoMapper {
-    Booking dtoToBooking(BookingDto dto);
-    BookingDtoForResponse bookingToDto(Booking booking);
-    List<BookingDtoForResponse> bookingToDto(List<Booking> bookings);
-    BookingDtoForItem bookingToDtoForItem(Booking booking);
+public abstract class BookingDtoMapper {
+    public abstract Booking dtoToBooking(BookingDto dto);
+
+    public abstract BookingDtoForResponse bookingToDto(Booking booking);
+
+    public abstract List<BookingDtoForResponse> bookingToDto(List<Booking> bookings);
+
+    public BookingDtoForItem bookingToDtoForItem(Booking booking) {
+        BookingDtoForItem bookingDto = new BookingDtoForItem();
+        bookingDto.setId(booking.getId());
+        bookingDto.setStart(booking.getStart());
+        bookingDto.setEnd(booking.getEnd());
+        bookingDto.setBookerId(booking.getBooker().getId());
+        bookingDto.setStatus(booking.getStatus());
+        return bookingDto;
+    }
 }
