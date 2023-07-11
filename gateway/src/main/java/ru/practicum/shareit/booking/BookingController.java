@@ -27,7 +27,6 @@ public class BookingController {
                                          @Valid @RequestBody BookingDto requestDto) {
         log.info("Creating booking {}, userId={}", requestDto, userId);
         return bookingClient.create(userId, requestDto);
-        // bookingClient.bookItem(
     }
 
     @GetMapping
@@ -37,7 +36,6 @@ public class BookingController {
                                                  @RequestParam(defaultValue = "20") @Positive Integer size) {
         log.info("Get booking with state {}, userId={}, from={}, size={}", state, userId, from, size);
         return bookingClient.getAllByBooker(userId, state, from, size);
-        // в шаблоне это bookingClient.getBookings
     }
 
     @GetMapping("/owner")
