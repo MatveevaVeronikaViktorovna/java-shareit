@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -18,6 +19,9 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.pagination.CustomPageRequest;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -34,6 +38,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Transactional
     @Override
@@ -46,6 +51,11 @@ public class ItemServiceImpl implements ItemService {
         });
         item.setOwner(owner);
 
+        if (itemDto.getRequestId() != null) {
+            Optional<ItemRequest> request = itemRequestRepository.findById(itemDto.getRequestId());
+            request.ifPresent(item::setRequest);
+        }
+
         Item newItem = itemRepository.save(item);
         log.info("Добавленa вещь: {}", newItem);
         return ItemMapper.toDto(newItem);
@@ -53,8 +63,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> getAllByOwner(Long userId) {
-        List<Item> thisOwnerItems = itemRepository.findAllByOwnerIdOrderByIdAsc(userId);
+    public List<ItemDto> getAllByOwner(Long userId, Integer from, Integer size) {
+        Pageable page = CustomPageRequest.of(from, size);
+        List<Item> thisOwnerItems = itemRepository.findAllByOwnerIdOrderByIdAsc(userId, page);
         List<ItemDto> items = new ArrayList<>();
         for (Item item : thisOwnerItems) {
             ItemDto itemDto = setLastBookingAndNextBooking(item);
@@ -105,7 +116,7 @@ public class ItemServiceImpl implements ItemService {
         }
         Item updatedItem = itemRepository.save(oldItem);
         log.info("Обновлена вещь c id {} на {}", id, updatedItem);
-        return ItemMapper.toDto(updatedItem);
+        return ItemMapper.toDto(oldItem);
     }
 
     @Transactional
@@ -117,11 +128,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> searchByText(Long userId, String text) {
+    public List<ItemDto> searchByText(Long userId, String text, Integer from, Integer size) {
         if (text == null || text.isBlank()) {
             return Collections.emptyList();
         } else {
-            return itemRepository.findAllAvailableByText(text)
+            Pageable page = CustomPageRequest.of(from, size);
+            return itemRepository.findAllAvailableByText(text, page)
                     .stream()
                     .map(ItemMapper::toDto)
                     .collect(Collectors.toList());
