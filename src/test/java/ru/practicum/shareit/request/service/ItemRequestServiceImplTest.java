@@ -3,6 +3,7 @@ package ru.practicum.shareit.request.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -13,7 +14,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.pagination.CustomPageRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoForResponse;
-import ru.practicum.shareit.request.dto.ItemRequestMapper;
+import ru.practicum.shareit.request.dto.ItemRequestDtoMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
@@ -41,7 +42,7 @@ class ItemRequestServiceImplTest {
 
     @InjectMocks
     private ItemRequestServiceImpl itemRequestService;
-
+    private ItemRequestDtoMapper mapper = Mappers.getMapper(ItemRequestDtoMapper.class);
     private Long userId;
     private User requestor;
     private ItemRequestDto requestItemRequestDto;
@@ -65,7 +66,7 @@ class ItemRequestServiceImplTest {
         expectedItemRequest.setId(id);
         expectedItemRequest.setRequestor(requestor);
 
-        expectedItemRequestDto = ItemRequestMapper.toDto(expectedItemRequest);
+        expectedItemRequestDto = mapper.itemRequestToDto(expectedItemRequest);
 
         from = 0;
         size = 10;
@@ -96,7 +97,7 @@ class ItemRequestServiceImplTest {
     @Test
     void getAllByRequestorWhenRequestorFoundThenReturnedListOfItemRequest() {
         List<ItemRequest> expectedItemRequests = List.of(new ItemRequest());
-        List<ItemRequestDtoForResponse> expectedItemRequestsDto = ItemRequestMapper.toDto(expectedItemRequests);
+        List<ItemRequestDtoForResponse> expectedItemRequestsDto = mapper.itemRequestToDto(expectedItemRequests);
         expectedItemRequestsDto.forEach(itemRequestDtoForResponse -> itemRequestDtoForResponse
                 .setItems(Collections.emptyList()));
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
@@ -144,7 +145,7 @@ class ItemRequestServiceImplTest {
     @Test
     void getAllWhenInvokedThenReturnedListOfItemRequest() {
         List<ItemRequest> expectedItemRequests = List.of(new ItemRequest());
-        List<ItemRequestDtoForResponse> expectedItemRequestsDto = ItemRequestMapper.toDto(expectedItemRequests);
+        List<ItemRequestDtoForResponse> expectedItemRequestsDto = mapper.itemRequestToDto(expectedItemRequests);
         expectedItemRequestsDto.forEach(itemRequestDtoForResponse -> itemRequestDtoForResponse
                 .setItems(Collections.emptyList()));
         Mockito.when(itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(userId, page))

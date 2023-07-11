@@ -3,13 +3,14 @@ package ru.practicum.shareit.booking.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.booking.controller.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoForResponse;
-import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.dto.BookingDtoMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -45,6 +46,7 @@ class BookingServiceImplTest {
 
     @Captor
     private ArgumentCaptor<Booking> bookingArgumentCaptor;
+    private final BookingDtoMapper mapper = Mappers.getMapper(BookingDtoMapper.class);
     private BookingDto requestBookingDto;
     private BookingDtoForResponse expectedBookingDto;
     Long id;
@@ -85,7 +87,7 @@ class BookingServiceImplTest {
         expectedBooking.setBooker(booker);
         expectedBooking.setItem(item);
 
-        expectedBookingDto = BookingMapper.toDto(expectedBooking);
+        expectedBookingDto = mapper.bookingToDto(expectedBooking);
 
         from = 0;
         size = 10;
@@ -253,7 +255,7 @@ class BookingServiceImplTest {
         List<Booking> expectedBookings = allBookings;
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
-        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        List<BookingDtoForResponse> expectedBookingsDto = mapper.bookingToDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllByBookerIdOrderByStartDesc(userId, page)).thenReturn(expectedBookings);
 
@@ -267,7 +269,7 @@ class BookingServiceImplTest {
         List<Booking> expectedBookings = List.of(currentBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
-        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        List<BookingDtoForResponse> expectedBookingsDto = mapper.bookingToDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(Mockito.anyLong(),
                         Mockito.any(LocalDateTime.class), Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class)))
@@ -283,7 +285,7 @@ class BookingServiceImplTest {
         List<Booking> expectedBookings = List.of(pastBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
-        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        List<BookingDtoForResponse> expectedBookingsDto = mapper.bookingToDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(),
                 Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
@@ -298,7 +300,7 @@ class BookingServiceImplTest {
         List<Booking> expectedBookings = List.of(futureBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
-        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        List<BookingDtoForResponse> expectedBookingsDto = mapper.bookingToDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(Mockito.anyLong(),
                 Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
@@ -313,7 +315,7 @@ class BookingServiceImplTest {
         List<Booking> expectedBookings = List.of(waitingBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
-        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        List<BookingDtoForResponse> expectedBookingsDto = mapper.bookingToDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(Mockito.anyLong(),
                 Mockito.any(Status.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
@@ -328,7 +330,7 @@ class BookingServiceImplTest {
         List<Booking> expectedBookings = List.of(rejectedBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
-        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        List<BookingDtoForResponse> expectedBookingsDto = mapper.bookingToDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(Mockito.anyLong(),
                 Mockito.any(Status.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
@@ -351,7 +353,7 @@ class BookingServiceImplTest {
         List<Booking> expectedBookings = allBookings;
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
-        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        List<BookingDtoForResponse> expectedBookingsDto = mapper.bookingToDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, page)).thenReturn(expectedBookings);
 
@@ -365,7 +367,7 @@ class BookingServiceImplTest {
         List<Booking> expectedBookings = List.of(currentBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
-        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        List<BookingDtoForResponse> expectedBookingsDto = mapper.bookingToDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(Mockito.anyLong(),
                 Mockito.any(LocalDateTime.class), Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
@@ -380,7 +382,7 @@ class BookingServiceImplTest {
         List<Booking> expectedBookings = List.of(pastBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
-        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        List<BookingDtoForResponse> expectedBookingsDto = mapper.bookingToDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(Mockito.anyLong(),
                 Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
@@ -395,7 +397,7 @@ class BookingServiceImplTest {
         List<Booking> expectedBookings = List.of(futureBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
-        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        List<BookingDtoForResponse> expectedBookingsDto = mapper.bookingToDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(Mockito.anyLong(),
                 Mockito.any(LocalDateTime.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
@@ -410,7 +412,7 @@ class BookingServiceImplTest {
         List<Booking> expectedBookings = List.of(waitingBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
-        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        List<BookingDtoForResponse> expectedBookingsDto = mapper.bookingToDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(Mockito.anyLong(),
                 Mockito.any(Status.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);
@@ -425,7 +427,7 @@ class BookingServiceImplTest {
         List<Booking> expectedBookings = List.of(rejectedBooking);
         expectedBookings.forEach(booking -> booking.setBooker(new User()));
         expectedBookings.forEach(booking -> booking.setItem(new Item()));
-        List<BookingDtoForResponse> expectedBookingsDto = BookingMapper.toDto(expectedBookings);
+        List<BookingDtoForResponse> expectedBookingsDto = mapper.bookingToDto(expectedBookings);
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(Mockito.anyLong(),
                 Mockito.any(Status.class), Mockito.any(Pageable.class))).thenReturn(expectedBookings);

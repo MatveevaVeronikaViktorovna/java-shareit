@@ -2,13 +2,14 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.controller.State;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoForResponse;
-import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.dto.BookingDtoMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -34,11 +35,12 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final BookingDtoMapper mapper = Mappers.getMapper(BookingDtoMapper.class);
 
     @Transactional
     @Override
     public BookingDtoForResponse create(Long userId, BookingDto bookingDto) {
-        Booking booking = BookingMapper.toBooking(bookingDto);
+        Booking booking = mapper.dtoToBooking(bookingDto);
 
         Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> {
             log.warn("Вещь с id {} не найдена", bookingDto.getItemId());
@@ -66,7 +68,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setStatus(Status.WAITING);
         Booking newBooking = bookingRepository.save(booking);
         log.info("Добавлено бронирование: {}", newBooking);
-        return BookingMapper.toDto(newBooking);
+        return mapper.bookingToDto(newBooking);
     }
 
     @Transactional
@@ -90,7 +92,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         Booking newBooking = bookingRepository.save(booking);
-        return BookingMapper.toDto(newBooking);
+        return mapper.bookingToDto(newBooking);
     }
 
     @Transactional(readOnly = true)
@@ -102,7 +104,7 @@ public class BookingServiceImpl implements BookingService {
         });
 
         if (booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId)) {
-            return BookingMapper.toDto(booking);
+            return mapper.bookingToDto(booking);
         } else {
             log.warn("Бронирование с id {} у пользователя с id {} не найдено", id, userId);
             throw new EntityNotFoundException(String.format("Бронирование с id %d у пользователя с id %d не найдено",
@@ -143,7 +145,7 @@ public class BookingServiceImpl implements BookingService {
         }
         return bookings
                 .stream()
-                .map(BookingMapper::toDto)
+                .map(mapper::bookingToDto)
                 .collect(Collectors.toList());
     }
 
@@ -183,7 +185,7 @@ public class BookingServiceImpl implements BookingService {
         }
         return bookings
                 .stream()
-                .map(BookingMapper::toDto)
+                .map(mapper::bookingToDto)
                 .collect(Collectors.toList());
     }
 

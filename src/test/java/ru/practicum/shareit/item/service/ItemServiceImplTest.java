@@ -3,19 +3,17 @@ package ru.practicum.shareit.item.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.dto.BookingDtoMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.CommentWithoutBookingException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.CommentMapper;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
@@ -54,6 +52,9 @@ class ItemServiceImplTest {
 
     @Captor
     private ArgumentCaptor<Item> itemArgumentCaptor;
+    private final BookingDtoMapper mapper = Mappers.getMapper(BookingDtoMapper.class);
+    private final CommentDtoMapper commentDtoMapper = Mappers.getMapper(CommentDtoMapper.class);
+    private final ItemDtoMapper itemDtoMapper = Mappers.getMapper(ItemDtoMapper.class);
     private Long ownerId;
     private User owner;
     Long authorId;
@@ -109,9 +110,9 @@ class ItemServiceImplTest {
         expectedItem.setAvailable(true);
         expectedItem.setOwner(owner);
 
-        expectedItemDto = ItemMapper.toDto(expectedItem);
+        expectedItemDto = itemDtoMapper.itemToDto(expectedItem);
 
-        expectedItemDtoWithComments = ItemMapper.toDto(expectedItem);
+        expectedItemDtoWithComments = itemDtoMapper.itemToDto(expectedItem);
         expectedItemDtoWithComments.setComments(Collections.emptyList());
 
         lastBooking = new Booking();
@@ -120,10 +121,10 @@ class ItemServiceImplTest {
         nextBooking = new Booking();
         nextBooking.setBooker(booker);
 
-        expectedItemDtoWithBookings = ItemMapper.toDto(expectedItem);
+        expectedItemDtoWithBookings = itemDtoMapper.itemToDto(expectedItem);
         expectedItemDtoWithBookings.setComments(Collections.emptyList());
-        expectedItemDtoWithBookings.setLastBooking(BookingMapper.toDtoForItem(lastBooking));
-        expectedItemDtoWithBookings.setNextBooking(BookingMapper.toDtoForItem(nextBooking));
+        expectedItemDtoWithBookings.setLastBooking(mapper.bookingToDtoForItem(lastBooking));
+        expectedItemDtoWithBookings.setNextBooking(mapper.bookingToDtoForItem(nextBooking));
 
         itemId = 1L;
         item = new Item();
@@ -134,7 +135,7 @@ class ItemServiceImplTest {
         expectedComment = new Comment();
         expectedComment.setAuthor(author);
 
-        expectedCommentDto = CommentMapper.toDto(expectedComment);
+        expectedCommentDto = commentDtoMapper.commentToDto(expectedComment);
 
         from = 0;
         size = 10;
@@ -165,7 +166,7 @@ class ItemServiceImplTest {
     void createWhenOwnerFoundAndRequestIdNotNullThenSavedItem() {
         requestItemDto.setRequestId(requestId);
         expectedItem.setRequest(request);
-        expectedItemDto = ItemMapper.toDto(expectedItem);
+        expectedItemDto = itemDtoMapper.itemToDto(expectedItem);
         Mockito.when(userRepository.findById(ownerId)).thenReturn(Optional.of(owner));
         Mockito.when(itemRequestRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(request));
         Mockito.when(itemRepository.save(Mockito.any(Item.class))).thenReturn(expectedItem);
@@ -179,7 +180,7 @@ class ItemServiceImplTest {
     @Test
     void getAllByOwnerWhenInvokedThenReturnedListOfItems() {
         List<Item> expectedItems = List.of(new Item());
-        List<ItemDto> expectedItemsDto = ItemMapper.toDto(expectedItems);
+        List<ItemDto> expectedItemsDto = itemDtoMapper.itemToDto(expectedItems);
         expectedItemsDto.forEach(itemDto -> itemDto.setComments(Collections.emptyList()));
         Mockito.when(itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId, page)).thenReturn(expectedItems);
 
@@ -224,7 +225,7 @@ class ItemServiceImplTest {
         newItem.setName("updatedName");
         newItem.setDescription("updated description");
         newItem.setAvailable(false);
-        ItemDto newItemDto = ItemMapper.toDto(newItem);
+        ItemDto newItemDto = itemDtoMapper.itemToDto(newItem);
         Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(expectedItem));
 
         itemService.update(ownerId, id, newItemDto);
@@ -240,7 +241,7 @@ class ItemServiceImplTest {
     void updateWhenItemFoundButOwnerWrongThenItemNotUpdated() {
         Long userId = 99L;
         Item newItem = new Item();
-        ItemDto newItemDto = ItemMapper.toDto(newItem);
+        ItemDto newItemDto = itemDtoMapper.itemToDto(newItem);
         Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(expectedItem));
 
         assertThrows(EntityNotFoundException.class, () -> itemService.update(userId, id, newItemDto));
@@ -251,7 +252,7 @@ class ItemServiceImplTest {
     void updateNameWhenItemFoundAndOwnerCorrectThenUpdatedOnlyName() {
         Item newItem = new Item();
         newItem.setName("updatedName");
-        ItemDto newItemDto = ItemMapper.toDto(newItem);
+        ItemDto newItemDto = itemDtoMapper.itemToDto(newItem);
         Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(expectedItem));
 
         itemService.update(ownerId, id, newItemDto);
@@ -267,7 +268,7 @@ class ItemServiceImplTest {
     void updateDescriptionWhenItemFoundAndOwnerCorrectThenUpdatedOnlyDescription() {
         Item newItem = new Item();
         newItem.setDescription("updated description");
-        ItemDto newItemDto = ItemMapper.toDto(newItem);
+        ItemDto newItemDto = itemDtoMapper.itemToDto(newItem);
         Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(expectedItem));
 
         itemService.update(ownerId, id, newItemDto);
@@ -283,7 +284,7 @@ class ItemServiceImplTest {
     void updateAvailableWhenItemFoundAndOwnerCorrectThenUpdatedOnlyAvailable() {
         Item newItem = new Item();
         newItem.setAvailable(false);
-        ItemDto newItemDto = ItemMapper.toDto(newItem);
+        ItemDto newItemDto = itemDtoMapper.itemToDto(newItem);
         Mockito.when(itemRepository.findById(id)).thenReturn(Optional.of(expectedItem));
 
         itemService.update(ownerId, id, newItemDto);
@@ -298,7 +299,7 @@ class ItemServiceImplTest {
     @Test
     void updateWhenItemNotFoundThenNotUpdatedItem() {
         Item newItem = new Item();
-        ItemDto newItemDto = ItemMapper.toDto(newItem);
+        ItemDto newItemDto = itemDtoMapper.itemToDto(newItem);
         Mockito.when(itemRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> itemService.update(ownerId, id, newItemDto));
@@ -316,7 +317,7 @@ class ItemServiceImplTest {
     void searchByTextWhenInvokedThenReturnedListOfItems() {
         String text = "eSC";
         List<Item> expectedItems = List.of(expectedItem);
-        List<ItemDto> expectedItemsDto = ItemMapper.toDto(expectedItems);
+        List<ItemDto> expectedItemsDto = itemDtoMapper.itemToDto(expectedItems);
         Mockito.when(itemRepository.findAllAvailableByText(text, page)).thenReturn(expectedItems);
 
         List<ItemDto> items = itemService.searchByText(ownerId, text, from, size);

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
-    private UserDtoMapper mapper = Mappers.getMapper(UserDtoMapper.class);
+    private final UserDtoMapper mapper = Mappers.getMapper(UserDtoMapper.class);
 
     @Transactional
     @Override

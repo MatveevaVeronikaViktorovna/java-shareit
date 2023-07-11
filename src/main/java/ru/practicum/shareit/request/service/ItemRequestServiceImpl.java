@@ -2,17 +2,18 @@ package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDtoForItemRequest;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.ItemDtoMapper;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.pagination.CustomPageRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoForResponse;
-import ru.practicum.shareit.request.dto.ItemRequestMapper;
+import ru.practicum.shareit.request.dto.ItemRequestDtoMapper;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
@@ -31,11 +32,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final ItemRequestDtoMapper mapper = Mappers.getMapper(ItemRequestDtoMapper.class);
+    private final ItemDtoMapper itemDtoMapper = Mappers.getMapper(ItemDtoMapper.class);
 
     @Transactional
     @Override
     public ItemRequestDtoForResponse create(Long userId, ItemRequestDto itemRequestDto) {
-        ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto);
+        ItemRequest itemRequest = mapper.dtoToItemRequest(itemRequestDto);
 
         User requestor = userRepository.findById(userId).orElseThrow(() -> {
             log.warn("Пользователь с id {} не найден", userId);
@@ -46,7 +49,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         itemRequest.setCreated(LocalDateTime.now());
         ItemRequest newItemRequest = itemRequestRepository.save(itemRequest);
         log.info("Добавлен запрос вещи: {}", newItemRequest);
-        return ItemRequestMapper.toDto(newItemRequest);
+        return mapper.itemRequestToDto(newItemRequest);
     }
 
     @Transactional(readOnly = true)
@@ -59,7 +62,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(userId);
         List<ItemRequestDtoForResponse> allDto = new ArrayList<>();
         itemRequests.forEach(itemRequest -> {
-            ItemRequestDtoForResponse dto = ItemRequestMapper.toDto(itemRequest);
+            ItemRequestDtoForResponse dto = mapper.itemRequestToDto(itemRequest);
             setItems(dto);
             allDto.add(dto);
         });
@@ -77,7 +80,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             log.warn("Запрос вещи с id {} не найден", id);
             throw new EntityNotFoundException(String.format("Запрос вещи с id %d не найден", id));
         });
-        ItemRequestDtoForResponse requestDto = ItemRequestMapper.toDto(request);
+        ItemRequestDtoForResponse requestDto = mapper.itemRequestToDto(request);
         setItems(requestDto);
         return requestDto;
     }
@@ -89,7 +92,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(userId, page);
         List<ItemRequestDtoForResponse> allDto = new ArrayList<>();
         itemRequests.forEach(itemRequest -> {
-            ItemRequestDtoForResponse dto = ItemRequestMapper.toDto(itemRequest);
+            ItemRequestDtoForResponse dto = mapper.itemRequestToDto(itemRequest);
             setItems(dto);
             allDto.add(dto);
         });
@@ -100,7 +103,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private void setItems(ItemRequestDtoForResponse dto) {
         List<ItemDtoForItemRequest> items = itemRepository.findAllByRequestIdOrderByIdAsc(dto.getId())
                 .stream()
-                .map(ItemMapper::toDtoForItemRequest)
+                .map(itemDtoMapper::itemToDtoForItemRequest)
                 .collect(Collectors.toList());
         dto.setItems(items);
     }
