@@ -7,8 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.State;
 import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -48,6 +46,10 @@ public class ItemClient extends BaseClient {
 
     public ResponseEntity<Object> update(Long userId, Long id, ItemDto requestDto) {
         return patch("/" + id, userId, requestDto);
+    }
+
+    public ResponseEntity<Object> delete(Long id) {
+        return delete("/" + id);
     }
 
     public ResponseEntity<Object> searchByText(Long userId, String text, Integer from, Integer size) {

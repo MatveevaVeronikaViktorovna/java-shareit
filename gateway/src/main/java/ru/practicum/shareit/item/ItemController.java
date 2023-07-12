@@ -55,6 +55,11 @@ public class ItemController {
         return itemClient.update(userId, id, requestDto);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
+        return itemClient.delete(id);
+    }
+
     @GetMapping("/search")
     public ResponseEntity<Object> searchByText(@RequestHeader(HEADER) Long userId,
                                                @RequestParam String text,

@@ -39,4 +39,9 @@ public class UserController {
         return userClient.update(id, requestDto);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
+        return userClient.delete(id);
+    }
+
 }
