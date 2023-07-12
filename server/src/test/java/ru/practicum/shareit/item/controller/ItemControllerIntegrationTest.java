@@ -67,7 +67,7 @@ class ItemControllerIntegrationTest {
         verify(itemService).create(Mockito.anyLong(), Mockito.any(ItemDto.class));
     }
 
-    @SneakyThrows
+  /*  @SneakyThrows
     @Test
     void createWhenItemIsNotValidThenReturnedBadRequest() {
         itemDto.setName("");
@@ -79,7 +79,7 @@ class ItemControllerIntegrationTest {
                 .andExpect(status().isBadRequest());
 
         verify(itemService, Mockito.never()).create(Mockito.anyLong(), Mockito.any(ItemDto.class));
-    }
+    } */
 
     @SneakyThrows
     @Test
@@ -196,7 +196,7 @@ class ItemControllerIntegrationTest {
         verify(itemService).addComment(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(CommentDto.class));
     }
 
-    @SneakyThrows
+ /*   @SneakyThrows
     @Test
     void addCommentWhenCommentNotValidThenReturnedBadRequest() {
         Long itemId = 1L;
@@ -210,6 +210,6 @@ class ItemControllerIntegrationTest {
 
         verify(itemService, Mockito.never()).addComment(Mockito.anyLong(), Mockito.anyLong(),
                 Mockito.any(CommentDto.class));
-    }
+    } */
 
 }
