@@ -6,8 +6,6 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -18,14 +16,14 @@ public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     @Column(name = "description")
-    @NotBlank
     String description;
-    @NotNull
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requestor_id")
     User requestor;
+
     @Column(name = "created")
-    @NotNull
     LocalDateTime created;
 }

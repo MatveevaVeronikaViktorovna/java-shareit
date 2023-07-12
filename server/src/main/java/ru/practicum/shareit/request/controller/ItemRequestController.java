@@ -2,15 +2,11 @@ package ru.practicum.shareit.request.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoForResponse;
 import ru.practicum.shareit.request.service.ItemRequestService;
-import ru.practicum.shareit.user.dto.Create;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 import static ru.practicum.shareit.booking.controller.BookingController.HEADER;
@@ -18,7 +14,6 @@ import static ru.practicum.shareit.booking.controller.BookingController.HEADER;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/requests")
-@Validated
 public class ItemRequestController {
 
     private final ItemRequestService itemRequestService;
@@ -26,7 +21,7 @@ public class ItemRequestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ItemRequestDtoForResponse create(@RequestHeader(HEADER) Long userId,
-                                            @Validated(Create.class) @RequestBody ItemRequestDto itemRequestDto) {
+                                            @RequestBody ItemRequestDto itemRequestDto) {
         return itemRequestService.create(userId, itemRequestDto);
     }
 
@@ -46,8 +41,8 @@ public class ItemRequestController {
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     public List<ItemRequestDtoForResponse> getAll(@RequestHeader(HEADER) Long userId,
-                                                  @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                                  @RequestParam(defaultValue = "20") @Positive Integer size) {
+                                                  @RequestParam(defaultValue = "0") Integer from,
+                                                  @RequestParam(defaultValue = "20") Integer size) {
         return itemRequestService.getAll(userId, from, size);
     }
 
