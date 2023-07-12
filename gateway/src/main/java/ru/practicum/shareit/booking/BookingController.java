@@ -57,6 +57,7 @@ public class BookingController {
     public ResponseEntity<Object> approveOrReject(@RequestHeader(HEADER) Long userId,
                                                   @PathVariable Long id,
                                                   @RequestParam Boolean approved) {
+        log.info("Approve or reject booking {}, userId={}, approved={}", id, userId, approved);
         return bookingClient.approveOrReject(userId, id, approved);
     }
 
