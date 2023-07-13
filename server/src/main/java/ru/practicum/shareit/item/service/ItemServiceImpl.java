@@ -85,6 +85,7 @@ public class ItemServiceImpl implements ItemService {
         });
         ItemDto itemDto;
         if (item.getOwner().getId().equals(userId)) {
+            // вот тут сейчас буду тестировать, разбираться
             itemDto = setLastBookingAndNextBooking(item);
         } else {
             itemDto = itemDtoMapper.itemToDto(item);
