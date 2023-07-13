@@ -41,6 +41,6 @@ services:
       - POSTGRES_DB=shareIt
       - POSTGRES_USER=shareIt
       - POSTGRES_PASSWORD=1985
-  volumes:
-    - "/etc/localtime:/etc/localtime:ro"
-    - "/etc/timezone:/etc/timezone:ro"
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
