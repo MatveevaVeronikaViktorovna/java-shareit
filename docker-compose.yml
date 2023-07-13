@@ -10,6 +10,9 @@ services:
       - server
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
+    volumes:
+          - "/etc/localtime:/etc/localtime:ro"
+          - "/etc/timezone:/etc/timezone:ro"
 
   server:
     build: ./server
@@ -25,6 +28,9 @@ services:
       - DB_NAME=shareIt
       - POSTGRES_USER=shareIt
       - POSTGRES_PASSWORD=1985
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
 
   db:
     image: postgres:13.7-alpine
@@ -35,3 +41,6 @@ services:
       - POSTGRES_DB=shareIt
       - POSTGRES_USER=shareIt
       - POSTGRES_PASSWORD=1985
+  volumes:
+    - "/etc/localtime:/etc/localtime:ro"
+    - "/etc/timezone:/etc/timezone:ro"
