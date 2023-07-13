@@ -11,8 +11,8 @@ services:
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
     volumes:
-          - "/etc/localtime:/etc/localtime:ro"
-          - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/timezone:/etc/timezone:ro"
 
   server:
     build: ./server
