@@ -40,8 +40,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDtoForResponse create(Long userId, BookingDto bookingDto) {
-        Booking booking = mapper.dtoToBooking(bookingDto);
-
+       Booking booking = mapper.dtoToBooking(bookingDto);
         Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> {
             log.warn("Вещь с id {} не найдена", bookingDto.getItemId());
             throw new EntityNotFoundException(String.format("Вещь с id %d не найдена", bookingDto.getItemId()));

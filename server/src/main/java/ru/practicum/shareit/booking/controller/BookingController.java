@@ -20,7 +20,7 @@ public class BookingController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BookingDtoForResponse create(@RequestHeader(HEADER) Long userId,
-                                        BookingDto bookingDto) {
+                                        @RequestBody BookingDto bookingDto) {
         return bookingService.create(userId, bookingDto);
     }
 
