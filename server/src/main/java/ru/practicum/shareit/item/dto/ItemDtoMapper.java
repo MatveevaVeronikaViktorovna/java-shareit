@@ -8,7 +8,8 @@ import java.util.List;
 @Mapper
 public abstract class ItemDtoMapper {
     public abstract Item dtoToItem(ItemDto dto);
-    public ItemDto itemToDto(Item item){
+
+    public ItemDto itemToDto(Item item) {
         ItemDto itemDto = new ItemDto();
         itemDto.setId(item.getId());
         itemDto.setName(item.getName());
@@ -19,8 +20,10 @@ public abstract class ItemDtoMapper {
         }
         return itemDto;
     }
+
     public abstract List<ItemDto> itemToDto(List<Item> items);
-    public ItemDtoForItemRequest itemToDtoForItemRequest(Item item){
+
+    public ItemDtoForItemRequest itemToDtoForItemRequest(Item item) {
         ItemDtoForItemRequest itemDto = new ItemDtoForItemRequest();
         itemDto.setId(item.getId());
         itemDto.setName(item.getName());

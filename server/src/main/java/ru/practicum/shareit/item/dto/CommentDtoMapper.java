@@ -6,6 +6,7 @@ import ru.practicum.shareit.item.model.Comment;
 @Mapper
 public abstract class CommentDtoMapper {
     public abstract Comment dtoToComment(CommentDto dto);
+
     public CommentDto commentToDto(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setId(comment.getId());
