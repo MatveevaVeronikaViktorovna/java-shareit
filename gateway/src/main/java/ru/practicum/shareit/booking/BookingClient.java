@@ -54,7 +54,11 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> approveOrReject(Long userId, Long id, Boolean approved) {
-        return patch("/" + id, userId, approved);
+        Map<String, Object> parameters = Map.of(
+                "approved", approved.booleanValue()
+        );
+        System.out.println("параметры такие: " + parameters);
+        return patch("/" + id + "?approved={approved}", userId, parameters);
     }
 
 }
