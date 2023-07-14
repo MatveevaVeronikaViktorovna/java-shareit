@@ -25,7 +25,7 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Object> create(@RequestHeader(HEADER) Long userId,
                                          @Valid @RequestBody BookingDto requestDto) {
-        log.info("Creating booking {}, userId={}", requestDto, userId);
+        log.info("Поступил запрос на создание бронирования {} от пользователя с id={}", requestDto, userId);
         return bookingClient.create(userId, requestDto);
     }
 
@@ -34,7 +34,8 @@ public class BookingController {
                                                  @RequestParam(defaultValue = "ALL") State state,
                                                  @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                  @RequestParam(defaultValue = "20") @Positive Integer size) {
-        log.info("Get booking with state {}, userId={}, from={}, size={}", state, userId, from, size);
+        log.info("Поступил запрос на получение всех бронирований от пользователя с id={} со статусом {}, " +
+                "from={}, size={}", userId, state, from, size);
         return bookingClient.getAllByBooker(userId, state, from, size);
     }
 
@@ -43,13 +44,15 @@ public class BookingController {
                                                 @RequestParam(defaultValue = "ALL") State state,
                                                 @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                 @RequestParam(defaultValue = "20") @Positive Integer size) {
+        log.info("Поступил запрос на получение всех бронирований от пользователя(owner) с id={} со статусом {}, " +
+                "from={}, size={}", userId, state, from, size);
         return bookingClient.getAllByOwner(userId, state, from, size);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@RequestHeader(HEADER) Long userId,
                                           @PathVariable Long id) {
-        log.info("Get booking {}, userId={}", id, userId);
+        log.info("Поступил запрос на получение бронирования с id={} от пользователя с id={}", id, userId);
         return bookingClient.getById(userId, id);
     }
 
@@ -57,7 +60,8 @@ public class BookingController {
     public ResponseEntity<Object> approveOrReject(@RequestHeader(HEADER) Long userId,
                                                   @PathVariable Long id,
                                                   @RequestParam Boolean approved) {
-        log.info("Approve or reject booking {}, userId={}, approved={}", id, userId, approved);
+        log.info("Поступил запрос на подтверждение/отклонение бронирования от пользователя с id={}, " +
+                "бронирование с id={}, approved={}", id, userId, approved);
         return bookingClient.approveOrReject(userId, id, approved);
     }
 

@@ -28,7 +28,7 @@ public class ItemController {
     @PostMapping
     public ResponseEntity<Object> create(@RequestHeader(HEADER) Long userId,
                                          @Validated(Create.class) @RequestBody ItemDto requestDto) {
-        log.info("Creating item {}, userId={}", requestDto, userId);
+        log.info("Поступил запрос на создание вещи {} от пользователя с id={}", requestDto, userId);
         return itemClient.create(userId, requestDto);
     }
 
@@ -36,14 +36,15 @@ public class ItemController {
     public ResponseEntity<Object> getAllByOwner(@RequestHeader(HEADER) Long userId,
                                                 @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                 @RequestParam(defaultValue = "20") @Positive Integer size) {
-        log.info("Get item by owner userId={}, from={}, size={}", userId, from, size);
+        log.info("Поступил запрос на получение всех вещей от пользователя с id={}, from={}, size={}",
+                userId, from, size);
         return itemClient.getAllByOwner(userId, from, size);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@RequestHeader(HEADER) Long userId,
                                           @PathVariable Long id) {
-        log.info("Get item {}, userId={}", id, userId);
+        log.info("Поступил запрос на получение вещи с id={} от пользователя с id={}", id, userId);
         return itemClient.getById(userId, id);
     }
 
@@ -51,12 +52,13 @@ public class ItemController {
     public ResponseEntity<Object> update(@RequestHeader(HEADER) Long userId,
                                          @PathVariable Long id,
                                          @Validated(Update.class) @RequestBody ItemDto requestDto) {
-        log.info("Update item {}, userId={}, requestDto={}", id, userId, requestDto);
+        log.info("Поступил запрос на обновление вещи с id={} от пользователя с id={} на {}", id, userId, requestDto);
         return itemClient.update(userId, id, requestDto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id) {
+        log.info("Поступил запрос на удаление вещи с id={}", id);
         return itemClient.delete(id);
     }
 
@@ -65,6 +67,8 @@ public class ItemController {
                                                @RequestParam String text,
                                                @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                @RequestParam(defaultValue = "20") @Positive Integer size) {
+        log.info("Поступил запрос на поиск всех вещей по тексту от пользователя с id={}, text={}, from={}, size={}",
+                userId, text, from, size);
         return itemClient.searchByText(userId, text, from, size);
     }
 
@@ -72,6 +76,8 @@ public class ItemController {
     public ResponseEntity<Object> addComment(@RequestHeader(HEADER) Long userId,
                                              @PathVariable Long itemId,
                                              @Validated(Create.class) @RequestBody CommentDto commentDto) {
+        log.info("Поступил запрос на добавление комментария {} от пользователя с id={} к вещи с id={}",
+                commentDto, userId, itemId);
         return itemClient.addComment(userId, itemId, commentDto);
     }
 

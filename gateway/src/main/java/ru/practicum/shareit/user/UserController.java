@@ -20,27 +20,32 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Object> create(@Validated(Create.class) @RequestBody UserDto requestDto) {
+        log.info("Поступил запрос на создание пользователя {}", requestDto);
         return userClient.create(requestDto);
     }
 
     @GetMapping
     public ResponseEntity<Object> getAll() {
+        log.info("Поступил запрос на получение всех пользователей");
         return userClient.getAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable Long id) {
+        log.info("Поступил запрос на получение пользователя с id={}", id);
         return userClient.getById(id);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable Long id,
                                          @Validated(Update.class) @RequestBody UserDto requestDto) {
+        log.info("Поступил запрос на обновление пользователя с id={} на {}", id, requestDto);
         return userClient.update(id, requestDto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable Long id) {
+        log.info("Поступил запрос на удаление пользователя с id={}", id);
         return userClient.delete(id);
     }
 
