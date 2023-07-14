@@ -14,8 +14,10 @@ import java.time.LocalDateTime;
 @Data
 @StartBeforeEndDateValid
 public class BookingDto {
+    @NotNull
     @FutureOrPresent
     LocalDateTime start;
+    @NotNull
     @Future
     LocalDateTime end;
     @NotNull
