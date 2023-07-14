@@ -1,25 +1,25 @@
 package ru.practicum.shareit.booking.dto;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
-@Mapper
-public abstract class BookingDtoMapper {
-    public abstract Booking dtoToBooking(BookingDto dto);
+@Mapper(componentModel = "spring")
+public interface BookingDtoMapper {
+    Booking dtoToBooking(BookingDto dto);
 
-    public abstract BookingDtoForResponse bookingToDto(Booking booking);
+    BookingDtoForResponse bookingToDto(Booking booking);
 
-    public abstract List<BookingDtoForResponse> bookingToDto(List<Booking> bookings);
+    List<BookingDtoForResponse> bookingToDto(List<Booking> bookings);
 
-    public BookingDtoForItem bookingToDtoForItem(Booking booking) {
-        BookingDtoForItem bookingDto = new BookingDtoForItem();
-        bookingDto.setId(booking.getId());
-        bookingDto.setStart(booking.getStart());
-        bookingDto.setEnd(booking.getEnd());
-        bookingDto.setBookerId(booking.getBooker().getId());
-        bookingDto.setStatus(booking.getStatus());
-        return bookingDto;
+    @Mapping(target = "bookerId", source = "booker")
+    BookingDtoForItem bookingToDtoForItem(Booking booking);
+
+    default Long mapBookerToBookerId(User booker) {
+        return booker.getId();
     }
+
 }
