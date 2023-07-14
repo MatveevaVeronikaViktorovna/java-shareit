@@ -58,19 +58,6 @@ class UserControllerIntegrationTest {
         verify(userService).create(Mockito.any(UserDto.class));
     }
 
- /*   @SneakyThrows
-    @Test
-    void createWhenUserIsNotValidThenReturnedBadRequest() {
-        userDto.setName("");
-
-        mockMvc.perform(post("/users")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(userDto)))
-                .andExpect(status().isBadRequest());
-
-        verify(userService, Mockito.never()).create(Mockito.any(UserDto.class));
-    } */
-
     @SneakyThrows
     @Test
     void getAllWhenInvokedThenReturnedListOfUsers() {
@@ -119,20 +106,6 @@ class UserControllerIntegrationTest {
         assertEquals(objectMapper.writeValueAsString(userDto), result);
         verify(userService).update(userId, userDto);
     }
-
- /*   @SneakyThrows
-    @Test
-    void updateWhenUserIsNotValidThenReturnedBadRequest() {
-        Long userId = 1L;
-        userDto.setEmail("nameyandex.ru");
-
-        mockMvc.perform(patch("/users/{id}", userId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(userDto)))
-                .andExpect(status().isBadRequest());
-
-        verify(userService, Mockito.never()).update(Mockito.anyLong(), Mockito.any(UserDto.class));
-    } */
 
     @SneakyThrows
     @Test

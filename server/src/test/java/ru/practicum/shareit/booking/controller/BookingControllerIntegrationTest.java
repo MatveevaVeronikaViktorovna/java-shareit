@@ -65,20 +65,6 @@ class BookingControllerIntegrationTest {
         verify(bookingService).create(Mockito.anyLong(), Mockito.any(BookingDto.class));
     }
 
- /*   @SneakyThrows
-    @Test
-    void createWhenBookingIsNotValidThenReturnedBadRequest() {
-        bookingDto.setStart(LocalDateTime.now().minusDays(10L));
-
-        mockMvc.perform(post("/bookings")
-                        .header(HEADER, 1L)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(bookingDto)))
-                .andExpect(status().isBadRequest());
-
-        verify(bookingService, Mockito.never()).create(Mockito.anyLong(), Mockito.any(BookingDto.class));
-    } */
-
     @SneakyThrows
     @Test
     void approveWhenInvokedThenReturnedBooking() {

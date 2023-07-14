@@ -63,20 +63,6 @@ class ItemRequestControllerIntegrationTest {
         verify(itemRequestService).create(Mockito.anyLong(), Mockito.any(ItemRequestDto.class));
     }
 
- /*   @SneakyThrows
-    @Test
-    void createWhenItemRequestIsNotValidThenReturnedBadRequest() {
-        itemRequestDto.setDescription("");
-
-        mockMvc.perform(post("/requests")
-                        .header(HEADER, 1L)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(itemRequestDto)))
-                .andExpect(status().isBadRequest());
-
-        verify(itemRequestService, Mockito.never()).create(Mockito.anyLong(), Mockito.any(ItemRequestDto.class));
-    } */
-
     @SneakyThrows
     @Test
     void getAllByRequestorWhenInvokedThenReturnedListOfItemRequests() {

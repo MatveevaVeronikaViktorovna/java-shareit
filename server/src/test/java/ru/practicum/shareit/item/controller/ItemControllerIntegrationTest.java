@@ -67,20 +67,6 @@ class ItemControllerIntegrationTest {
         verify(itemService).create(Mockito.anyLong(), Mockito.any(ItemDto.class));
     }
 
-  /*  @SneakyThrows
-    @Test
-    void createWhenItemIsNotValidThenReturnedBadRequest() {
-        itemDto.setName("");
-
-        mockMvc.perform(post("/items")
-                        .header(HEADER, 1L)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(itemDto)))
-                .andExpect(status().isBadRequest());
-
-        verify(itemService, Mockito.never()).create(Mockito.anyLong(), Mockito.any(ItemDto.class));
-    } */
-
     @SneakyThrows
     @Test
     void createWithoutHeaderThenReturnedBadRequest() {
@@ -195,21 +181,5 @@ class ItemControllerIntegrationTest {
         assertEquals(objectMapper.writeValueAsString(commentDto), result);
         verify(itemService).addComment(Mockito.anyLong(), Mockito.anyLong(), Mockito.any(CommentDto.class));
     }
-
- /*   @SneakyThrows
-    @Test
-    void addCommentWhenCommentNotValidThenReturnedBadRequest() {
-        Long itemId = 1L;
-        commentDto.setText("");
-
-        mockMvc.perform(post("/items/{itemId}/comment", itemId)
-                        .header(HEADER, 1L)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(commentDto)))
-                .andExpect(status().isBadRequest());
-
-        verify(itemService, Mockito.never()).addComment(Mockito.anyLong(), Mockito.anyLong(),
-                Mockito.any(CommentDto.class));
-    } */
 
 }
